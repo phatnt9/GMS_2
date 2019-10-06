@@ -13,7 +13,6 @@ namespace GateAccessControl
         private string _pinno;
         private string _adno;
         private string _profileName;
-        private int _classId;
         private string _className;
         private string _subClass;
         private string _gender;
@@ -86,18 +85,6 @@ namespace GateAccessControl
             {
                 _profileName = value;
                 OnPropertyChanged("PROFILE_NAME");
-            }
-        }
-        public int CLASS_ID
-        {
-            get
-            {
-                return _classId;
-            }
-            set
-            {
-                _classId = value;
-                OnPropertyChanged("CLASS_ID");
             }
         }
         public String CLASS_NAME

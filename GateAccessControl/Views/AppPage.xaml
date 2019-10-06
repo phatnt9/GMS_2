@@ -5,10 +5,51 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:GateAccessControl.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:md="clr-namespace:GateAccessControl"
     Title="AppPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
+    <Page.Resources>
+
+        <Style
+            x:Key="placeHolder"
+            BasedOn="{StaticResource {x:Type TextBox}}"
+            TargetType="{x:Type TextBox}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBox}">
+                        <Grid>
+                            <TextBox
+                                x:Name="textSource"
+                                VerticalContentAlignment="Center"
+                                Panel.ZIndex="2"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Text="{Binding Path=Text, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox
+                                VerticalContentAlignment="Center"
+                                Panel.ZIndex="1"
+                                Background="{TemplateBinding Background}"
+                                Text="{TemplateBinding Tag}">
+                                <TextBox.Style>
+                                    <Style TargetType="{x:Type TextBox}">
+                                        <Setter Property="Foreground" Value="Transparent" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=Text, Source={x:Reference textSource}}" Value="">
+                                                <Setter Property="Foreground" Value="LightGray" />
+                                                <Setter Property="VerticalContentAlignment" Value="Center" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
 
     <Grid Background="White">
         <Grid.RowDefinitions>
@@ -27,7 +68,7 @@
         </Grid>
         <Grid Grid.Row="1">
             <TabControl>
-                <TabItem FontSize="9.5" Header="Devices">
+                <TabItem FontSize="11" Header="Devices">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition MaxHeight="250" />
@@ -40,9 +81,9 @@
                             </Grid.ColumnDefinitions>
                             <Grid Grid.Column="0">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="20" />
+                                    <RowDefinition Height="25" />
                                     <RowDefinition />
-                                    <RowDefinition Height="20" />
+                                    <RowDefinition Height="25" />
                                 </Grid.RowDefinitions>
                                 <Grid
                                     Grid.Row="0"
@@ -148,41 +189,50 @@
                             </Grid.ColumnDefinitions>
                             <Grid Grid.Column="0">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="20" />
+                                    <RowDefinition Height="25" />
                                     <RowDefinition />
-                                    <RowDefinition Height="20" />
+                                    <RowDefinition Height="25" />
                                 </Grid.RowDefinitions>
                                 <Grid Grid.Row="0" Background="Cornsilk">
                                     <StackPanel
                                         HorizontalAlignment="Left"
                                         Background="DarkSlateBlue"
                                         Orientation="Horizontal">
-                                        <ComboBox
+                                        <md:CommandComboBox
                                             x:Name="cb_device_class"
+                                            Width="65"
                                             Margin="3,2"
                                             Padding="5,0"
                                             VerticalContentAlignment="Center"
-                                            SelectedIndex="0">
-                                            <ComboBoxItem>Parent</ComboBoxItem>
-                                            <ComboBoxItem>Admin</ComboBoxItem>
-                                            <ComboBoxItem>Teacher</ComboBoxItem>
-                                        </ComboBox>
+                                            DisplayMemberPath="CLASS_NAME"
+                                            ItemsSource="{Binding Classes, UpdateSourceTrigger=PropertyChanged}"
+                                            SelectedIndex="0" />
                                         <ComboBox
                                             x:Name="cb_device_group"
+                                            Width="65"
                                             Margin="3,2"
                                             Padding="5,0"
                                             VerticalContentAlignment="Center"
                                             SelectedIndex="0">
+                                            <ComboBoxItem>All</ComboBoxItem>
                                             <ComboBoxItem>Group 1</ComboBoxItem>
                                             <ComboBoxItem>Group 2</ComboBoxItem>
                                             <ComboBoxItem>Group 3</ComboBoxItem>
+                                            <ComboBoxItem>Group 4</ComboBoxItem>
+                                            <ComboBoxItem>Group 5</ComboBoxItem>
+                                            <ComboBoxItem>Group 6</ComboBoxItem>
+                                            <ComboBoxItem>Group 7</ComboBoxItem>
+                                            <ComboBoxItem>Group 8</ComboBoxItem>
+                                            <ComboBoxItem>Group 9</ComboBoxItem>
+                                            <ComboBoxItem>Group 10</ComboBoxItem>
                                         </ComboBox>
-                                        <TextBox
+                                        <md:CommandTextBox
                                             x:Name="tb_device_search"
-                                            Width="100"
+                                            Width="120"
                                             Margin="3,2"
                                             Padding="5,0"
-                                            Text="Search" />
+                                            Style="{StaticResource placeHolder}"
+                                            Tag="Type to search" />
                                     </StackPanel>
                                     <StackPanel
                                         HorizontalAlignment="Right"
@@ -230,14 +280,14 @@
                                                         <Grid Grid.Row="0" Margin="0,0,0,2">
                                                             <DockPanel>
                                                                 <Label Padding="3,0" VerticalContentAlignment="Center">From</Label>
-                                                                <TextBox
+                                                                <md:CommandTextBox
                                                                     x:Name="tb_active_from_time_1"
                                                                     Width="50"
                                                                     Padding="0"
                                                                     VerticalContentAlignment="Center"
-                                                                    Text="test 19:00" />
+                                                                    Text="19:00" />
                                                                 <Label Padding="3,0" VerticalContentAlignment="Center">to</Label>
-                                                                <TextBox
+                                                                <md:CommandTextBox
                                                                     x:Name="tb_active_to_time_1"
                                                                     Width="50"
                                                                     Padding="0"
@@ -247,13 +297,13 @@
                                                         <Grid Grid.Row="1">
                                                             <DockPanel>
                                                                 <Label Padding="3,0" VerticalContentAlignment="Center">From</Label>
-                                                                <TextBox
+                                                                <md:CommandTextBox
                                                                     x:Name="tb_active_from_time_2"
                                                                     Width="50"
                                                                     Padding="0"
                                                                     VerticalContentAlignment="Center" />
                                                                 <Label Padding="3,0" VerticalContentAlignment="Center">to</Label>
-                                                                <TextBox
+                                                                <md:CommandTextBox
                                                                     x:Name="tb_active_to_time_2"
                                                                     Width="50"
                                                                     Padding="0"
@@ -268,8 +318,8 @@
                                                     GroupName="TimeActive" />
                                                 <Button
                                                     x:Name="btn_apply_activeTime"
-                                                    Width="50"
-                                                    Height="16"
+                                                    Width="60"
+                                                    Height="20"
                                                     Content="Apply" />
                                             </StackPanel>
                                         </DockPanel>
@@ -279,18 +329,19 @@
                         </Grid>
                     </Grid>
                 </TabItem>
-                <TabItem FontSize="9.5" Header="Profiles">
+                <TabItem FontSize="11" Header="Profiles">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="250" />
-                            <ColumnDefinition />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="4" />
+                            <ColumnDefinition Width="*" MinWidth="300" />
                         </Grid.ColumnDefinitions>
                         <Grid Grid.Column="0">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="20" />
-                                <RowDefinition Height="20" />
+                                <RowDefinition Height="25" />
+                                <RowDefinition Height="25" />
                                 <RowDefinition />
-                                <RowDefinition Height="20" />
+                                <RowDefinition Height="25" />
                             </Grid.RowDefinitions>
                             <Grid Grid.Row="0" Background="Cornsilk">
                                 <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
@@ -309,51 +360,76 @@
                             </Grid>
                             <Grid Grid.Row="1">
                                 <DockPanel HorizontalAlignment="Stretch" Background="DarkSlateBlue">
-                                    <ComboBox
+                                    <md:CommandComboBox
                                         x:Name="cb_profile_class"
+                                        Width="65"
                                         Margin="3,2"
                                         Padding="5,0"
                                         VerticalContentAlignment="Center"
-                                        SelectedIndex="0">
-                                        <ComboBoxItem>Parent</ComboBoxItem>
-                                        <ComboBoxItem>Admin</ComboBoxItem>
-                                        <ComboBoxItem>Teacher</ComboBoxItem>
-                                    </ComboBox>
-                                    <ComboBox
+                                        Command="{Binding SearchClassProfilesCommand}"
+                                        CommandParameter="{Binding ElementName=dg_main_profiles, UpdateSourceTrigger=PropertyChanged, Path=Items}"
+                                        DisplayMemberPath="CLASS_NAME"
+                                        ItemsSource="{Binding Classes, UpdateSourceTrigger=PropertyChanged}"
+                                        SelectedIndex="0"
+                                        Text="{Binding Search_profiles_class, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}" />
+                                    <md:CommandComboBox
                                         x:Name="cb_profile_group"
+                                        Width="65"
                                         Margin="3,2"
                                         Padding="5,0"
                                         VerticalContentAlignment="Center"
-                                        SelectedIndex="0">
+                                        Command="{Binding SearchGroupProfilesCommand}"
+                                        CommandParameter="{Binding ElementName=dg_main_profiles, UpdateSourceTrigger=PropertyChanged, Path=Items}"
+                                        SelectedIndex="0"
+                                        Text="{Binding Search_profiles_group, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}">
+                                        <ComboBoxItem>All</ComboBoxItem>
                                         <ComboBoxItem>Group 1</ComboBoxItem>
                                         <ComboBoxItem>Group 2</ComboBoxItem>
                                         <ComboBoxItem>Group 3</ComboBoxItem>
-                                    </ComboBox>
-                                    <TextBox
+                                        <ComboBoxItem>Group 4</ComboBoxItem>
+                                        <ComboBoxItem>Group 5</ComboBoxItem>
+                                        <ComboBoxItem>Group 6</ComboBoxItem>
+                                        <ComboBoxItem>Group 7</ComboBoxItem>
+                                        <ComboBoxItem>Group 8</ComboBoxItem>
+                                        <ComboBoxItem>Group 9</ComboBoxItem>
+                                        <ComboBoxItem>Group 10</ComboBoxItem>
+                                    </md:CommandComboBox>
+                                    <md:CommandTextBox
                                         x:Name="tb_profile_search"
                                         Margin="3,2"
                                         Padding="5,0"
-                                        Text="Search" />
+                                        Command="{Binding SearchOthersProfilesCommand}"
+                                        CommandParameter="{Binding ElementName=dg_main_profiles, UpdateSourceTrigger=PropertyChanged, Path=Items}"
+                                        Style="{StaticResource placeHolder}"
+                                        Tag="Type to search"
+                                        Text="{Binding Search_profiles_others, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}" />
                                 </DockPanel>
                             </Grid>
                             <Grid Grid.Row="2">
                                 <DataGrid
                                     x:Name="dg_main_profiles"
                                     AutoGenerateColumns="True"
+                                    CanUserAddRows="False"
+                                    CanUserDeleteRows="False"
                                     ItemsSource="{Binding Profiles, UpdateSourceTrigger=PropertyChanged}" />
                             </Grid>
                             <Grid Grid.Row="3" Background="Cornsilk" />
                         </Grid>
-                        <Grid Grid.Column="1">
+                        <GridSplitter
+                            Name="gs_main"
+                            Grid.Column="1"
+                            HorizontalAlignment="Stretch"
+                            Background="#F1F1F1" />
+                        <Grid Grid.Column="2">
                             <Grid.RowDefinitions>
                                 <RowDefinition />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
                             <Grid Grid.Row="0" Background="White">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="20" />
+                                    <RowDefinition Height="25" />
                                     <RowDefinition />
-                                    <RowDefinition Height="20" />
+                                    <RowDefinition Height="25" />
                                 </Grid.RowDefinitions>
                                 <Grid Grid.Row="0" Background="MediumAquamarine">
                                     <StackPanel
@@ -466,9 +542,9 @@
                             </Grid>
                             <Grid Grid.Row="1">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="20" />
+                                    <RowDefinition Height="25" />
                                     <RowDefinition />
-                                    <RowDefinition Height="20" />
+                                    <RowDefinition Height="25" />
                                 </Grid.RowDefinitions>
                                 <Grid Grid.Row="0" Background="ForestGreen">
                                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">

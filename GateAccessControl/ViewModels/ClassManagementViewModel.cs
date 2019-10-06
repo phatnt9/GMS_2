@@ -86,7 +86,14 @@ namespace GateAccessControl
         {
             foreach (CardType cardType in classes)
             {
-                SqliteDataAccess.InsertDataClass(cardType);
+                if (cardType.CLASS_ID == 0)
+                {
+                    SqliteDataAccess.InsertDataClass(cardType);
+                }
+                else
+                {
+                    SqliteDataAccess.UpdateDataClass(cardType);
+                }
             }
         }
 
@@ -102,15 +109,13 @@ namespace GateAccessControl
         {
             try
             {
+                Classes.Clear();
                 List<CardType> classesList = SqliteDataAccess.LoadAllCardType();
-                if (classesList.Count > 0)
+                foreach (CardType item in classesList)
                 {
-                    Classes.Clear();
-                    foreach (CardType item in classesList)
-                    {
-                        Classes.Add(item);
-                    }
+                    Classes.Add(item);
                 }
+
             }
             catch (Exception ex)
             {

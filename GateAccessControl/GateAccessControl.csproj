@@ -78,7 +78,16 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Commands\RelayCommand.cs" />
+    <Compile Include="Communication\JObjectExtensions.cs" />
+    <Compile Include="Communication\Message.cs" />
+    <Compile Include="Communication\MessageTypes.cs" />
+    <Compile Include="Communication\Operation.cs" />
+    <Compile Include="Communication\RosSocket.cs" />
+    <Compile Include="Communication\SerialCOM.cs" />
     <Compile Include="Models\CardType.cs" />
+    <Compile Include="Models\CommandComboBox.cs" />
+    <Compile Include="Models\CommandListBox.cs" />
+    <Compile Include="Models\CommandTextBox.cs" />
     <Compile Include="Models\Device.cs" />
     <Compile Include="Models\DeviceCardType.cs" />
     <Compile Include="Models\DeviceProfiles.cs" />
@@ -89,6 +98,7 @@
     <Compile Include="ViewModels\DgvSelectedItemsConverter.cs" />
     <Compile Include="ViewModels\DialogCloser.cs" />
     <Compile Include="ViewModels\GlobalConstant.cs" />
+    <Compile Include="ViewModels\SearchProfilesParametersConverter.cs" />
     <Compile Include="ViewModels\SqliteDataAccess.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\AppPage.xaml.cs">

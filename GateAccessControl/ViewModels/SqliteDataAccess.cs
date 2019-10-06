@@ -60,18 +60,17 @@ namespace GateAccessControl
                 return null;
             }
         }
-        public static List<Profile> LoadAllProfiles(string name = "", string pinno = "", string adno = "")
+        public static List<Profile> LoadAllProfiles(string className = "", string subClass = "")
         {
             try
             {
                 using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
                 {
                     var p = new DynamicParameters();
-                    p.Add("@PROFILE_NAME", "%" + name + "%");
-                    p.Add("@PIN_NO", "%" + pinno + "%");
-                    p.Add("@AD_NO", "%" + adno + "%");
+                    p.Add("@CLASS_NAME", "%" + className + "%");
+                    p.Add("@SUB_CLASS", "%" + subClass + "%");
 
-                    var output = cnn.Query<Profile>("SELECT * FROM DT_PROFILE WHERE ((PROFILE_NAME LIKE (@PROFILE_NAME)) AND (PIN_NO LIKE (@PIN_NO)) AND (AD_NO LIKE (@AD_NO)))", p);
+                    var output = cnn.Query<Profile>("SELECT * FROM DT_PROFILE WHERE ((CLASS_NAME LIKE (@CLASS_NAME)) AND (SUB_CLASS LIKE (@SUB_CLASS)))", p);
                     return output.ToList();
                 }
             }
@@ -186,10 +185,10 @@ namespace GateAccessControl
                 using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
                 {
                     cnn.Execute("INSERT INTO DT_PROFILE " +
-                        "(PIN_NO,AD_NO,PROFILE_NAME,CLASS_ID,SUB_CLASS,GENDER,DOB,DISU,EMAIL,ADDRESS," +
+                        "(PIN_NO,AD_NO,PROFILE_NAME,CLASS_NAME,SUB_CLASS,GENDER,DOB,DISU,EMAIL,ADDRESS," +
                         "PHONE,PROFILE_STATUS,IMAGE,LOCK_DATE,DATE_TO_LOCK,CHECK_DATE_TO_LOCK," +
                         "LICENSE_PLATE,DATE_CREATED,DATE_MODIFIED) " +
-                        "VALUES (@PIN_NO,@AD_NO,@PROFILE_NAME,@CLASS_ID,@SUB_CLASS,@GENDER,@DOB,@DISU,@EMAIL,@ADDRESS," +
+                        "VALUES (@PIN_NO,@AD_NO,@PROFILE_NAME,@CLASS_NAME,@SUB_CLASS,@GENDER,@DOB,@DISU,@EMAIL,@ADDRESS," +
                         "@PHONE,@PROFILE_STATUS,@IMAGE,@LOCK_DATE,@DATE_TO_LOCK,@CHECK_DATE_TO_LOCK," +
                         "@LICENSE_PLATE,@DATE_CREATED,@DATE_MODIFIED)", profile);
                 }
@@ -224,10 +223,10 @@ namespace GateAccessControl
                 using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
                 {
                     cnn.Execute("INSERT INTO DT_PROFILE " +
-                        "(PIN_NO,AD_NO,PROFILE_NAME,CLASS_ID,SUB_CLASS,GENDER,DOB,DISU,EMAIL,ADDRESS," +
+                        "(PIN_NO,AD_NO,PROFILE_NAME,CLASS_NAME,SUB_CLASS,GENDER,DOB,DISU,EMAIL,ADDRESS," +
                         "PHONE,PROFILE_STATUS,IMAGE,LOCK_DATE,DATE_TO_LOCK,CHECK_DATE_TO_LOCK," +
                         "LICENSE_PLATE,DATE_CREATED,DATE_MODIFIED,SYNC_STATUS,ACTIVE_TIME) " +
-                        "VALUES (@PIN_NO,@AD_NO,@PROFILE_NAME,@CLASS_ID,@SUB_CLASS,@GENDER,@DOB,@DISU,@EMAIL,@ADDRESS," +
+                        "VALUES (@PIN_NO,@AD_NO,@PROFILE_NAME,@CLASS_NAME,@SUB_CLASS,@GENDER,@DOB,@DISU,@EMAIL,@ADDRESS," +
                         "@PHONE,@PROFILE_STATUS,@IMAGE,@LOCK_DATE,@DATE_TO_LOCK,@CHECK_DATE_TO_LOCK," +
                         "@LICENSE_PLATE,@DATE_CREATED,@DATE_MODIFIED,@SYNC_STATUS,@ACTIVE_TIME)", _profile);
                 }
@@ -239,24 +238,24 @@ namespace GateAccessControl
                 return false;
             }
         }
-        public static bool InsertDataDeviceCardType(DeviceCardType deviceCardType)
-        {
-            try
-            {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    cnn.Execute("INSERT INTO DT_DEVICE_CLASS " +
-                        "(DEVICE_ID,CLASS_ID,CHECK_STATUS) " +
-                        "VALUES (@DEVICE_ID,@CLASS_ID,@CHECK_STATUS)", deviceCardType);
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return false;
-            }
-        }
+        //public static bool InsertDataDeviceCardType(DeviceCardType deviceCardType)
+        //{
+        //    try
+        //    {
+        //        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //        {
+        //            cnn.Execute("INSERT INTO DT_DEVICE_CLASS " +
+        //                "(DEVICE_ID,CLASS_ID,CHECK_STATUS) " +
+        //                "VALUES (@DEVICE_ID,@CLASS_ID,@CHECK_STATUS)", deviceCardType);
+        //        }
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logFile.Error(ex.Message);
+        //        return false;
+        //    }
+        //}
         public static bool InsertDataTimeCheck(TimeRecord timeRecord)
         {
             try
@@ -305,7 +304,7 @@ namespace GateAccessControl
                         "PIN_NO = @PIN_NO, " +
                         "AD_NO = @AD_NO, " +
                         "PROFILE_NAME = @PROFILE_NAME, " +
-                        "CLASS_ID = @CLASS_ID, " +
+                        "CLASS_NAME = @CLASS_NAME, " +
                         "SUB_CLASS = @SUB_CLASS, " +
                         "GENDER = @GENDER, " +
                         "DOB = @DOB, " +
@@ -349,26 +348,26 @@ namespace GateAccessControl
                 return false;
             }
         }
-        public static bool UpdateDataDeviceClass(DeviceCardType deviceCardType)
-        {
-            try
-            {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    cnn.Execute("UPDATE DT_DEVICE_CLASS SET " +
-                        "DEVICE_ID = @DEVICE_ID, " +
-                        "CLASS_ID = @CLASS_ID, " +
-                        "CHECK_STATUS = @CHECK_STATUS " +
-                        "WHERE DEVICE_CLASS_ID = @DEVICE_CLASS_ID", deviceCardType);
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return false;
-            }
-        }
+        //public static bool UpdateDataDeviceCardType(DeviceCardType deviceCardType)
+        //{
+        //    try
+        //    {
+        //        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //        {
+        //            cnn.Execute("UPDATE DT_DEVICE_CLASS SET " +
+        //                "DEVICE_ID = @DEVICE_ID, " +
+        //                "CLASS_ID = @CLASS_ID, " +
+        //                "CHECK_STATUS = @CHECK_STATUS " +
+        //                "WHERE DEVICE_CLASS_ID = @DEVICE_CLASS_ID", deviceCardType);
+        //        }
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logFile.Error(ex.Message);
+        //        return false;
+        //    }
+        //}
         public static bool DeleteDataDevice(Device device)
         {
             try
@@ -451,7 +450,7 @@ namespace GateAccessControl
                                "\"PIN_NO\" TEXT NOT NULL UNIQUE, " +
                                "\"AD_NO\" TEXT NOT NULL, " +
                                "\"PROFILE_NAME\" TEXT NOT NULL, " +
-                               "\"CLASS_ID\" INTEGER NOT NULL, " +
+                               "\"CLASS_NAME\" TEXT NOT NULL, " +
                                "\"SUB_CLASS\" TEXT, " +
                                "\"GENDER\" TEXT NOT NULL, " +
                                "\"DOB\" DATE NOT NULL, " +
@@ -501,7 +500,7 @@ namespace GateAccessControl
                             "\"PIN_NO\" TEXT NOT NULL UNIQUE, " +
                             "\"AD_NO\" TEXT NOT NULL, " +
                             "\"PROFILE_NAME\" TEXT NOT NULL, " +
-                            "\"CLASS_ID\" INTEGER NOT NULL, " +
+                            "\"CLASS_NAME\" TEXT NOT NULL, " +
                             "\"SUB_CLASS\" TEXT, " +
                             "\"GENDER\" TEXT NOT NULL, " +
                             "\"DOB\" DATE NOT NULL, " +
@@ -535,13 +534,13 @@ namespace GateAccessControl
                             "(\"CLASS_ID\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE," +
                             "\"CLASS_NAME\" TEXT NOT NULL UNIQUE)");
 
-                        cnn.Execute("CREATE TABLE \"DT_DEVICE_CLASS\" " +
-                            "(\"DEVICE_CLASS_ID\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE," +
-                            "\"DEVICE_ID\" INTEGER NOT NULL," +
-                            "\"CLASS_ID\" INTEGER NOT NULL," +
-                            "\"CHECK_STATUS\" INTEGER NOT NULL DEFAULT 0," +
-                            "CONSTRAINT \"DEVICE_ID_CLASS_ID_UNIQUE\" UNIQUE(\"DEVICE_ID\",\"CLASS_ID\")" +
-                            ")");
+                        //cnn.Execute("CREATE TABLE \"DT_DEVICE_CLASS\" " +
+                        //    "(\"DEVICE_CLASS_ID\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE," +
+                        //    "\"DEVICE_ID\" INTEGER NOT NULL," +
+                        //    "\"CLASS_ID\" INTEGER NOT NULL," +
+                        //    "\"CHECK_STATUS\" INTEGER NOT NULL DEFAULT 0," +
+                        //    "CONSTRAINT \"DEVICE_ID_CLASS_ID_UNIQUE\" UNIQUE(\"DEVICE_ID\",\"CLASS_ID\")" +
+                        //    ")");
                     }
                 }
                 catch (Exception ex)
@@ -568,7 +567,7 @@ namespace GateAccessControl
                     // + _profile.ID + ","
                     + "'" + _profile.PIN_NO + "'" + ","
                     + "'" + _profile.PROFILE_NAME + "'" + ","
-                    + "'" + _profile.CLASS_ID + "'" + ","
+                    + "'" + _profile.CLASS_NAME + "'" + ","
                     + "'" + _profile.GENDER + "'" + ","
                     + "'" + _profile.DOB + "'" + ","
                     + "'" + _profile.EMAIL + "'" + ","

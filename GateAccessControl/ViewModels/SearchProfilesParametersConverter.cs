@@ -5,9 +5,9 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Data;
 
-namespace GateAccessControl
+namespace GateAccessControl.ViewModels
 {
-    class DgvSelectedItemsConverter : IMultiValueConverter
+    class SearchProfilesParametersConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
@@ -23,7 +23,7 @@ namespace GateAccessControl
             {
                 return new List<CardType>();
             }
-            
+
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

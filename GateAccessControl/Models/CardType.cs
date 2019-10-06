@@ -37,6 +37,16 @@ namespace GateAccessControl
             }
         }
 
+        public CardType()
+        {
+        }
+
+        public CardType(int classId, string className)
+        {
+            CLASS_ID = classId;
+            CLASS_NAME = className;
+        }
+
         #region INotifyPropertyChanged Members
 
         protected void OnPropertyChanged(string propertyName)

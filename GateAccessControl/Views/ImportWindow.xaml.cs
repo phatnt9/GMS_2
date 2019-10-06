@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Globalization;
 using Excel = Microsoft.Office.Interop.Excel;
+using System.Collections.Generic;
 
 namespace GateAccessControl.Views
 {
@@ -18,11 +19,13 @@ namespace GateAccessControl.Views
         private string importFilePath = "";
         private string importFileFolder = "";
         private bool isAddProfile = true; //add-true, update-false
+        private List<CardType> classes;
         private BackgroundWorker worker;
-        public ImportWindow()
+        public ImportWindow(List<CardType> classes)
         {
             InitializeComponent();
             btn_stop.IsEnabled = false;
+            this.classes = classes;
         }
         private void btnSelectFile_Click(object sender, RoutedEventArgs e)
         {
@@ -162,7 +165,7 @@ namespace GateAccessControl.Views
 
                         profile.PROFILE_NAME = xlRange.Cells[i, 2].Value2.ToString().ToUpper();
                         
-                        profile.CLASS_ID = int.Parse(xlRange.Cells[i, 9].Value2.ToString());
+                        profile.CLASS_NAME = xlRange.Cells[i, 9].Value2.ToString();
 
                         profile.SUB_CLASS = (xlRange.Cells[i, 10].Value2 == null) ? "" : xlRange.Cells[i, 10].Value2.ToString();
 
@@ -234,19 +237,22 @@ namespace GateAccessControl.Views
 
                         try
                         {
-                            if (isAddProfile)
+                            if (CheckClassNameValid(classes, profile.CLASS_NAME))
                             {
-                                if (SqliteDataAccess.InsertDataProfile(profile))
+                                if (isAddProfile)
                                 {
-                                    ImportProfileImage(importFileFolder, profile.IMAGE);
+                                    if (SqliteDataAccess.InsertDataProfile(profile))
+                                    {
+                                        ImportProfileImage(importFileFolder, profile.IMAGE);
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                //if (SqliteDataAccess.UpdateDataProfile(profile, profile.PROFILE_STATUS))
-                                if (SqliteDataAccess.UpdateDataProfile(profile))
+                                else
                                 {
-                                    ImportProfileImage(importFileFolder, profile.IMAGE);
+                                    //if (SqliteDataAccess.UpdateDataProfile(profile, profile.PROFILE_STATUS))
+                                    if (SqliteDataAccess.UpdateDataProfile(profile))
+                                    {
+                                        ImportProfileImage(importFileFolder, profile.IMAGE);
+                                    }
                                 }
                             }
                         }
@@ -284,6 +290,19 @@ namespace GateAccessControl.Views
                     btn_stop.IsEnabled = false;
                 });
             }
+        }
+
+        public bool CheckClassNameValid(List<CardType> list, string ClassName)
+        {
+            foreach(CardType item in list)
+            {
+                if (item.CLASS_NAME.Equals(ClassName))
+                {
+                    return true;
+                }
+            }
+            Console.WriteLine("Class name is not valid in database");
+            return false;
         }
 
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
