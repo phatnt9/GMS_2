@@ -11,7 +11,32 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
     <Page.Resources>
-
+        <DataTemplate DataType="{x:Type TextBlock}">
+            <Border
+                Width="200"
+                Margin="2"
+                Padding="5"
+                BorderBrush="Green"
+                BorderThickness="1"
+                CornerRadius="3">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        Grid.Column="0"
+                        Background="LightBlue"
+                        Text="{Binding}" />
+                </Grid>
+            </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding}" Value="Pending">
+                    <Setter Property="TextBlock.Background" Value="Yellow" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
         <Style
             x:Key="placeHolder"
             BasedOn="{StaticResource {x:Type TextBox}}"
@@ -94,6 +119,7 @@
                                             x:Name="btn_device_add"
                                             Margin="3,2"
                                             Padding="5,0"
+                                            Command="{Binding AddDeviceCommand}"
                                             Content="Add" />
                                         <Button
                                             x:Name="btn_device_edit"
@@ -109,9 +135,94 @@
                                     </StackPanel>
                                 </Grid>
                                 <Grid Grid.Row="1">
-                                    <DataGrid x:Name="dg_devices" />
+                                    <DataGrid
+                                        x:Name="dg_devices"
+                                        AutoGenerateColumns="False"
+                                        CanUserAddRows="False"
+                                        CanUserDeleteRows="False"
+                                        ItemsSource="{Binding Devices, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn
+                                                Width="Auto"
+                                                Binding="{Binding Path=DEVICE_ID}"
+                                                Header="ID"
+                                                IsReadOnly="True"
+                                                Visibility="Visible" />
+                                            <DataGridTextColumn
+                                                Width="Auto"
+                                                Binding="{Binding Path=DEVICE_NAME}"
+                                                Header="NAME"
+                                                IsReadOnly="True"
+                                                Visibility="Visible" />
+                                            <DataGridTextColumn
+                                                Width="Auto"
+                                                Binding="{Binding Path=DEVICE_IP}"
+                                                Header="IP"
+                                                IsReadOnly="True"
+                                                Visibility="Visible" />
+                                            <DataGridTextColumn
+                                                Width="Auto"
+                                                Binding="{Binding Path=DEVICE_STATUS}"
+                                                Header="STATUS"
+                                                IsReadOnly="True"
+                                                Visibility="Visible">
+                                                <DataGridTextColumn.CellStyle>
+                                                    <Style TargetType="{x:Type DataGridCell}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Path=DEVICE_STATUS}" Value="Pending">
+                                                                <Setter Property="Foreground" Value="Blue" />
+                                                                <Setter Property="Background" Value="Yellow" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Path=DEVICE_STATUS}" Value="Connected">
+                                                                <Setter Property="Foreground" Value="Blue" />
+                                                                <Setter Property="Background" Value="Lime" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Path=DEVICE_STATUS}" Value="Disconnected">
+                                                                <Setter Property="Foreground" Value="White" />
+                                                                <Setter Property="Background" Value="Red" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </DataGridTextColumn.CellStyle>
+                                            </DataGridTextColumn>
+                                            <!--<DataGridTemplateColumn Header="STATUS TEST" IsReadOnly="True">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Background="LimeGreen" Foreground="White">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="{x:Type TextBlock}">
+                                                                    <Setter Property="Text" Value="{Binding Path=DEVICE_STATUS}" />
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding Path=DEVICE_STATUS}" Value="Pending">
+                                                                            <Setter Property="Background" Value="Red" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>-->
+                                        </DataGrid.Columns>
+                                    </DataGrid>
                                 </Grid>
-                                <Grid Grid.Row="2" Background="LightCoral" />
+                                <Grid Grid.Row="2" Background="MediumAquamarine">
+                                    <StackPanel
+                                        HorizontalAlignment="Right"
+                                        Background="Coral"
+                                        Orientation="Horizontal">
+                                        <Button
+                                            x:Name="btn_device_connect"
+                                            Margin="3,2"
+                                            Padding="5,0"
+                                            Content="Connect" />
+                                        <Button
+                                            x:Name="btn_device_disconnect"
+                                            Margin="3,2"
+                                            Padding="5,0"
+                                            Content="Disconnect" />
+                                    </StackPanel>
+                                </Grid>
                             </Grid>
                             <Grid Grid.Column="1" Background="White">
                                 <GroupBox
@@ -246,7 +357,12 @@
                                     </StackPanel>
                                 </Grid>
                                 <Grid Grid.Row="1">
-                                    <DataGrid x:Name="dg_device_profiles" />
+                                    <DataGrid
+                                        x:Name="dg_device_profiles"
+                                        AutoGenerateColumns="True"
+                                        CanUserAddRows="False"
+                                        CanUserDeleteRows="False"
+                                        ItemsSource="{Binding DeviceProfiles, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                                 <Grid Grid.Row="2" Background="CadetBlue">
                                     <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
@@ -569,7 +685,12 @@
                                     </StackPanel>
                                 </Grid>
                                 <Grid Grid.Row="1">
-                                    <DataGrid x:Name="dg_timeChecks" />
+                                    <DataGrid
+                                        x:Name="dg_timeChecks"
+                                        AutoGenerateColumns="True"
+                                        CanUserAddRows="False"
+                                        CanUserDeleteRows="False"
+                                        ItemsSource="{Binding TimeChecks, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                                 <Grid Grid.Row="2" Background="ForestGreen" />
                             </Grid>

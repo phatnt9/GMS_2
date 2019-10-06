@@ -70,14 +70,7 @@
                         Padding="5,0"
                         Command="{Binding SaveClassesCommand}"
                         CommandParameter="{Binding ElementName=dg_classes, Path=ItemsSource}"
-                        Content="Save">
-                        <!--<Button.CommandParameter>
-                            <MultiBinding Converter="{StaticResource myDgvSelectedItemsConverter}" UpdateSourceTrigger="PropertyChanged">
-                                <Binding ElementName="dg_classes" Path="SelectedItems.Count" />
-                                <Binding ElementName="dg_classes" Path="Items" />
-                            </MultiBinding>
-                        </Button.CommandParameter>-->
-                    </Button>
+                        Content="Save" />
                     <Button
                         x:Name="btn_class_close"
                         Margin="3,2"

@@ -51,6 +51,7 @@
     <Reference Include="System.Data.SQLite, Version=1.0.111.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Data.SQLite.Core.1.0.111.0\lib\net46\System.Data.SQLite.dll</HintPath>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -85,14 +86,18 @@
     <Compile Include="Communication\RosSocket.cs" />
     <Compile Include="Communication\SerialCOM.cs" />
     <Compile Include="Models\CardType.cs" />
+    <Compile Include="Models\CheckinData.cs" />
     <Compile Include="Models\CommandComboBox.cs" />
     <Compile Include="Models\CommandListBox.cs" />
     <Compile Include="Models\CommandTextBox.cs" />
     <Compile Include="Models\Device.cs" />
     <Compile Include="Models\DeviceCardType.cs" />
+    <Compile Include="Models\DeviceItem.cs" />
     <Compile Include="Models\DeviceProfiles.cs" />
     <Compile Include="Models\Profile.cs" />
     <Compile Include="Models\TimeRecord.cs" />
+    <Compile Include="ViewModels\AddDeviceDataConverter.cs" />
+    <Compile Include="ViewModels\AddDeviceViewModels.cs" />
     <Compile Include="ViewModels\AppPageViewModel.cs" />
     <Compile Include="ViewModels\ClassManagementViewModel.cs" />
     <Compile Include="ViewModels\DgvSelectedItemsConverter.cs" />
@@ -101,6 +106,9 @@
     <Compile Include="ViewModels\SearchProfilesParametersConverter.cs" />
     <Compile Include="ViewModels\SqliteDataAccess.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="Views\AddDeviceWindow.xaml.cs">
+      <DependentUpon>AddDeviceWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\AppPage.xaml.cs">
       <DependentUpon>AppPage.xaml</DependentUpon>
     </Compile>
@@ -174,6 +182,10 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\AddDeviceWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\AppPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

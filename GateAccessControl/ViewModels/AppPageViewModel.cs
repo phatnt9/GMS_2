@@ -12,13 +12,15 @@ namespace GateAccessControl
         private static readonly log4net.ILog logFile = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private ObservableCollection<Profile> _profiles = new ObservableCollection<Profile>();
-        private ObservableCollection<Profile> _deviceProfiles = new ObservableCollection<Profile>();
-        private ObservableCollection<Profile> _timeChecks = new ObservableCollection<Profile>();
+        private ObservableCollection<Device> _devices = new ObservableCollection<Device>();
+        private ObservableCollection<DeviceProfiles> _deviceProfiles = new ObservableCollection<DeviceProfiles>();
+        private ObservableCollection<TimeRecord> _timeChecks = new ObservableCollection<TimeRecord>();
         private ObservableCollection<CardType> _classes = new ObservableCollection<CardType>();
 
         public ObservableCollection<Profile> Profiles => _profiles;
-        public ObservableCollection<Profile> DeviceProfiles => _deviceProfiles;
-        public ObservableCollection<Profile> TimeChecks => _timeChecks;
+        public ObservableCollection<Device> Devices => _devices;
+        public ObservableCollection<DeviceProfiles> DeviceProfiles => _deviceProfiles;
+        public ObservableCollection<TimeRecord> TimeChecks => _timeChecks;
         public ObservableCollection<CardType> Classes => _classes;
 
         private string _search_profiles_class;
@@ -82,6 +84,8 @@ namespace GateAccessControl
             }
         }
 
+
+        public ICommand AddDeviceCommand { get; set; }
         public ICommand ImportProfilesCommand { get; set; }
         public ICommand ClassManagementCommand { get; set; }
         public ICommand SearchClassProfilesCommand { get; set; }
@@ -93,8 +97,17 @@ namespace GateAccessControl
 
         public AppPageViewModel()
         {
+            ReloadDataDevices();
             ReloadDataProfiles();
             ReloadDataCardTypes();
+
+            AddDeviceCommand = new RelayCommand<Device>(
+                (p) => true,
+                (p) =>
+                {
+                    AddDevice(p);
+                    ReloadDataDevices();
+                });
 
             SearchOthersProfilesCommand = new RelayCommand<ItemCollection>(
                 (p) => true,
@@ -137,6 +150,12 @@ namespace GateAccessControl
                 });
         }
 
+        private void AddDevice(Device p)
+        {
+            AddDeviceWindow addDeviceWindow = new AddDeviceWindow();
+            addDeviceWindow.ShowDialog();
+        }
+
         private void SearchProfiles(ItemCollection p)
         {
             Console.WriteLine("==================================");
@@ -174,12 +193,30 @@ namespace GateAccessControl
         {
             try
             {
-                Classes.Clear();
+                _classes.Clear();
                 List<CardType> classesList = SqliteDataAccess.LoadAllCardType();
                 Classes.Add(new CardType(0, "All"));
                 foreach (CardType item in classesList)
                 {
-                    Classes.Add(item);
+                    _classes.Add(item);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+            }
+        }
+
+        public void ReloadDataDevices()
+        {
+            try
+            {
+                _devices.Clear();
+                List<Device> deviceList = SqliteDataAccess.LoadAllDevices();
+                foreach (Device item in deviceList)
+                {
+                    _devices.Add(item);
                 }
 
             }
@@ -193,11 +230,11 @@ namespace GateAccessControl
         {
             try
             {
-                Profiles.Clear();
+                _profiles.Clear();
                 List<Profile> profileList = SqliteDataAccess.LoadAllProfiles(className, subClass);
                 foreach (Profile item in profileList)
                 {
-                    Profiles.Add(item);
+                    _profiles.Add(item);
                 }
 
             }
@@ -206,5 +243,7 @@ namespace GateAccessControl
                 logFile.Error(ex.Message);
             }
         }
+
+        
     }
 }

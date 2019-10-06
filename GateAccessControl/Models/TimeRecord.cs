@@ -14,6 +14,19 @@ namespace GateAccessControl
         private string _pinno;
         private string _deviceIp;
 
+        public TimeRecord()
+        {
+
+        }
+
+        public TimeRecord(string ip, string pinno, DateTime checkTime)
+        {
+            TIMECHECK_ID = 0;
+            DEVICE_IP = ip;
+            PIN_NO = pinno;
+            TIMECHECK_TIME = checkTime;
+        }
+
 
         public int TIMECHECK_ID
         {
