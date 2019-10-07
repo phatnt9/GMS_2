@@ -11,6 +11,7 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
     <Page.Resources>
+        <md:DeviceItemWebSocketStatusConverter x:Key="myDeviceItemWebSocketStatusConverter" />
         <DataTemplate DataType="{x:Type TextBlock}">
             <Border
                 Width="200"
@@ -87,13 +88,27 @@
                     x:Name="btn_classManagement"
                     Margin="2"
                     Padding="2"
-                    Command="{Binding ClassManagementCommand}"
+                    Command="{Binding ManageClassCommand}"
+                    Content="Class Management" />
+                <Button
+                    x:Name="btn_createTable"
+                    Margin="2"
+                    Padding="2"
+                    Click="Btn_createTable_Click"
                     Content="Class Management" />
             </WrapPanel>
         </Grid>
         <Grid Grid.Row="1">
             <TabControl>
-                <TabItem FontSize="11" Header="Devices">
+                <TabItem
+                    Width="100"
+                    FontSize="12"
+                    Header="Devices">
+                    <TabItem.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" />
+                        </DataTemplate>
+                    </TabItem.HeaderTemplate>
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition MaxHeight="250" />
@@ -135,12 +150,15 @@
                                     </StackPanel>
                                 </Grid>
                                 <Grid Grid.Row="1">
-                                    <DataGrid
+                                    <md:CommandDataGrid
                                         x:Name="dg_devices"
                                         AutoGenerateColumns="False"
                                         CanUserAddRows="False"
                                         CanUserDeleteRows="False"
-                                        ItemsSource="{Binding Devices, UpdateSourceTrigger=PropertyChanged}">
+                                        Command="{Binding SelectDeviceCommand}"
+                                        CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem}"
+                                        ItemsSource="{Binding Devices, UpdateSourceTrigger=PropertyChanged}"
+                                        SelectionMode="Extended">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn
                                                 Width="Auto"
@@ -149,37 +167,45 @@
                                                 IsReadOnly="True"
                                                 Visibility="Visible" />
                                             <DataGridTextColumn
-                                                Width="Auto"
+                                                Width="*"
                                                 Binding="{Binding Path=DEVICE_NAME}"
                                                 Header="NAME"
                                                 IsReadOnly="True"
                                                 Visibility="Visible" />
                                             <DataGridTextColumn
-                                                Width="Auto"
+                                                Width="*"
                                                 Binding="{Binding Path=DEVICE_IP}"
                                                 Header="IP"
                                                 IsReadOnly="True"
                                                 Visibility="Visible" />
                                             <DataGridTextColumn
-                                                Width="Auto"
-                                                Binding="{Binding Path=DEVICE_STATUS}"
+                                                Width="*"
+                                                Binding="{Binding Path=DeviceItem.webSocket, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, Converter={StaticResource myDeviceItemWebSocketStatusConverter}}"
                                                 Header="STATUS"
                                                 IsReadOnly="True"
                                                 Visibility="Visible">
                                                 <DataGridTextColumn.CellStyle>
                                                     <Style TargetType="{x:Type DataGridCell}">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Path=DEVICE_STATUS}" Value="Pending">
+                                                            <DataTrigger Binding="{Binding Path=DeviceItem.webSocket, Converter={StaticResource myDeviceItemWebSocketStatusConverter}}" Value="Pending">
                                                                 <Setter Property="Foreground" Value="Blue" />
-                                                                <Setter Property="Background" Value="Yellow" />
+                                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                                <Setter Property="Background" Value="#F7D23D" />
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Path=DEVICE_STATUS}" Value="Connected">
-                                                                <Setter Property="Foreground" Value="Blue" />
-                                                                <Setter Property="Background" Value="Lime" />
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Path=DEVICE_STATUS}" Value="Disconnected">
+                                                            <DataTrigger Binding="{Binding Path=DeviceItem.webSocket, Converter={StaticResource myDeviceItemWebSocketStatusConverter}}" Value="Connecting">
                                                                 <Setter Property="Foreground" Value="White" />
-                                                                <Setter Property="Background" Value="Red" />
+                                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                                <Setter Property="Background" Value="#4D9DE0" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Path=DeviceItem.webSocket, Converter={StaticResource myDeviceItemWebSocketStatusConverter}}" Value="Connected">
+                                                                <Setter Property="Foreground" Value="White" />
+                                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                                <Setter Property="Background" Value="#69B578" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Path=DeviceItem.webSocket, Converter={StaticResource myDeviceItemWebSocketStatusConverter}}" Value="Disconnected">
+                                                                <Setter Property="Foreground" Value="White" />
+                                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                                <Setter Property="Background" Value="#E15554" />
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
@@ -204,7 +230,7 @@
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>-->
                                         </DataGrid.Columns>
-                                    </DataGrid>
+                                    </md:CommandDataGrid>
                                 </Grid>
                                 <Grid Grid.Row="2" Background="MediumAquamarine">
                                     <StackPanel
@@ -215,11 +241,15 @@
                                             x:Name="btn_device_connect"
                                             Margin="3,2"
                                             Padding="5,0"
+                                            Command="{Binding ConnectDeviceCommand}"
+                                            CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem}"
                                             Content="Connect" />
                                         <Button
                                             x:Name="btn_device_disconnect"
                                             Margin="3,2"
                                             Padding="5,0"
+                                            Command="{Binding DisconnectDeviceCommand}"
+                                            CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem}"
                                             Content="Disconnect" />
                                     </StackPanel>
                                 </Grid>
@@ -445,7 +475,15 @@
                         </Grid>
                     </Grid>
                 </TabItem>
-                <TabItem FontSize="11" Header="Profiles">
+                <TabItem
+                    Width="100"
+                    FontSize="12"
+                    Header="Profiles">
+                    <TabItem.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" />
+                        </DataTemplate>
+                    </TabItem.HeaderTemplate>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />

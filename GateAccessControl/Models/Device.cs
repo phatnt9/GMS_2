@@ -14,6 +14,55 @@ namespace GateAccessControl
         private string _deviceName;
         private string _deviceStatus;
         private string _deviceNote;
+        private DeviceItem _deviceItem;
+        private string _webSocketStatus;
+
+        public Device()
+        {
+            DeviceItem = new DeviceItem();
+        }
+
+        public String WebSocketStatus
+        {
+            get
+            {
+                string returnStatus;
+                if (DeviceItem.webSocket != null)
+                {
+                    if (DeviceItem.webSocket.IsAlive)
+                    {
+                        returnStatus = "Connected";
+                    }
+                    else
+                    {
+                        returnStatus = "Connecting";
+                    }
+                }
+                else
+                {
+                    returnStatus = "Pending";
+                }
+                return returnStatus;
+            }
+            set
+            {
+                _webSocketStatus = value;
+                OnPropertyChanged("WebSocketStatus");
+            }
+        }
+
+        public DeviceItem DeviceItem
+        {
+            get
+            {
+                return _deviceItem;
+            }
+            set
+            {
+                _deviceItem = value;
+                OnPropertyChanged("DeviceItem");
+            }
+        }
 
         public int DEVICE_ID
         {

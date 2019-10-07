@@ -8,6 +8,8 @@
     Title="MainWindow"
     Width="800"
     Height="450"
+    MinHeight="350"
+    MinWidth="400"
     mc:Ignorable="d">
     <Frame
         x:Name="mainFrame"

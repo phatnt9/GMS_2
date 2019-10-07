@@ -88,6 +88,7 @@
     <Compile Include="Models\CardType.cs" />
     <Compile Include="Models\CheckinData.cs" />
     <Compile Include="Models\CommandComboBox.cs" />
+    <Compile Include="Models\CommandDataGrid.cs" />
     <Compile Include="Models\CommandListBox.cs" />
     <Compile Include="Models\CommandTextBox.cs" />
     <Compile Include="Models\Device.cs" />
@@ -100,6 +101,7 @@
     <Compile Include="ViewModels\AddDeviceViewModels.cs" />
     <Compile Include="ViewModels\AppPageViewModel.cs" />
     <Compile Include="ViewModels\ClassManagementViewModel.cs" />
+    <Compile Include="ViewModels\DeviceItemWebSocketStatusConverter.cs" />
     <Compile Include="ViewModels\DgvSelectedItemsConverter.cs" />
     <Compile Include="ViewModels\DialogCloser.cs" />
     <Compile Include="ViewModels\GlobalConstant.cs" />

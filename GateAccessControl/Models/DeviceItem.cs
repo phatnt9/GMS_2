@@ -81,17 +81,10 @@ namespace GateAccessControl
 
         public STATUSPROFILE statusProfile = STATUSPROFILE.Pending;
 
+        
         public DeviceItem()
         {
             OnFlagStatusClient.OnConfirmProfileSuccess = CLIENTCMD.CLIENT_READY;
-        }
-        public void createRosTerms()
-        {
-            int subscription_imagerequest = this.Subscribe("ReqImage", "std_msgs/String", ReqImgHandler);
-            publishdataImg = this.Advertise("ServerRespImg", "sensor_msgs/CompressedImage");
-
-            publishdata = this.Advertise("ServerPublish", "std_msgs/String");
-            int subscription = this.Subscribe("ClientPublish", "std_msgs/String", DataHandler);
         }
         protected override void OnOpenedEvent()
         {
@@ -105,6 +98,14 @@ namespace GateAccessControl
                 Console.WriteLine("Robot Control Error Send OnOpenedEvent");
                 logFile.Error(ex.Message);
             }
+        }
+        public void createRosTerms()
+        {
+            int subscription_imagerequest = this.Subscribe("ReqImage", "std_msgs/String", ReqImgHandler);
+            publishdataImg = this.Advertise("ServerRespImg", "sensor_msgs/CompressedImage");
+
+            publishdata = this.Advertise("ServerPublish", "std_msgs/String");
+            int subscription = this.Subscribe("ClientPublish", "std_msgs/String", DataHandler);
         }
         protected override void OnClosedEvent(object sender, CloseEventArgs e)
         {
@@ -120,46 +121,39 @@ namespace GateAccessControl
                 var ip = (string)stuff["ip"];
                 switch (status)
                 {
-                    case CLIENTCMD.REQUEST_PROFILE_ADD:
-                        //sendProfile(ip, SERVERRESPONSE.RESP_PROFILE_ADD, new List<Profile>());
-                        //dynamic product=new JOb
-                        break;
-
-                    case CLIENTCMD.REQUEST_PROFILE_UPDATE:
-                        //sendProfile(ip, SERVERRESPONSE.RESP_PROFILE_UPDATE, new List<Profile>());
-                        //dynamic product=new JOb
-                        break;
-
-                    case CLIENTCMD.REQUEST_PROFILE_DELETE:
-                        //sendProfile(ip, SERVERRESPONSE.RESP_PROFILE_DELETE, new List<Profile>());
-                        //dynamic product=new JOb
-                        break;
-
                     case CLIENTCMD.CONFIRM_ADD_PROFILE_SUCCESS:
+                    {
                         OnFlagStatusClient.OnConfirmProfileSuccess = status;
                         break;
-
+                    }
                     case CLIENTCMD.CONFIRM_UPDATE_PROFILE_SUCCESS:
+                    {
                         OnFlagStatusClient.OnConfirmProfileSuccess = status;
                         break;
-
+                    }
                     case CLIENTCMD.CONFIRM_DELETE_PROFILE_SUCCESS:
+                    {
                         OnFlagStatusClient.OnConfirmProfileSuccess = status;
                         break;
+                    }
 
                     case CLIENTCMD.CONFIRM_ADD_PROFILE_UNSUCCESS:
+                    {
                         OnFlagStatusClient.OnConfirmProfileSuccess = status;
                         break;
-
+                    }
                     case CLIENTCMD.CONFIRM_UPDATE_PROFILE_UNSUCCESS:
+                    {
                         OnFlagStatusClient.OnConfirmProfileSuccess = status;
                         break;
-
+                    }
                     case CLIENTCMD.CONFIRM_DELETE_PROFILE_UNSUCCESS:
+                    {
                         OnFlagStatusClient.OnConfirmProfileSuccess = status;
                         break;
-
+                    }
                     case CLIENTCMD.REQUEST_SYNC_TIME:
+                    {
                         dynamic productTimeSync = new JObject();
                         productTimeSync.status = (int)SERVERRESPONSE.RESP_SYNC_TIME;
                         productTimeSync.data = DateTime.Now.Ticks;
@@ -167,8 +161,9 @@ namespace GateAccessControl
                         msgTimeSync.data = productTimeSync.ToString();
                         Publish(publishdata, msgTimeSync);
                         break;
-
+                    }
                     case CLIENTCMD.REQUEST_REG_PERSON_LIST:
+                    {
                         List<CheckinData> personList = new List<CheckinData>();
                         try
                         {
@@ -218,6 +213,7 @@ namespace GateAccessControl
                         }
 
                         break;
+                    }
                 }
             }
             catch (Exception ex)
@@ -318,3 +314,21 @@ namespace GateAccessControl
 
     }
 }
+//case CLIENTCMD.REQUEST_PROFILE_ADD:
+//                    {
+//                        //sendProfile(ip, SERVERRESPONSE.RESP_PROFILE_ADD, new List<Profile>());
+//                        //dynamic product=new JOb
+//                        break;
+//                    }
+//                    case CLIENTCMD.REQUEST_PROFILE_UPDATE:
+//                    {
+//                        //sendProfile(ip, SERVERRESPONSE.RESP_PROFILE_UPDATE, new List<Profile>());
+//                        //dynamic product=new JOb
+//                        break;
+//                    }
+//                    case CLIENTCMD.REQUEST_PROFILE_DELETE:
+//                    {
+//                        //sendProfile(ip, SERVERRESPONSE.RESP_PROFILE_DELETE, new List<Profile>());
+//                        //dynamic product=new JOb
+//                        break;
+//                    }

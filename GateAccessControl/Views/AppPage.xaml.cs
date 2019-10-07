@@ -25,5 +25,10 @@ namespace GateAccessControl.Views
             InitializeComponent();
             DataContext = new AppPageViewModel();
         }
+
+        private void Btn_createTable_Click(object sender, RoutedEventArgs e)
+        {
+            //SqliteDataAccess.CreateDeviceProfilesTable("TESTTEST");
+        }
     }
 }

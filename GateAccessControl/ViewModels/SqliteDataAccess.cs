@@ -60,6 +60,22 @@ namespace GateAccessControl
                 return null;
             }
         }
+        public static List<DeviceProfiles> LoadAllDeviceProfiles(Device device)
+        {
+            try
+            {
+                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+                {
+                    var output = cnn.Query<DeviceProfiles>("SELECT * FROM DT_DEVICE_PROFILES_" + device.DEVICE_ID, new DynamicParameters());
+                    return output.ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return null;
+            }
+        }
         public static List<Profile> LoadAllProfiles(string className = "", string subClass = "")
         {
             try
@@ -445,7 +461,7 @@ namespace GateAccessControl
                 {
                     using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
                     {
-                        cnn.Execute("CREATE TABLE \"DT_DEVICE_PROFILE\" " +
+                        cnn.Execute("CREATE TABLE IF NOT EXISTS \""+ tableName + "\" " +
                                "(\"PROFILE_ID\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, " +
                                "\"PIN_NO\" TEXT NOT NULL UNIQUE, " +
                                "\"AD_NO\" TEXT NOT NULL, " +

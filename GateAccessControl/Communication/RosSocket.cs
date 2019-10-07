@@ -20,6 +20,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -28,7 +29,7 @@ using WebSocketSharp;
 
 namespace GateAccessControl
 {
-    public class RosSocket
+    public class RosSocket : INotifyPropertyChanged
     {
         public enum ConnectionStatus
         {
@@ -254,7 +255,19 @@ namespace GateAccessControl
             }
         }
 
-        public WebSocket webSocket;
+        private WebSocket _webSocket;
+        public WebSocket webSocket
+        {
+            get
+            {
+                return _webSocket;
+            }
+            set
+            {
+                _webSocket = value;
+                OnPropertyChanged("webSocket");
+            }
+        }
         private Dictionary<int, Publisher> publishers = new Dictionary<int, Publisher>();
         private Dictionary<int, Subscriber> subscribers = new Dictionary<int, Subscriber>();
         private Dictionary<int, ServiceCaller> serviceCallers = new Dictionary<int, ServiceCaller>();
@@ -352,5 +365,16 @@ namespace GateAccessControl
         }
 
         #endregion Private
+
+        #region INotifyPropertyChanged Members
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
     }
 }
