@@ -13,7 +13,6 @@ namespace GateAccessControl
         {
             try
             {
-                //Console.WriteLine(values[0].ToString() + "-" + values[1].ToString());
                 Device returnDevice = new Device();
                 returnDevice.DEVICE_NAME = values[0].ToString();
                 returnDevice.DEVICE_IP = values[1].ToString();

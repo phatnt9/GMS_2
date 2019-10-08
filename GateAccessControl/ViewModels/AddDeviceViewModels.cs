@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Net;
 using System.Windows.Input;
 
@@ -18,6 +15,7 @@ namespace GateAccessControl
 
         private bool? _dialogResult;
         private string _addDeviceStatus;
+        private Device _addDevice;
         public bool? DialogResult
         {
             get
@@ -28,6 +26,19 @@ namespace GateAccessControl
             {
                 _dialogResult = value;
                 RaisePropertyChanged("DialogResult");
+            }
+        }
+
+        public Device AddDevice
+        {
+            get
+            {
+                return _addDevice;
+            }
+            set
+            {
+                _addDevice = value;
+                RaisePropertyChanged("AddDevice");
             }
         }
 
@@ -52,10 +63,11 @@ namespace GateAccessControl
 
         public AddDeviceViewModels()
         {
+            AddDevice = new Device();
             AddDeviceCommand = new RelayCommand<Device>(
                 (p) => 
                 {
-                    if (ValidateIPv4(p.DEVICE_IP) && !String.IsNullOrEmpty(p.DEVICE_NAME.ToString()))
+                    if (ValidateIPv4(AddDevice.DEVICE_IP) && !String.IsNullOrEmpty(AddDevice.DEVICE_NAME))
                     {
                         return true;
                     }
@@ -66,14 +78,14 @@ namespace GateAccessControl
                 },
                 (p) =>
                 {
-                    p.DEVICE_STATUS = DeviceStatus.Pending.ToString();
-                    if(SqliteDataAccess.InsertDataDevice(p))
+                    AddDevice.DEVICE_STATUS = DeviceStatus.Pending.ToString();
+                    if(SqliteDataAccess.InsertDataDevice(AddDevice))
                     {
                         AddDeviceStatus = "Succeed";
                     }
                     else
                     {
-                        AddDeviceStatus = "Error";
+                        AddDeviceStatus = "Unsucceed";
                     }
                 }
                 );

@@ -392,6 +392,10 @@ namespace GateAccessControl
                 {
                     cnn.Execute("DELETE FROM DT_DEVICE WHERE DEVICE_ID = @DEVICE_ID", device);
                 }
+                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+                {
+                    cnn.Execute("DROP TABLE IF EXISTS DT_DEVICE_PROFILES_"+device.DEVICE_ID, device);
+                }
                 return true;
             }
             catch (Exception ex)
@@ -544,7 +548,7 @@ namespace GateAccessControl
                             "\"DEVICE_IP\" TEXT NOT NULL UNIQUE," +
                             "\"DEVICE_NAME\" TEXT NOT NULL," +
                             "\"DEVICE_STATUS\" TEXT NOT NULL," +
-                            "\"DEVICE_NOTE\" TEXT NOT NULL)");
+                            "\"DEVICE_NOTE\" TEXT)");
 
                         cnn.Execute("CREATE TABLE \"DT_CLASS\" " +
                             "(\"CLASS_ID\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE," +

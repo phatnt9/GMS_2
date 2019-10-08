@@ -72,7 +72,6 @@
                         CommandParameter="{Binding ElementName=dg_classes, Path=ItemsSource}"
                         Content="Save" />
                     <Button
-                        x:Name="btn_class_close"
                         Margin="3,2"
                         Padding="5,0"
                         VerticalContentAlignment="Center"

@@ -102,8 +102,10 @@
     <Compile Include="ViewModels\AppPageViewModel.cs" />
     <Compile Include="ViewModels\ClassManagementViewModel.cs" />
     <Compile Include="ViewModels\DeviceItemWebSocketStatusConverter.cs" />
+    <Compile Include="ViewModels\DeviceProfilesManageViewModel.cs" />
     <Compile Include="ViewModels\DgvSelectedItemsConverter.cs" />
     <Compile Include="ViewModels\DialogCloser.cs" />
+    <Compile Include="ViewModels\EditDeviceViewModels.cs" />
     <Compile Include="ViewModels\GlobalConstant.cs" />
     <Compile Include="ViewModels\SearchProfilesParametersConverter.cs" />
     <Compile Include="ViewModels\SqliteDataAccess.cs" />
@@ -116,6 +118,12 @@
     </Compile>
     <Compile Include="Views\ClassManagement.xaml.cs">
       <DependentUpon>ClassManagement.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DeviceProfilesManagement.xaml.cs">
+      <DependentUpon>DeviceProfilesManagement.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditDeviceWindow.xaml.cs">
+      <DependentUpon>EditDeviceWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ImportWindow.xaml.cs">
       <DependentUpon>ImportWindow.xaml</DependentUpon>
@@ -193,6 +201,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ClassManagement.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DeviceProfilesManagement.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\EditDeviceWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

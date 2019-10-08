@@ -141,11 +141,15 @@
                                             Margin="3,2"
                                             Padding="5,0"
                                             VerticalContentAlignment="Center"
+                                            Command="{Binding EditDeviceCommand}"
+                                            CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem}"
                                             Content="Edit" />
                                         <Button
                                             x:Name="btn_device_remove"
                                             Margin="3,2"
                                             Padding="5,0"
+                                            Command="{Binding RemoveDeviceCommand}"
+                                            CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem}"
                                             Content="Remove" />
                                     </StackPanel>
                                 </Grid>
@@ -158,7 +162,8 @@
                                         Command="{Binding SelectDeviceCommand}"
                                         CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem}"
                                         ItemsSource="{Binding Devices, UpdateSourceTrigger=PropertyChanged}"
-                                        SelectionMode="Extended">
+                                        SelectionMode="Single"
+                                        SelectionUnit="FullRow">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn
                                                 Width="Auto"
@@ -379,6 +384,13 @@
                                         HorizontalAlignment="Right"
                                         Background="DarkGreen"
                                         Orientation="Horizontal">
+                                        <Button
+                                            x:Name="btn_deviceProfiles_manage"
+                                            Margin="3,2"
+                                            Padding="5,0"
+                                            Command="{Binding DeviceProfilesManageCommand}"
+                                            CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem}"
+                                            Content="Manage" />
                                         <Button
                                             x:Name="btn_device_export"
                                             Margin="3,2"

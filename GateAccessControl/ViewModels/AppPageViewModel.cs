@@ -86,11 +86,24 @@ namespace GateAccessControl
 
 
         public ICommand AddDeviceCommand { get; set; }
+        public ICommand EditDeviceCommand { get; set; }
+        public ICommand RemoveDeviceCommand { get; set; }
+
+
         public ICommand SelectDeviceCommand { get; set; }
+        public ICommand DeviceProfilesManageCommand { get; set; }
+
+
+
+
         public ICommand ConnectDeviceCommand { get; set; }
         public ICommand DisconnectDeviceCommand { get; set; }
+
+
         public ICommand ImportProfilesCommand { get; set; }
         public ICommand ManageClassCommand { get; set; }
+
+
         public ICommand SearchClassProfilesCommand { get; set; }
         public ICommand SearchGroupProfilesCommand { get; set; }
         public ICommand SearchOthersProfilesCommand { get; set; }
@@ -104,6 +117,39 @@ namespace GateAccessControl
             ReloadDataProfiles();
             ReloadDataCardTypes();
 
+
+            AddDeviceCommand = new RelayCommand<Device>(
+                 (p) => true,
+                 (p) =>
+                 {
+                     AddDevice();
+                     ReloadDataDevices();
+                 });
+
+            EditDeviceCommand = new RelayCommand<Device>(
+                (p) =>
+                {
+                    return CanEditOrRemoveDevice(p);
+                },
+                (p) =>
+                {
+                    EditDevice(p);
+                    ReloadDataDevices();
+                });
+
+            RemoveDeviceCommand = new RelayCommand<Device>(
+                (p) =>
+                {
+                    return CanEditOrRemoveDevice(p);
+                },
+                (p) =>
+                {
+                    if(RemoveDevice(p))
+                    {
+                        ReloadDataDevices(p);
+                    }
+                });
+
             SelectDeviceCommand = new RelayCommand<Device>(
                 (p) =>
                 {
@@ -112,6 +158,20 @@ namespace GateAccessControl
                 (p) =>
                 {
                     SqliteDataAccess.CreateDeviceProfilesTable("DT_DEVICE_PROFILES_"+p.DEVICE_ID);
+                    ReloadDataDeviceProfiles(p);
+                });
+
+            DeviceProfilesManageCommand = new RelayCommand<Device>(
+                (p) =>
+                {
+                    if (p != null)
+                        return true;
+                    else
+                        return false;
+                },
+                (p) =>
+                {
+                    ManageDeviceProfiles(p);
                     ReloadDataDeviceProfiles(p);
                 });
 
@@ -133,14 +193,6 @@ namespace GateAccessControl
                 (p) =>
                 {
                     DisconnectDevice(p);
-                });
-
-            AddDeviceCommand = new RelayCommand<Device>(
-                (p) => true,
-                (p) =>
-                {
-                    AddDevice(p);
-                    ReloadDataDevices();
                 });
 
             SearchOthersProfilesCommand = new RelayCommand<ItemCollection>(
@@ -184,6 +236,41 @@ namespace GateAccessControl
                 });
         }
 
+        private void ManageDeviceProfiles(Device p)
+        {
+            DeviceProfilesManagement deviceProfilesWindow = new DeviceProfilesManagement(p);
+            deviceProfilesWindow.ShowDialog();
+        }
+
+        private void AddDevice()
+        {
+            AddDeviceWindow addDeviceWindow = new AddDeviceWindow();
+            addDeviceWindow.ShowDialog();
+        }
+
+        private void EditDevice(Device p)
+        {
+            EditDeviceWindow editDeviceWindow = new EditDeviceWindow(p);
+            editDeviceWindow.ShowDialog();
+        }
+
+        private bool RemoveDevice(Device p)
+        {
+            //Remove Device in database
+            if(SqliteDataAccess.DeleteDataDevice(p))
+            {
+                //Succeed
+                Console.WriteLine("Succeed");
+                return true;
+            }
+            else
+            {
+                //Unsucceed
+                Console.WriteLine("Unsucceed");
+                return false;
+            }
+        }
+
         private void ReloadDataDeviceProfiles(Device p)
         {
             try
@@ -210,12 +297,6 @@ namespace GateAccessControl
         private void ConnectDevice(Device p)
         {
             p.DeviceItem.Start("ws://" + p.DEVICE_IP + ":9090");
-        }
-
-        private void AddDevice(Device p)
-        {
-            AddDeviceWindow addDeviceWindow = new AddDeviceWindow();
-            addDeviceWindow.ShowDialog();
         }
 
         private void SearchProfiles(ItemCollection p)
@@ -276,11 +357,21 @@ namespace GateAccessControl
                 List<Device> deviceList = SqliteDataAccess.LoadAllDevices();
                 foreach (Device item in deviceList)
                 {
-                    if (!CheckExistDeviceRF(Devices, item))
+                    Device device = CheckExistDeviceRF(Devices, item);
+                    if (device == null)
                     {
+                        //Add Device
                         Devices.Add(item);
                     }
+                    else
+                    {
+                        //Update Device
+                        device.DEVICE_IP = item.DEVICE_IP;
+                        device.DEVICE_NAME = item.DEVICE_NAME;
+                        device.DEVICE_NOTE = item.DEVICE_NOTE;
+                    }
                 }
+                //Remove Device
                 if (removedDevice != null)
                 {
                     Devices.Remove(removedDevice);
@@ -292,19 +383,19 @@ namespace GateAccessControl
             }
         }
 
-        public bool CheckExistDeviceRF(ObservableCollection<Device> list, Device deviceRF)
+        public Device CheckExistDeviceRF(ObservableCollection<Device> list, Device deviceRF)
         {
             foreach (Device item in list)
             {
-                if ((item.DEVICE_IP == deviceRF.DEVICE_IP))
+                if ((item.DEVICE_ID == deviceRF.DEVICE_ID))
                 {
-                    //item.DEVICE_ID = deviceRF.DEVICE_ID;
+                    //item.DEVICE_IP = deviceRF.DEVICE_IP;
                     //item.DEVICE_NAME = deviceRF.DEVICE_NAME;
                     //item.DEVICE_STATUS = deviceRF.DEVICE_STATUS;
-                    return true;
+                    return item;
                 }
             }
-            return false;
+            return null;
         }
 
         public void ReloadDataProfiles(string className = "", string subClass = "")
@@ -322,6 +413,25 @@ namespace GateAccessControl
             catch (Exception ex)
             {
                 logFile.Error(ex.Message);
+            }
+        }
+
+        private bool CanEditOrRemoveDevice(Device p)
+        {
+            if (p != null)
+            {
+                if (p.DeviceItem.webSocket == null) // Disconnected
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
             }
         }
 
