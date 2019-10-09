@@ -11,6 +11,8 @@ namespace GateAccessControl
     {
         private static readonly log4net.ILog logFile = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        private Device _selectedDevice;
+
         private ObservableCollection<Profile> _profiles = new ObservableCollection<Profile>();
         private ObservableCollection<Device> _devices = new ObservableCollection<Device>();
         private ObservableCollection<DeviceProfiles> _deviceProfiles = new ObservableCollection<DeviceProfiles>();
@@ -30,6 +32,17 @@ namespace GateAccessControl
         private string _search_deviceProfiles_class;
         private string _search_deviceProfiles_group;
         private string _search_deviceProfiles_others;
+
+
+        public Device SelectedDevice
+        {
+            get { return _selectedDevice; }
+            set
+            {
+                _selectedDevice = value;
+                RaisePropertyChanged("SelectedDevice");
+            }
+        }
 
         public String Search_profiles_class
         {
@@ -108,8 +121,11 @@ namespace GateAccessControl
         public ICommand SearchGroupProfilesCommand { get; set; }
         public ICommand SearchOthersProfilesCommand { get; set; }
 
-        
-        
+        public ICommand SearchClassDeviceProfilesCommand { get; set; }
+        public ICommand SearchGroupDeviceProfilesCommand { get; set; }
+        public ICommand SearchOthersDeviceProfilesCommand { get; set; }
+
+
 
         public AppPageViewModel()
         {
@@ -171,8 +187,8 @@ namespace GateAccessControl
                 },
                 (p) =>
                 {
-                    ManageDeviceProfiles(p);
-                    ReloadDataDeviceProfiles(p);
+                    ManageDeviceProfiles(SelectedDevice);
+                    ReloadDataDeviceProfiles(SelectedDevice);
                 });
 
             ConnectDeviceCommand = new RelayCommand<Device>(
@@ -202,6 +218,13 @@ namespace GateAccessControl
                     SearchProfiles(p);
                 });
 
+            SearchOthersDeviceProfilesCommand = new RelayCommand<ItemCollection>(
+                (p) => true,
+                (p) =>
+                {
+                    SearchDeviceProfiles(p);
+                });
+
             SearchClassProfilesCommand = new RelayCommand<ItemCollection>(
                 (p) => true,
                 (p) =>
@@ -209,11 +232,25 @@ namespace GateAccessControl
                     ReloadDataProfiles((Search_profiles_class=="All"?"":Search_profiles_class), (Search_profiles_group=="All"?"": Search_profiles_group));
                 });
 
+            SearchClassDeviceProfilesCommand = new RelayCommand<ItemCollection>(
+                (p) => true,
+                (p) =>
+                {
+                    ReloadDataDeviceProfiles(SelectedDevice, (Search_deviceProfiles_class=="All"?"": Search_deviceProfiles_class), (Search_deviceProfiles_group=="All"?"": Search_deviceProfiles_group));
+                });
+
             SearchGroupProfilesCommand = new RelayCommand<ItemCollection>(
                 (p) => true,
                 (p) =>
                 {
                     ReloadDataProfiles((Search_profiles_class=="All"?"":Search_profiles_class), (Search_profiles_group=="All"?"": Search_profiles_group));
+                });
+
+            SearchGroupDeviceProfilesCommand = new RelayCommand<ItemCollection>(
+                (p) => true,
+                (p) =>
+                {
+                    ReloadDataDeviceProfiles(SelectedDevice, (Search_deviceProfiles_class == "All"?"": Search_deviceProfiles_class), (Search_deviceProfiles_group == "All"?"": Search_deviceProfiles_group));
                 });
 
             ImportProfilesCommand = new RelayCommand<Profile>(
@@ -301,15 +338,6 @@ namespace GateAccessControl
 
         private void SearchProfiles(ItemCollection p)
         {
-            Console.WriteLine("==================================");
-            Console.WriteLine(Search_profiles_class);
-            Console.WriteLine(Search_profiles_group);
-            Console.WriteLine(Search_profiles_others);
-            Console.WriteLine(Search_deviceProfiles_class);
-            Console.WriteLine(Search_deviceProfiles_group);
-            Console.WriteLine(Search_deviceProfiles_others);
-            Console.WriteLine("==================================");
-
             p.Filter = (obj) => (
                 (((Profile)obj).ADDRESS.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
                 (((Profile)obj).AD_NO.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
@@ -317,6 +345,18 @@ namespace GateAccessControl
                 (((Profile)obj).PROFILE_NAME.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
                 (((Profile)obj).PHONE.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
                 (((Profile)obj).PIN_NO.ToLower().Contains(Search_profiles_others.ToString().ToLower()))
+            );
+        }
+
+        private void SearchDeviceProfiles(ItemCollection p)
+        {
+            p.Filter = (obj) => (
+                (((Profile)obj).ADDRESS.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((Profile)obj).AD_NO.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((Profile)obj).EMAIL.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((Profile)obj).PROFILE_NAME.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((Profile)obj).PHONE.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((Profile)obj).PIN_NO.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower()))
             );
         }
 
@@ -407,6 +447,24 @@ namespace GateAccessControl
                 foreach (Profile item in profileList)
                 {
                     _profiles.Add(item);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+            }
+        }
+
+        public void ReloadDataDeviceProfiles(Device device, string className = "", string subClass = "")
+        {
+            try
+            {
+                _deviceProfiles.Clear();
+                List<DeviceProfiles> deviceProfileList = SqliteDataAccess.LoadAllDeviceProfiles(device, className, subClass);
+                foreach (DeviceProfiles item in deviceProfileList)
+                {
+                    _deviceProfiles.Add(item);
                 }
 
             }

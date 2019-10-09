@@ -1,18 +1,17 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace GateAccessControl
 {
     class DeviceProfilesManageViewModel : ViewModelBase
     {
-        public DeviceProfilesManageViewModel(Device p)
-        {
-            ReloadDataProfiles();
-            ReloadDataDeviceProfiles(p);
-        }
+        private static readonly log4net.ILog logFile = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private bool? _dialogResult;
         public bool? DialogResult
         {
@@ -26,11 +25,72 @@ namespace GateAccessControl
                 RaisePropertyChanged("DialogResult");
             }
         }
-        private static readonly log4net.ILog logFile = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        private Device _device;
+        public Device Device
+        {
+            get
+            {
+                return _device;
+            }
+            set
+            {
+                _device = value;
+                RaisePropertyChanged("Device");
+            }
+        }
+
         private ObservableCollection<Profile> _profiles = new ObservableCollection<Profile>();
         private ObservableCollection<DeviceProfiles> _deviceProfiles = new ObservableCollection<DeviceProfiles>();
         public ObservableCollection<Profile> Profiles => _profiles;
         public ObservableCollection<DeviceProfiles> DeviceProfiles => _deviceProfiles;
+
+        public ICommand CloseDeviceProfilesManagementCommand { get; set; }
+        public ICommand SelectProfilesCommand { get; set; }
+
+
+        public DeviceProfilesManageViewModel(Device device)
+        {
+            Device = device;
+            ReloadDataProfiles();
+            ReloadDataDeviceProfiles(device);
+
+            SelectProfilesCommand = new RelayCommand<List<Profile>>(
+                (p) =>
+                {
+                    if (p.Count > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                },
+                (p) =>
+                {
+                    SelectProfiles(p);
+                    ReloadDataDeviceProfiles(Device);
+                });
+
+            CloseDeviceProfilesManagementCommand = new RelayCommand<DeviceProfiles>(
+                (p) =>
+                {
+                    return true;
+                },
+                (p) =>
+                {
+                    CloseWindow();
+                });
+        }
+
+        public void SelectProfiles(List<Profile> profiles)
+        {
+            foreach (Profile item in profiles)
+            {
+                SqliteDataAccess.InsertDataDeviceProfiles("DT_DEVICE_PROFILES_" + Device.DEVICE_ID, new DeviceProfiles(item));
+            }
+        }
 
         private void ReloadDataDeviceProfiles(Device p)
         {
@@ -66,6 +126,10 @@ namespace GateAccessControl
             {
                 logFile.Error(ex.Message);
             }
+        }
+        public void CloseWindow()
+        {
+            DialogResult = true;
         }
     }
 }

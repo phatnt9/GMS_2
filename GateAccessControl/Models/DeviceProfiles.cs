@@ -9,35 +9,38 @@ namespace GateAccessControl
 {
     public class DeviceProfiles : INotifyPropertyChanged
     {
-        private int _profileId;
-        private string _pinno;
-        private string _adno;
-        private string _profileName;
-        private string _className;
-        private string _subClass;
-        private string _gender;
-        private DateTime _dob;
-        private DateTime _disu;
+        public DeviceProfiles()
+        {
 
-        private string _email;
-        private string _address;
-        private string _phone;
-        private string _profileStatus;
-        private string _image;
+        }
 
-
-        private DateTime _lockDate;
-        private DateTime _dateToLock;
-
-        private bool _checkDateToLock;
-        private string _licensePlate;
-
-        private DateTime _dateCreated;
-        private DateTime _dateModified;
-
-        private string _syncStatus;
-        private string _activeTime;
-
+        public DeviceProfiles(Profile p)
+        {
+            PROFILE_ID = 0;
+            PIN_NO = p.PIN_NO;
+            AD_NO = p.AD_NO;
+            PROFILE_NAME = p.PROFILE_NAME;
+            CLASS_NAME = p.CLASS_NAME;
+            SUB_CLASS = p.SUB_CLASS;
+            GENDER = p.GENDER;
+            DOB = p.DOB;
+            DISU = p.DISU;
+            EMAIL = p.EMAIL;
+            ADDRESS = p.ADDRESS;
+            PHONE = p.PHONE;
+            PROFILE_STATUS = p.PROFILE_STATUS;
+            IMAGE = p.IMAGE;
+            LOCK_DATE = p.LOCK_DATE;
+            DATE_TO_LOCK = p.DATE_TO_LOCK;
+            CHECK_DATE_TO_LOCK = p.CHECK_DATE_TO_LOCK;
+            LICENSE_PLATE = p.LICENSE_PLATE;
+            DATE_CREATED = p.DATE_CREATED;
+            DATE_MODIFIED = p.DATE_MODIFIED;
+            SERVER_STATUS = "Unknow";
+            CLIENT_STATUS = "Unknow";
+            ACTIVE_TIME = "00:00,24:00;00:00,24:00";
+        }
+        
         public int PROFILE_ID
         {
             get
@@ -278,16 +281,28 @@ namespace GateAccessControl
                 OnPropertyChanged("DATE_MODIFIED");
             }
         }
-        public String SYNC_STATUS
+        public String SERVER_STATUS
         {
             get
             {
-                return _syncStatus;
+                return _serverStatus;
             }
             set
             {
-                _syncStatus = value;
-                OnPropertyChanged("SYNC_STATUS");
+                _serverStatus = value;
+                OnPropertyChanged("SERVER_STATUS");
+            }
+        }
+        public String CLIENT_STATUS
+        {
+            get
+            {
+                return _clientStatus;
+            }
+            set
+            {
+                _clientStatus = value;
+                OnPropertyChanged("CLIENT_STATUS");
             }
         }
         public String ACTIVE_TIME
@@ -302,6 +317,36 @@ namespace GateAccessControl
                 OnPropertyChanged("ACTIVE_TIME");
             }
         }
+
+        private int _profileId;
+        private string _pinno;
+        private string _adno;
+        private string _profileName;
+        private string _className;
+        private string _subClass;
+        private string _gender;
+        private DateTime _dob;
+        private DateTime _disu;
+
+        private string _email;
+        private string _address;
+        private string _phone;
+        private string _profileStatus;
+        private string _image;
+
+
+        private DateTime _lockDate;
+        private DateTime _dateToLock;
+
+        private bool _checkDateToLock;
+        private string _licensePlate;
+
+        private DateTime _dateCreated;
+        private DateTime _dateModified;
+
+        private string _serverStatus;
+        private string _clientStatus;
+        private string _activeTime;
 
         #region INotifyPropertyChanged Members
 

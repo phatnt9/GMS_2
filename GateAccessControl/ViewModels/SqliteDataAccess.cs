@@ -60,13 +60,16 @@ namespace GateAccessControl
                 return null;
             }
         }
-        public static List<DeviceProfiles> LoadAllDeviceProfiles(Device device)
+        public static List<DeviceProfiles> LoadAllDeviceProfiles(Device device, string className = "", string subClass = "")
         {
             try
             {
                 using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
                 {
-                    var output = cnn.Query<DeviceProfiles>("SELECT * FROM DT_DEVICE_PROFILES_" + device.DEVICE_ID, new DynamicParameters());
+                    var p = new DynamicParameters();
+                    p.Add("@CLASS_NAME", "%" + className + "%");
+                    p.Add("@SUB_CLASS", "%" + subClass + "%");
+                    var output = cnn.Query<DeviceProfiles>("SELECT * FROM DT_DEVICE_PROFILES_" + device.DEVICE_ID + " WHERE ((CLASS_NAME LIKE (@CLASS_NAME)) AND (SUB_CLASS LIKE (@SUB_CLASS)))", p);
                     return output.ToList();
                 }
             }
@@ -238,13 +241,13 @@ namespace GateAccessControl
             {
                 using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
                 {
-                    cnn.Execute("INSERT INTO DT_PROFILE " +
-                        "(PIN_NO,AD_NO,PROFILE_NAME,CLASS_NAME,SUB_CLASS,GENDER,DOB,DISU,EMAIL,ADDRESS," +
+                    cnn.Execute("INSERT INTO " + _tableName +
+                        " (PIN_NO,AD_NO,PROFILE_NAME,CLASS_NAME,SUB_CLASS,GENDER,DOB,DISU,EMAIL,ADDRESS," +
                         "PHONE,PROFILE_STATUS,IMAGE,LOCK_DATE,DATE_TO_LOCK,CHECK_DATE_TO_LOCK," +
-                        "LICENSE_PLATE,DATE_CREATED,DATE_MODIFIED,SYNC_STATUS,ACTIVE_TIME) " +
+                        "LICENSE_PLATE,DATE_CREATED,DATE_MODIFIED,SERVER_STATUS,CLIENT_STATUS,ACTIVE_TIME) " +
                         "VALUES (@PIN_NO,@AD_NO,@PROFILE_NAME,@CLASS_NAME,@SUB_CLASS,@GENDER,@DOB,@DISU,@EMAIL,@ADDRESS," +
                         "@PHONE,@PROFILE_STATUS,@IMAGE,@LOCK_DATE,@DATE_TO_LOCK,@CHECK_DATE_TO_LOCK," +
-                        "@LICENSE_PLATE,@DATE_CREATED,@DATE_MODIFIED,@SYNC_STATUS,@ACTIVE_TIME)", _profile);
+                        "@LICENSE_PLATE,@DATE_CREATED,@DATE_MODIFIED,@SERVER_STATUS,@CLIENT_STATUS,@ACTIVE_TIME)", _profile);
                 }
                 return true;
             }
@@ -486,7 +489,8 @@ namespace GateAccessControl
                                "\"LICENSE_PLATE\" TEXT, " +
                                "\"DATE_CREATED\" DATE, " +
                                "\"DATE_MODIFIED\" DATE, " +
-                               "\"SYNC_STATUS\" TEXT, " +
+                               "\"SERVER_STATUS\" TEXT, " +
+                               "\"CLIENT_STATUS\" TEXT, " +
                                "\"ACTIVE_TIME\" TEXT)");
                     }
                 }
@@ -603,7 +607,8 @@ namespace GateAccessControl
                     + "'" + _profile.CHECK_DATE_TO_LOCK + "'" + ","
                     + "'" + _profile.LICENSE_PLATE + "'" + ","
                     + "'" + _profile.PROFILE_STATUS + "'" + ","
-                    + "'" + _profile.SYNC_STATUS + "'" + ","
+                    + "'" + _profile.SERVER_STATUS + "'" + ","
+                    + "'" + _profile.CLIENT_STATUS + "'" + ","
                     + "'" + _profile.ACTIVE_TIME + "'" + ","
                     + "'" + _profile.DATE_CREATED + "'" + ","
                     + "'" + _profile.DATE_MODIFIED + "'" +

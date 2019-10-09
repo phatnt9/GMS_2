@@ -162,6 +162,7 @@
                                         Command="{Binding SelectDeviceCommand}"
                                         CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem}"
                                         ItemsSource="{Binding Devices, UpdateSourceTrigger=PropertyChanged}"
+                                        SelectedItem="{Binding SelectedDevice, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
                                         SelectionMode="Single"
                                         SelectionUnit="FullRow">
                                         <DataGrid.Columns>
@@ -350,16 +351,22 @@
                                             Margin="3,2"
                                             Padding="5,0"
                                             VerticalContentAlignment="Center"
+                                            Command="{Binding SearchClassDeviceProfilesCommand}"
+                                            CommandParameter="{Binding ElementName=dg_device_profiles, UpdateSourceTrigger=PropertyChanged, Path=Items}"
                                             DisplayMemberPath="CLASS_NAME"
                                             ItemsSource="{Binding Classes, UpdateSourceTrigger=PropertyChanged}"
-                                            SelectedIndex="0" />
-                                        <ComboBox
+                                            SelectedIndex="0"
+                                            Text="{Binding Search_deviceProfiles_class, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}" />
+                                        <md:CommandComboBox
                                             x:Name="cb_device_group"
                                             Width="65"
                                             Margin="3,2"
                                             Padding="5,0"
                                             VerticalContentAlignment="Center"
-                                            SelectedIndex="0">
+                                            Command="{Binding SearchGroupDeviceProfilesCommand}"
+                                            CommandParameter="{Binding ElementName=dg_device_profiles, UpdateSourceTrigger=PropertyChanged, Path=Items}"
+                                            SelectedIndex="0"
+                                            Text="{Binding Search_deviceProfiles_group, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}">
                                             <ComboBoxItem>All</ComboBoxItem>
                                             <ComboBoxItem>Group 1</ComboBoxItem>
                                             <ComboBoxItem>Group 2</ComboBoxItem>
@@ -371,14 +378,17 @@
                                             <ComboBoxItem>Group 8</ComboBoxItem>
                                             <ComboBoxItem>Group 9</ComboBoxItem>
                                             <ComboBoxItem>Group 10</ComboBoxItem>
-                                        </ComboBox>
+                                        </md:CommandComboBox>
                                         <md:CommandTextBox
                                             x:Name="tb_device_search"
                                             Width="120"
                                             Margin="3,2"
                                             Padding="5,0"
+                                            Command="{Binding SearchOthersDeviceProfilesCommand}"
+                                            CommandParameter="{Binding ElementName=dg_device_profiles, UpdateSourceTrigger=PropertyChanged, Path=Items}"
                                             Style="{StaticResource placeHolder}"
-                                            Tag="Type to search" />
+                                            Tag="Type to search"
+                                            Text="{Binding Search_deviceProfiles_others, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}" />
                                     </StackPanel>
                                     <StackPanel
                                         HorizontalAlignment="Right"

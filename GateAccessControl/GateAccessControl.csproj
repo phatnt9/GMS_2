@@ -107,6 +107,7 @@
     <Compile Include="ViewModels\DialogCloser.cs" />
     <Compile Include="ViewModels\EditDeviceViewModels.cs" />
     <Compile Include="ViewModels\GlobalConstant.cs" />
+    <Compile Include="ViewModels\ProfileSelectedItemsConverter.cs" />
     <Compile Include="ViewModels\SearchProfilesParametersConverter.cs" />
     <Compile Include="ViewModels\SqliteDataAccess.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />

@@ -8,6 +8,8 @@ namespace GateAccessControl
 {
     class ClassManagementViewModel : ViewModelBase
     {
+        private static readonly log4net.ILog logFile = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private bool? _dialogResult;
         public bool? DialogResult
         {
@@ -22,7 +24,6 @@ namespace GateAccessControl
             }
         }
 
-        private static readonly log4net.ILog logFile = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private ObservableCollection<CardType> _classes = new ObservableCollection<CardType>();
         public ObservableCollection<CardType> Classes => _classes;
 
