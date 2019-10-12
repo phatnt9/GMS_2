@@ -96,6 +96,12 @@
                     Padding="2"
                     Click="Btn_createTable_Click"
                     Content="Class Management" />
+                <Button
+                    x:Name="btn_openDatabase"
+                    Margin="2"
+                    Padding="2"
+                    Click="Btn_openDatabase_Click"
+                    Content="Open Database" />
             </WrapPanel>
         </Grid>
         <Grid Grid.Row="1">
@@ -449,7 +455,7 @@
                                                             <DockPanel>
                                                                 <Label Padding="3,0" VerticalContentAlignment="Center">From</Label>
                                                                 <md:CommandTextBox
-                                                                    x:Name="tb_active_from_time_1"
+                                                                    x:Name="tb_active_from_time_1_hour"
                                                                     Width="50"
                                                                     Padding="0"
                                                                     VerticalContentAlignment="Center"

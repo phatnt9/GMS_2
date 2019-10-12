@@ -31,6 +31,7 @@ namespace GateAccessControl
 
         private bool _checkDateToLock;
         private string _licensePlate;
+        private string _listDeviceId;
 
         private DateTime _dateCreated;
         private DateTime _dateModified;
@@ -253,6 +254,18 @@ namespace GateAccessControl
             {
                 _licensePlate = value;
                 OnPropertyChanged("LICENSE_PLATE");
+            }
+        }
+        public String LIST_DEVICE_ID
+        {
+            get
+            {
+                return _listDeviceId;
+            }
+            set
+            {
+                _listDeviceId = value;
+                OnPropertyChanged("LIST_DEVICE_ID");
             }
         }
         public DateTime DATE_CREATED

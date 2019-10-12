@@ -206,10 +206,10 @@ namespace GateAccessControl
                     cnn.Execute("INSERT INTO DT_PROFILE " +
                         "(PIN_NO,AD_NO,PROFILE_NAME,CLASS_NAME,SUB_CLASS,GENDER,DOB,DISU,EMAIL,ADDRESS," +
                         "PHONE,PROFILE_STATUS,IMAGE,LOCK_DATE,DATE_TO_LOCK,CHECK_DATE_TO_LOCK," +
-                        "LICENSE_PLATE,DATE_CREATED,DATE_MODIFIED) " +
+                        "LICENSE_PLATE,LIST_DEVICE_ID,DATE_CREATED,DATE_MODIFIED) " +
                         "VALUES (@PIN_NO,@AD_NO,@PROFILE_NAME,@CLASS_NAME,@SUB_CLASS,@GENDER,@DOB,@DISU,@EMAIL,@ADDRESS," +
                         "@PHONE,@PROFILE_STATUS,@IMAGE,@LOCK_DATE,@DATE_TO_LOCK,@CHECK_DATE_TO_LOCK," +
-                        "@LICENSE_PLATE,@DATE_CREATED,@DATE_MODIFIED)", profile);
+                        "@LICENSE_PLATE,@LIST_DEVICE_ID,@DATE_CREATED,@DATE_MODIFIED)", profile);
                 }
                 return true;
             }
@@ -257,6 +257,7 @@ namespace GateAccessControl
                 return false;
             }
         }
+
         //public static bool InsertDataDeviceCardType(DeviceCardType deviceCardType)
         //{
         //    try
@@ -314,7 +315,7 @@ namespace GateAccessControl
             }
         }
         public static bool UpdateDataProfile(Profile profile)
-        {
+        s{
             try
             {
                 using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
@@ -337,9 +338,10 @@ namespace GateAccessControl
                         "DATE_TO_LOCK = @DATE_TO_LOCK, " +
                         "CHECK_DATE_TO_LOCK = @CHECK_DATE_TO_LOCK, " +
                         "LICENSE_PLATE = @LICENSE_PLATE, " +
+                        "LIST_DEVICE_ID = @LIST_DEVICE_ID, " +
                         "DATE_CREATED = @DATE_CREATED, " +
                         "DATE_MODIFIED = @DATE_MODIFIED " +
-                        "WHERE PROFILE_ID = @PROFILE_ID", profile);
+                        "WHERE PIN_NO = @PIN_NO", profile);
                 }
                 return true;
             }
@@ -455,6 +457,23 @@ namespace GateAccessControl
                 return false;
             }
         }
+
+        public static bool DeleteDataDeviceProfiles(string _tableName, DeviceProfiles _profile)
+        {
+            try
+            {
+                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+                {
+                    cnn.Execute("DELETE FROM "+ _tableName + " WHERE PROFILE_ID = @PROFILE_ID", _profile);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return false;
+            }
+        }
         /// <summary>
         /// Create dynamic table containt profiles for each device in main Database
         /// </summary>
@@ -538,6 +557,7 @@ namespace GateAccessControl
                             "\"DATE_TO_LOCK\" DATE, " +
                             "\"CHECK_DATE_TO_LOCK\" INTEGER NOT NULL DEFAULT 0, " +
                             "\"LICENSE_PLATE\" TEXT, " +
+                            "\"LIST_DEVICE_ID\" TEXT, " +
                             "\"DATE_CREATED\" DATE, " +
                             "\"DATE_MODIFIED\" DATE)");
 

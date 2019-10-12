@@ -13,6 +13,7 @@
     mc:Ignorable="d">
     <Window.Resources>
         <vmd:ProfileSelectedItemsConverter x:Key="myProfileSelectedItemsConverter" />
+        <vmd:DeviceProfilesSelectedItemsConverter x:Key="myDeviceProfilesSelectedItemsConverter" />
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -36,19 +37,7 @@
                     <StackPanel
                         HorizontalAlignment="Right"
                         Background="Aqua"
-                        Orientation="Horizontal">
-                        <Button
-                            x:Name="btn_profiles_Active"
-                            Margin="3,2"
-                            Padding="5,0"
-                            VerticalContentAlignment="Center"
-                            Content="Active" />
-                        <Button
-                            x:Name="btn_profiles_Deactive"
-                            Margin="3,2"
-                            Padding="5,0"
-                            Content="Deactive" />
-                    </StackPanel>
+                        Orientation="Horizontal" />
                 </Grid>
                 <Grid Grid.Row="1">
                     <DataGrid
@@ -135,7 +124,15 @@
                             Margin="3,2"
                             Padding="5,0"
                             VerticalContentAlignment="Center"
-                            Content="Remove" />
+                            Command="{Binding DeleteDeviceProfilesCommand}"
+                            Content="Remove">
+                            <Button.CommandParameter>
+                                <MultiBinding Converter="{StaticResource myDeviceProfilesSelectedItemsConverter}" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding ElementName="dg_deviceProfiles" Path="SelectedItems.Count" />
+                                    <Binding ElementName="dg_deviceProfiles" Path="SelectedItems" />
+                                </MultiBinding>
+                            </Button.CommandParameter>
+                        </Button>
                     </StackPanel>
                 </Grid>
             </Grid>

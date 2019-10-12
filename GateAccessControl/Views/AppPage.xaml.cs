@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +30,11 @@ namespace GateAccessControl.Views
         private void Btn_createTable_Click(object sender, RoutedEventArgs e)
         {
             //SqliteDataAccess.CreateDeviceProfilesTable("TESTTEST");
+        }
+
+        private void Btn_openDatabase_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK");
         }
     }
 }

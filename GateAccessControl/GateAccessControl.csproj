@@ -103,6 +103,7 @@
     <Compile Include="ViewModels\ClassManagementViewModel.cs" />
     <Compile Include="ViewModels\DeviceItemWebSocketStatusConverter.cs" />
     <Compile Include="ViewModels\DeviceProfilesManageViewModel.cs" />
+    <Compile Include="ViewModels\DeviceProfilesSelectedItemsConverter.cs" />
     <Compile Include="ViewModels\DgvSelectedItemsConverter.cs" />
     <Compile Include="ViewModels\DialogCloser.cs" />
     <Compile Include="ViewModels\EditDeviceViewModels.cs" />

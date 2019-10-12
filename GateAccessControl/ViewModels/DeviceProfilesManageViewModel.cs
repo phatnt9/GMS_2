@@ -47,6 +47,7 @@ namespace GateAccessControl
 
         public ICommand CloseDeviceProfilesManagementCommand { get; set; }
         public ICommand SelectProfilesCommand { get; set; }
+        public ICommand DeleteDeviceProfilesCommand { get; set; }
 
 
         public DeviceProfilesManageViewModel(Device device)
@@ -54,6 +55,24 @@ namespace GateAccessControl
             Device = device;
             ReloadDataProfiles();
             ReloadDataDeviceProfiles(device);
+
+            DeleteDeviceProfilesCommand = new RelayCommand<List<DeviceProfiles>>(
+                (p) =>
+                {
+                    if (p.Count > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                },
+                (p) =>
+                {
+                    DeleteProfiles(p);
+                    ReloadDataDeviceProfiles(Device);
+                });
 
             SelectProfilesCommand = new RelayCommand<List<Profile>>(
                 (p) =>
@@ -82,6 +101,14 @@ namespace GateAccessControl
                 {
                     CloseWindow();
                 });
+        }
+
+        public void DeleteProfiles(List<DeviceProfiles> profiles)
+        {
+            foreach (DeviceProfiles item in profiles)
+            {
+                SqliteDataAccess.DeleteDataDeviceProfiles("DT_DEVICE_PROFILES_" + Device.DEVICE_ID, item);
+            }
         }
 
         public void SelectProfiles(List<Profile> profiles)

@@ -237,8 +237,15 @@ namespace GateAccessControl.Views
 
                         try
                         {
-                            if (CheckClassNameValid(classes, profile.CLASS_NAME))
+                            if (!CheckClassNameValid(classes, profile.CLASS_NAME))
                             {
+                                //Create New Class
+                                CardType NewClass = new CardType()
+                                {
+                                    CLASS_NAME = profile.CLASS_NAME
+                                };
+                                SqliteDataAccess.InsertDataClass(NewClass);
+                                //Add or Update Profile
                                 if (isAddProfile)
                                 {
                                     if (SqliteDataAccess.InsertDataProfile(profile))
@@ -255,6 +262,26 @@ namespace GateAccessControl.Views
                                     }
                                 }
                             }
+                            else
+                            {
+                                //Add or Update Profile
+                                if (isAddProfile)
+                                {
+                                    if (SqliteDataAccess.InsertDataProfile(profile))
+                                    {
+                                        ImportProfileImage(importFileFolder, profile.IMAGE);
+                                    }
+                                }
+                                else
+                                {
+                                    //if (SqliteDataAccess.UpdateDataProfile(profile, profile.PROFILE_STATUS))
+                                    if (SqliteDataAccess.UpdateDataProfile(profile))
+                                    {
+                                        ImportProfileImage(importFileFolder, profile.IMAGE);
+                                    }
+                                }
+                            }
+                            
                         }
                         catch (Exception ex)
                         {
