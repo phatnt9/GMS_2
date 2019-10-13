@@ -189,6 +189,7 @@ namespace GateAccessControl
                 {
                     ManageDeviceProfiles(SelectedDevice);
                     ReloadDataDeviceProfiles(SelectedDevice);
+                    ReloadDataProfiles((Search_profiles_class == "All" ? "" : Search_profiles_class), (Search_profiles_group == "All" ? "" : Search_profiles_group));
                 });
 
             ConnectDeviceCommand = new RelayCommand<Device>(
@@ -243,7 +244,7 @@ namespace GateAccessControl
                 (p) => true,
                 (p) =>
                 {
-                    ReloadDataProfiles((Search_profiles_class=="All"?"":Search_profiles_class), (Search_profiles_group=="All"?"": Search_profiles_group));
+                    ReloadDataProfiles((Search_profiles_class == "All" ? "" : Search_profiles_class), (Search_profiles_group == "All" ? "" : Search_profiles_group));
                 });
 
             SearchGroupDeviceProfilesCommand = new RelayCommand<ItemCollection>(

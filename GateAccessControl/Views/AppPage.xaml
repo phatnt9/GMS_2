@@ -168,6 +168,7 @@
                                         Command="{Binding SelectDeviceCommand}"
                                         CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem}"
                                         ItemsSource="{Binding Devices, UpdateSourceTrigger=PropertyChanged}"
+                                        SelectedIndex="0"
                                         SelectedItem="{Binding SelectedDevice, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
                                         SelectionMode="Single"
                                         SelectionUnit="FullRow">
@@ -420,6 +421,7 @@
                                         AutoGenerateColumns="True"
                                         CanUserAddRows="False"
                                         CanUserDeleteRows="False"
+                                        IsReadOnly="True"
                                         ItemsSource="{Binding DeviceProfiles, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                                 <Grid Grid.Row="2" Background="CadetBlue">

@@ -315,7 +315,7 @@ namespace GateAccessControl
             }
         }
         public static bool UpdateDataProfile(Profile profile)
-        s{
+        {
             try
             {
                 using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
@@ -351,6 +351,47 @@ namespace GateAccessControl
                 return false;
             }
         }
+
+        public static bool UpdateDataDeviceProfiles(string _tableName, DeviceProfiles _profile)
+        {
+            try
+            {
+                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+                {
+                    cnn.Execute("UPDATE " + _tableName + " SET " +
+                        "PIN_NO = @PIN_NO, " +
+                        "AD_NO = @AD_NO, " +
+                        "PROFILE_NAME = @PROFILE_NAME, " +
+                        "CLASS_NAME = @CLASS_NAME, " +
+                        "SUB_CLASS = @SUB_CLASS, " +
+                        "GENDER = @GENDER, " +
+                        "DOB = @DOB, " +
+                        "DISU = @DISU, " +
+                        "EMAIL = @EMAIL, " +
+                        "ADDRESS = @ADDRESS, " +
+                        "PHONE = @PHONE, " +
+                        "PROFILE_STATUS = @PROFILE_STATUS, " +
+                        "IMAGE = @IMAGE, " +
+                        "LOCK_DATE = @LOCK_DATE, " +
+                        "DATE_TO_LOCK = @DATE_TO_LOCK, " +
+                        "CHECK_DATE_TO_LOCK = @CHECK_DATE_TO_LOCK, " +
+                        "LICENSE_PLATE = @LICENSE_PLATE, " +
+                        "DATE_CREATED = @DATE_CREATED, " +
+                        "DATE_MODIFIED = @DATE_MODIFIED " +
+                        "SERVER_STATUS = @SERVER_STATUS " +
+                        "CLIENT_STATUS = @CLIENT_STATUS " +
+                        "ACTIVE_TIME = @ACTIVE_TIME " +
+                        "WHERE PIN_NO = @PIN_NO", _profile);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return false;
+            }
+        }
+
         public static bool UpdateDataClass(CardType cardType)
         {
             try

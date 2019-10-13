@@ -26,7 +26,17 @@ namespace GateAccessControl.Views
             InitializeComponent();
             btn_stop.IsEnabled = false;
             this.classes = classes;
+            Closed += ImportWindow_Closed;
         }
+
+        private void ImportWindow_Closed(object sender, EventArgs e)
+        {
+            if (worker.IsBusy)
+            {
+                worker.CancelAsync();
+            }
+        }
+
         private void btnSelectFile_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog

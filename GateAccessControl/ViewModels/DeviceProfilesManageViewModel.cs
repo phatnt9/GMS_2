@@ -48,6 +48,8 @@ namespace GateAccessControl
         public ICommand CloseDeviceProfilesManagementCommand { get; set; }
         public ICommand SelectProfilesCommand { get; set; }
         public ICommand DeleteDeviceProfilesCommand { get; set; }
+        public ICommand ActiveDeviceProfilesCommand { get; set; }
+        public ICommand DeactiveDeviceProfilesCommand { get; set; }
 
 
         public DeviceProfilesManageViewModel(Device device)
@@ -56,10 +58,32 @@ namespace GateAccessControl
             ReloadDataProfiles();
             ReloadDataDeviceProfiles(device);
 
-            DeleteDeviceProfilesCommand = new RelayCommand<List<DeviceProfiles>>(
+            DeactiveDeviceProfilesCommand = new RelayCommand<List<DeviceProfiles>>(
                 (p) =>
                 {
-                    if (p.Count > 0)
+                    if (p == null)
+                    {
+                        return false;
+                    }
+                    List<DeviceProfiles> CanDeactiveDeviceProfiles = p.FindAll((u) =>
+                    {
+                        if (
+                        ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                        (u.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString())) ||
+
+                        ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                        (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString()))
+                        )
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+
+                    });
+                    if (p != null && p.Count > 0 && CanDeactiveDeviceProfiles.Count == p.Count)
                     {
                         return true;
                     }
@@ -70,14 +94,111 @@ namespace GateAccessControl
                 },
                 (p) =>
                 {
-                    DeleteProfiles(p);
+                    DeactiveDeviceProfiles(p);
+                    ReloadDataDeviceProfiles(Device);
+                });
+
+            ActiveDeviceProfilesCommand = new RelayCommand<List<DeviceProfiles>>(
+                (p) =>
+                {
+                    if(p == null)
+                    {
+                        return false;
+                    }
+                    List<DeviceProfiles> CanActiveDeviceProfiles = p.FindAll((u) =>
+                    {
+                        if (
+                        ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                        (u.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString())) ||
+
+                        ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                        (u.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString()))
+                        )
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+
+                    });
+                    if (p != null && p.Count > 0 && CanActiveDeviceProfiles.Count == p.Count)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                },
+                (p) =>
+                {
+                    ActiveDeviceProfiles(p);
+                    ReloadDataDeviceProfiles(Device);
+                });
+
+            DeleteDeviceProfilesCommand = new RelayCommand<List<DeviceProfiles>>(
+                (p) =>
+                {
+                    if (p == null)
+                    {
+                        return false;
+                    }
+                    List< DeviceProfiles> CanDeleteDeviceProfiles = p.FindAll((u) => 
+                    {
+                        if (
+                        ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                        (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString())) ||
+
+                        ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                        (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString())) ||
+
+                        ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                        (u.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString()))
+                        )
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+
+                    });
+                if (p != null && p.Count > 0 && CanDeleteDeviceProfiles.Count == p.Count)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                },
+                (p) =>
+                {
+                    DeleteDeviceProfiles(p);
                     ReloadDataDeviceProfiles(Device);
                 });
 
             SelectProfilesCommand = new RelayCommand<List<Profile>>(
                 (p) =>
                 {
-                    if (p.Count > 0)
+                    List<Profile> CanInserDeviceProfiles = p.FindAll((u) =>
+                    {
+                        if (
+                        (u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString())
+                        )
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+
+                    });
+                    if (p.Count > 0 && CanInserDeviceProfiles.Count == p.Count)
                     {
                         return true;
                     }
@@ -88,7 +209,7 @@ namespace GateAccessControl
                 },
                 (p) =>
                 {
-                    SelectProfiles(p);
+                    InserDeviceProfiles(p);
                     ReloadDataDeviceProfiles(Device);
                 });
 
@@ -103,19 +224,112 @@ namespace GateAccessControl
                 });
         }
 
-        public void DeleteProfiles(List<DeviceProfiles> profiles)
+        private void ActiveDeviceProfiles(List<DeviceProfiles> profiles)
         {
             foreach (DeviceProfiles item in profiles)
             {
-                SqliteDataAccess.DeleteDataDeviceProfiles("DT_DEVICE_PROFILES_" + Device.DEVICE_ID, item);
+                if ((item.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                        (item.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString()))
+                {
+                    item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
+                    item.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+
+                    if (SqliteDataAccess.UpdateDataDeviceProfiles("DT_DEVICE_PROFILES_" + Device.DEVICE_ID, item))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
+                        item.SERVER_STATUS = GlobalConstant.ServerStatus.Remove.ToString();
+                    }
+                }
+
+                if ((item.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                        (item.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString()))
+                {
+                    item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
+                    item.SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
+
+                    if (SqliteDataAccess.UpdateDataDeviceProfiles("DT_DEVICE_PROFILES_" + Device.DEVICE_ID, item))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
+                        item.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+                    }
+                }
             }
         }
 
-        public void SelectProfiles(List<Profile> profiles)
+        private void DeactiveDeviceProfiles(List<DeviceProfiles> profiles)
+        {
+            foreach (DeviceProfiles item in profiles)
+            {
+                if ((item.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                        (item.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString()))
+                {
+                    item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
+                    item.SERVER_STATUS = GlobalConstant.ServerStatus.Remove.ToString();
+
+                    if (SqliteDataAccess.UpdateDataDeviceProfiles("DT_DEVICE_PROFILES_" + Device.DEVICE_ID, item))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
+                        item.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+                    }
+                }
+
+                if ((item.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                        (item.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString()))
+                {
+                    item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
+                    item.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+
+                    if (SqliteDataAccess.UpdateDataDeviceProfiles("DT_DEVICE_PROFILES_" + Device.DEVICE_ID, item))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
+                        item.SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
+                    }
+                }
+            }
+        }
+
+        public void DeleteDeviceProfiles(List<DeviceProfiles> profiles)
+        {
+            foreach (DeviceProfiles item in profiles)
+            {
+                if(SqliteDataAccess.DeleteDataDeviceProfiles("DT_DEVICE_PROFILES_" + Device.DEVICE_ID, item))
+                {
+                    List<Profile> listProfiles = Profiles.Where(x => x.PIN_NO.Equals(item.PIN_NO)).Cast<Profile>().ToList();
+                    foreach (Profile pf in listProfiles)
+                    {
+                        pf.RemoveDeviceId(Device.DEVICE_ID);
+                        SqliteDataAccess.UpdateDataProfile(pf);
+                    }
+                }
+            }
+        }
+
+        public void InserDeviceProfiles(List<Profile> profiles)
         {
             foreach (Profile item in profiles)
             {
-                SqliteDataAccess.InsertDataDeviceProfiles("DT_DEVICE_PROFILES_" + Device.DEVICE_ID, new DeviceProfiles(item));
+                if (SqliteDataAccess.InsertDataDeviceProfiles("DT_DEVICE_PROFILES_" + Device.DEVICE_ID, new DeviceProfiles(item)))
+                {
+                    item.AddDeviceId(Device.DEVICE_ID);
+                    SqliteDataAccess.UpdateDataProfile(item);
+                }
+
             }
         }
 

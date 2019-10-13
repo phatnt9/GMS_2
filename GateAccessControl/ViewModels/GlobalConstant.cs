@@ -9,6 +9,24 @@ namespace GateAccessControl
 {
     public class GlobalConstant
     {
+        public enum ProfileStatus
+        {
+            Active = 0,
+            Suspended = 1
+        }
+        public enum ClientStatus
+        {
+            Synced = 0,
+            Unsync = 1
+        }
+        public enum ServerStatus
+        {
+            None = 0,
+            Add = 1,
+            Update = 2,
+            Remove = 3
+        }
+
         public static readonly string AppPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK";
         public static readonly string DatabasePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK\DB";
         public static readonly string ImagePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK\Image";

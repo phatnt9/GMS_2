@@ -92,12 +92,28 @@
                             Margin="3,2"
                             Padding="5,0"
                             VerticalContentAlignment="Center"
-                            Content="Active" />
+                            Command="{Binding ActiveDeviceProfilesCommand}"
+                            Content="Active">
+                            <Button.CommandParameter>
+                                <MultiBinding Converter="{StaticResource myDeviceProfilesSelectedItemsConverter}" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding ElementName="dg_deviceProfiles" Path="SelectedItems.Count" />
+                                    <Binding ElementName="dg_deviceProfiles" Path="SelectedItems" />
+                                </MultiBinding>
+                            </Button.CommandParameter>
+                        </Button>
                         <Button
                             x:Name="btn_deviceProfiles_Deactive"
                             Margin="3,2"
                             Padding="5,0"
-                            Content="Deactive" />
+                            Command="{Binding DeactiveDeviceProfilesCommand}"
+                            Content="Deactive">
+                            <Button.CommandParameter>
+                                <MultiBinding Converter="{StaticResource myDeviceProfilesSelectedItemsConverter}" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding ElementName="dg_deviceProfiles" Path="SelectedItems.Count" />
+                                    <Binding ElementName="dg_deviceProfiles" Path="SelectedItems" />
+                                </MultiBinding>
+                            </Button.CommandParameter>
+                        </Button>
                     </StackPanel>
                 </Grid>
                 <Grid Grid.Row="1">

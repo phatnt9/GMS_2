@@ -36,9 +36,9 @@ namespace GateAccessControl
             LICENSE_PLATE = p.LICENSE_PLATE;
             DATE_CREATED = p.DATE_CREATED;
             DATE_MODIFIED = p.DATE_MODIFIED;
-            SERVER_STATUS = "Unknow";
+            SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
             CLIENT_STATUS = "Unknow";
-            ACTIVE_TIME = "00:00,24:00;00:00,24:00";
+            ACTIVE_TIME = "00:00,23:59;00:00,23:59";
         }
         
         public int PROFILE_ID

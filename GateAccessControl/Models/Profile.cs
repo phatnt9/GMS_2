@@ -40,6 +40,57 @@ namespace GateAccessControl
         {
 
         }
+
+        public void AddDeviceId(int deviceId)
+        {
+            List<int> listDeviceId = new List<int>();
+            if (LIST_DEVICE_ID == null)
+            {
+                LIST_DEVICE_ID += deviceId + ",";
+            }
+            else
+            {
+                string[] listVar = this.LIST_DEVICE_ID.Split(',');
+                foreach (string var in listVar)
+                {
+                    int temp;
+                    Int32.TryParse(var, out temp);
+                    if(temp != 0)
+                    {
+                        listDeviceId.Add(temp);
+                    }
+                }
+                if (!listDeviceId.Contains(deviceId))
+                {
+                    LIST_DEVICE_ID += deviceId + ",";
+                }
+            }
+        }
+        public void RemoveDeviceId(int deviceId)
+        {
+            List<int> listDeviceId = new List<int>();
+            if (!String.IsNullOrEmpty(LIST_DEVICE_ID))
+            {
+                string[] listVar = this.LIST_DEVICE_ID.Split(',');
+                foreach (string var in listVar)
+                {
+                    int temp;
+                    Int32.TryParse(var, out temp);
+                    if (temp != 0)
+                    {
+                        listDeviceId.Add(temp);
+                    }
+                }
+                LIST_DEVICE_ID = "";
+                foreach (int id in listDeviceId)
+                {
+                    if(id != deviceId)
+                    {
+                        LIST_DEVICE_ID += deviceId + ",";
+                    }
+                }
+            }
+        }
         public int PROFILE_ID
         {
             get
