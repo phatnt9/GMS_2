@@ -6,12 +6,15 @@
     xmlns:local="clr-namespace:GateAccessControl.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:md="clr-namespace:GateAccessControl"
+    xmlns:vmd="clr-namespace:GateAccessControl.ViewModels"
     Title="AppPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
     <Page.Resources>
         <md:DeviceItemWebSocketStatusConverter x:Key="myDeviceItemWebSocketStatusConverter" />
+        <vmd:ProfileSelectedItemsConverter x:Key="myProfileSelectedItemsConverter" />
+        <vmd:DeviceProfilesSelectedItemsConverter x:Key="myDeviceProfilesSelectedItemsConverter" />
         <DataTemplate DataType="{x:Type TextBlock}">
             <Border
                 Width="200"
@@ -345,6 +348,7 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="25" />
                                     <RowDefinition />
+                                    <RowDefinition Height="10" />
                                     <RowDefinition Height="25" />
                                 </Grid.RowDefinitions>
                                 <Grid Grid.Row="0" Background="Cornsilk">
@@ -424,18 +428,41 @@
                                         IsReadOnly="True"
                                         ItemsSource="{Binding DeviceProfiles, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
-                                <Grid Grid.Row="2" Background="CadetBlue">
+                                <Grid Grid.Row="2">
+                                    <ProgressBar
+                                        Name="pbStatus"
+                                        Maximum="100"
+                                        Minimum="0"
+                                        Value="{Binding SyncProgressValue, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        FontSize="10"
+                                        FontWeight="Normal"
+                                        Text="{Binding ElementName=pbStatus, Path=Value, StringFormat={}{0:0} %}" />
+                                </Grid>
+                                <Grid Grid.Row="3" Background="CadetBlue">
                                     <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                                         <Button
                                             x:Name="btn_device_sync_each"
                                             Margin="3,2"
                                             Padding="5,0"
-                                            Content="Sync" />
+                                            Command="{Binding SyncCommand}"
+                                            Content="Sync">
+                                            <Button.CommandParameter>
+                                                <MultiBinding Converter="{StaticResource myDeviceProfilesSelectedItemsConverter}" UpdateSourceTrigger="PropertyChanged">
+                                                    <Binding ElementName="dg_device_profiles" Path="SelectedItems.Count" />
+                                                    <Binding ElementName="dg_device_profiles" Path="SelectedItems" />
+                                                </MultiBinding>
+                                            </Button.CommandParameter>
+                                        </Button>
                                         <Button
-                                            x:Name="btn_device_sync_all"
+                                            x:Name="btn_device_stopSync"
                                             Margin="3,2"
                                             Padding="5,0"
-                                            Content="Sync all" />
+                                            Command="{Binding StopSyncCommand}"
+                                            CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged}"
+                                            Content="Stop" />
                                     </StackPanel>
                                 </Grid>
                             </Grid>

@@ -61,6 +61,13 @@ namespace GateAccessControl
             public List<Profile> data;
         }
 
+        public class JStringDeviceProfile
+        {
+            public int status;
+            public List<DeviceProfiles> data;
+            public bool remainProfiles;
+        }
+
         public class JStringClient
         {
             public int deviceId;
@@ -273,6 +280,62 @@ namespace GateAccessControl
                 }
             }
         }
+        public bool SendDeviceProfile(string ip, SERVERRESPONSE serverRes, List<DeviceProfiles> DeviceProfileToSend, bool remainProfiles)
+        {
+            IsSendingProfiles = true;
+            try
+            {
+                JStringDeviceProfile JDeviceProfile = new JStringDeviceProfile();
+                JDeviceProfile.status = (int)serverRes;
+                JDeviceProfile.data = DeviceProfileToSend;
+                JDeviceProfile.remainProfiles = remainProfiles;
+
+                var jsonSettings = new JsonSerializerSettings();
+                jsonSettings.DateFormatString = "yyyy-MM-dd";
+                string dataResp = JsonConvert.SerializeObject(JDeviceProfile, jsonSettings);
+                StandardString info = new StandardString();
+                info.data = dataResp;
+                this.Publish(publishdata, info);
+
+                //===================================Waiting Response
+                int cntTimeOut = 0;
+                do
+                {
+                    if (OnFlagStatusClient.OnConfirmProfileSuccess == CLIENTCMD.CONFIRM_ADD_PROFILE_SUCCESS ||
+                        OnFlagStatusClient.OnConfirmProfileSuccess == CLIENTCMD.CONFIRM_ADD_PROFILE_UNSUCCESS ||
+                        OnFlagStatusClient.OnConfirmProfileSuccess == CLIENTCMD.CONFIRM_DELETE_PROFILE_SUCCESS ||
+                        OnFlagStatusClient.OnConfirmProfileSuccess == CLIENTCMD.CONFIRM_DELETE_PROFILE_UNSUCCESS ||
+                        OnFlagStatusClient.OnConfirmProfileSuccess == CLIENTCMD.CONFIRM_UPDATE_PROFILE_SUCCESS ||
+                        OnFlagStatusClient.OnConfirmProfileSuccess == CLIENTCMD.CONFIRM_UPDATE_PROFILE_UNSUCCESS)
+                    {
+                        break;
+                    }
+                    Thread.Sleep(1000);
+                }
+                while (cntTimeOut++ < 120);
+
+                if (OnFlagStatusClient.OnConfirmProfileSuccess == CLIENTCMD.CONFIRM_ADD_PROFILE_SUCCESS ||
+                                    OnFlagStatusClient.OnConfirmProfileSuccess == CLIENTCMD.CONFIRM_DELETE_PROFILE_SUCCESS ||
+                                    OnFlagStatusClient.OnConfirmProfileSuccess == CLIENTCMD.CONFIRM_UPDATE_PROFILE_SUCCESS)
+                {
+                    OnFlagStatusClient.OnConfirmProfileSuccess = CLIENTCMD.CLIENT_READY;
+                    statusProfile = STATUSPROFILE.Updated;
+                    return true;
+                }
+                else
+                {
+                    OnFlagStatusClient.OnConfirmProfileSuccess = CLIENTCMD.CLIENT_READY;
+                    statusProfile = STATUSPROFILE.Failed;
+                    return false;
+                }
+                //===================================
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return false;
+            }
+        }
         public bool CheckinServer(string ip, List<CheckinData> person)
         {
             try
@@ -312,6 +375,34 @@ namespace GateAccessControl
             return byteArray;
         }
 
+
+        private string _webSocketStatus;
+        public String WebSocketStatus
+        {
+            get
+            {
+                return _webSocketStatus;
+            }
+            set
+            {
+                _webSocketStatus = value;
+                OnPropertyChanged("WebSocketStatus");
+            }
+        }
+
+        private bool _isSendingProfiles;
+        public bool IsSendingProfiles
+        {
+            get
+            {
+                return _isSendingProfiles;
+            }
+            set
+            {
+                _isSendingProfiles = value;
+                OnPropertyChanged("IsSendingProfiles");
+            }
+        }
     }
 }
 //case CLIENTCMD.REQUEST_PROFILE_ADD:

@@ -23,6 +23,12 @@ namespace GateAccessControl.Views
         {
             InitializeComponent();
             Loaded += MainWindow_Loaded;
+            Closed += MainWindow_Closed;
+        }
+
+        private void MainWindow_Closed(object sender, EventArgs e)
+        {
+            Environment.Exit(Environment.ExitCode);
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)

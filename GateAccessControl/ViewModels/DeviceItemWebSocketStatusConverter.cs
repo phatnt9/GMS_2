@@ -12,20 +12,24 @@ namespace GateAccessControl
         {
             try
             {
+                //DeviceItem di = value as DeviceItem;
                 WebSocket vl = value as WebSocket;
                 if (vl != null)
                 {
                     if (vl.IsAlive)
                     {
+                        //di.WebSocketStatus = "Connected";
                         return "Connected";
                     }
                     else
                     {
+                        //di.WebSocketStatus = "Connecting";
                         return "Connecting";
                     }
                 }
                 else
                 {
+                    //di.WebSocketStatus = "Disconnected";
                     return "Disconnected";
                 }
             }

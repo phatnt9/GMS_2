@@ -83,7 +83,7 @@ namespace GateAccessControl
                         }
 
                     });
-                    if (p != null && p.Count > 0 && CanDeactiveDeviceProfiles.Count == p.Count)
+                    if (p.Count > 0 && CanDeactiveDeviceProfiles.Count == p.Count)
                     {
                         return true;
                     }
@@ -123,7 +123,7 @@ namespace GateAccessControl
                         }
 
                     });
-                    if (p != null && p.Count > 0 && CanActiveDeviceProfiles.Count == p.Count)
+                    if (p.Count > 0 && CanActiveDeviceProfiles.Count == p.Count)
                     {
                         return true;
                     }
@@ -166,7 +166,7 @@ namespace GateAccessControl
                         }
 
                     });
-                if (p != null && p.Count > 0 && CanDeleteDeviceProfiles.Count == p.Count)
+                if (p.Count > 0 && CanDeleteDeviceProfiles.Count == p.Count)
                     {
                         return true;
                     }
@@ -184,6 +184,10 @@ namespace GateAccessControl
             SelectProfilesCommand = new RelayCommand<List<Profile>>(
                 (p) =>
                 {
+                    if (p == null)
+                    {
+                        return false;
+                    }
                     List<Profile> CanInserDeviceProfiles = p.FindAll((u) =>
                     {
                         if (
@@ -243,12 +247,13 @@ namespace GateAccessControl
                         item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
                         item.SERVER_STATUS = GlobalConstant.ServerStatus.Remove.ToString();
                     }
+                    continue;
                 }
 
                 if ((item.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
                         (item.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString()))
                 {
-                    item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
+                    item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
                     item.SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
 
                     if (SqliteDataAccess.UpdateDataDeviceProfiles("DT_DEVICE_PROFILES_" + Device.DEVICE_ID, item))
@@ -260,6 +265,7 @@ namespace GateAccessControl
                         item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
                         item.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
                     }
+                    continue;
                 }
             }
         }

@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Windows.Controls;
 using GateAccessControl.Views;
+using System.ComponentModel;
+using WebSocketSharp;
 
 namespace GateAccessControl
 {
@@ -32,6 +34,20 @@ namespace GateAccessControl
         private string _search_deviceProfiles_class;
         private string _search_deviceProfiles_group;
         private string _search_deviceProfiles_others;
+
+        private int _syncProgressValue;
+
+        private BackgroundWorker SyncWorker;
+
+        public int SyncProgressValue
+        {
+            get { return _syncProgressValue; }
+            set
+            {
+                _syncProgressValue = value;
+                RaisePropertyChanged("SyncProgressValue");
+            }
+        }
 
 
         public Device SelectedDevice
@@ -126,13 +142,118 @@ namespace GateAccessControl
         public ICommand SearchOthersDeviceProfilesCommand { get; set; }
 
 
+        public ICommand SyncCommand { get; set; }
+        public ICommand StopSyncCommand { get; set; }
+
+        public string CheckDeviceConnected(Device device)
+        {
+            try
+            {
+                WebSocket vl = device.DeviceItem.webSocket;
+                if (vl != null)
+                {
+                    if (vl.IsAlive)
+                    {
+                        device.DeviceItem.WebSocketStatus = "Connected";
+                        return "Connected";
+                    }
+                    else
+                    {
+                        device.DeviceItem.WebSocketStatus = "Connecting";
+                        return "Connecting";
+                    }
+                }
+                else
+                {
+                    device.DeviceItem.WebSocketStatus = "Disconnected";
+                    return "Disconnected";
+                }
+            }
+            catch
+            {
+                return "Pending";
+            }
+        }
+
 
         public AppPageViewModel()
         {
             ReloadDataDevices();
             ReloadDataProfiles();
             ReloadDataCardTypes();
+            SyncProgressValue = 0;
 
+
+            StopSyncCommand = new RelayCommand<Device>(
+                 (p) =>
+                 {
+                     if (p.DeviceItem.IsSendingProfiles)
+                     { return true; }
+                     else
+                     { return false; }
+                 },
+                 (p) =>
+                 {
+                     AddDevice();
+                     ReloadDataDevices();
+                 });
+
+
+            SyncCommand = new RelayCommand<List<DeviceProfiles>>(
+                 (p) =>
+                 {
+                     if (SelectedDevice == null)
+                     {
+                         return false;
+                     }
+                     if (p == null || SelectedDevice.DeviceItem.IsSendingProfiles) 
+                     {
+                         return false;
+                     }
+                     if (!CheckDeviceConnected(SelectedDevice).Equals("Connected"))
+                     {
+                         return false;
+                     }
+                     List<DeviceProfiles> CanSyncDeviceProfiles = p.FindAll((u) =>
+                     {
+                         if (
+                         ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                         (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString())) ||
+
+                         ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                         (u.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString())) ||
+
+                         ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                         (u.SERVER_STATUS == GlobalConstant.ServerStatus.Update.ToString())) ||
+
+                         ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                         (u.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString())) ||
+
+                         ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                         (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString()))
+                         )
+                         {
+                             return true;
+                         }
+                         else
+                         {
+                             return false;
+                         }
+
+                     });
+                     if (p.Count > 0 && CanSyncDeviceProfiles.Count == p.Count)
+                     {
+                         return true;
+                     }
+                     else
+                     {
+                         return false;
+                     }
+                 },
+                (p) =>
+                {
+                    SyncDeviceProfiles(p);
+                });
 
             AddDeviceCommand = new RelayCommand<Device>(
                  (p) => true,
@@ -205,7 +326,14 @@ namespace GateAccessControl
             DisconnectDeviceCommand = new RelayCommand<Device>(
                 (p) => 
                 {
-                    return !CheckIfDeviceCanConnect(p);
+                    if (p.DeviceItem.IsSendingProfiles)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return !CheckIfDeviceCanConnect(p);
+                    }
                 },
                 (p) =>
                 {
@@ -272,6 +400,190 @@ namespace GateAccessControl
                     ManageClass();
                     ReloadDataCardTypes();
                 });
+        }
+
+        private void SyncDeviceProfiles(List<DeviceProfiles> profiles)
+        {
+            SyncWorker = new BackgroundWorker();
+            SyncWorker.WorkerSupportsCancellation = true;
+            SyncWorker.WorkerReportsProgress = true;
+            SyncWorker.DoWork += SyncWorker_DoWork;
+            SyncWorker.RunWorkerCompleted += SyncWorker_RunWorkerCompleted;
+            SyncWorker.ProgressChanged += SyncWorker_ProgressChanged;
+            SyncWorker.RunWorkerAsync(argument: profiles);
+        }
+
+        private void SyncWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            SyncProgressValue = e.ProgressPercentage;
+        }
+
+        private void SyncWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                // handle the error
+                //PgbStatus = AppStatus.Error;
+            }
+            else if (e.Cancelled)
+            {
+                // handle cancellation
+                //PgbStatus = AppStatus.Cancelled;
+            }
+            else
+            {
+                //PgbStatus = AppStatus.Completed;
+            }
+            SyncProgressValue = 0;
+        }
+
+        private void SyncWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            bool remainProfiles = true;
+            List<DeviceProfiles> profiles = (List<DeviceProfiles>)e.Argument;
+            for (int i = 0; i < profiles.Count; i++)
+            {
+                if (i == (profiles.Count - 1))
+                {
+                    remainProfiles = false;
+                }
+                DeviceProfiles deviceProfileToSend = profiles[i];
+
+                if ((deviceProfileToSend.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                        (deviceProfileToSend.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString()))
+                {
+                    deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
+                    deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+
+
+                    DeviceItem.SERVERRESPONSE serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_ADD;
+                    List<DeviceProfiles> sendList = new List<DeviceProfiles>();
+                    sendList.Add(deviceProfileToSend);
+                    if (SelectedDevice.DeviceItem.SendDeviceProfile(SelectedDevice.DEVICE_IP, serRes, sendList, remainProfiles))
+                    {
+                        SqliteDataAccess.UpdateDataDeviceProfiles("DT_DEVICE_PROFILES_" + SelectedDevice.DEVICE_ID, deviceProfileToSend);
+                        continue;
+                    }
+                    else
+                    {
+                        deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
+                        deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
+                    }
+                    if (SyncWorker.CancellationPending)
+                    {
+                        break;
+                    }
+                    (sender as BackgroundWorker).ReportProgress((i * 100) / profiles.Count);
+                }
+
+                if ((deviceProfileToSend.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                        (deviceProfileToSend.SERVER_STATUS == GlobalConstant.ServerStatus.Update.ToString()))
+                {
+                    deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
+                    deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+
+
+                    DeviceItem.SERVERRESPONSE serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_UPDATE;
+                    List<DeviceProfiles> sendList = new List<DeviceProfiles>();
+                    sendList.Add(deviceProfileToSend);
+                    if (SelectedDevice.DeviceItem.SendDeviceProfile(SelectedDevice.DEVICE_IP, serRes, sendList, remainProfiles))
+                    {
+                        SqliteDataAccess.UpdateDataDeviceProfiles("DT_DEVICE_PROFILES_" + SelectedDevice.DEVICE_ID, deviceProfileToSend);
+                        continue;
+                    }
+                    else
+                    {
+                        deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
+                        deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.Update.ToString();
+                    }
+                    if (SyncWorker.CancellationPending)
+                    {
+                        break;
+                    }
+                    (sender as BackgroundWorker).ReportProgress((i * 100) / profiles.Count);
+                }
+
+                if ((deviceProfileToSend.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                        (deviceProfileToSend.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString()))
+                {
+                    deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
+                    deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+
+
+                    DeviceItem.SERVERRESPONSE serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_DELETE;
+                    List<DeviceProfiles> sendList = new List<DeviceProfiles>();
+                    sendList.Add(deviceProfileToSend);
+                    if (SelectedDevice.DeviceItem.SendDeviceProfile(SelectedDevice.DEVICE_IP, serRes, sendList, remainProfiles))
+                    {
+                        SqliteDataAccess.UpdateDataDeviceProfiles("DT_DEVICE_PROFILES_" + SelectedDevice.DEVICE_ID, deviceProfileToSend);
+                        continue;
+                    }
+                    else
+                    {
+                        deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
+                        deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.Remove.ToString();
+                    }
+                    if (SyncWorker.CancellationPending)
+                    {
+                        break;
+                    }
+                    (sender as BackgroundWorker).ReportProgress((i * 100) / profiles.Count);
+                }
+
+                if ((deviceProfileToSend.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                        (deviceProfileToSend.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString()))
+                {
+                    deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
+                    deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+
+
+                    DeviceItem.SERVERRESPONSE serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_DELETE;
+                    List<DeviceProfiles> sendList = new List<DeviceProfiles>();
+                    sendList.Add(deviceProfileToSend);
+                    if (SelectedDevice.DeviceItem.SendDeviceProfile(SelectedDevice.DEVICE_IP, serRes, sendList, remainProfiles))
+                    {
+                        SqliteDataAccess.UpdateDataDeviceProfiles("DT_DEVICE_PROFILES_" + SelectedDevice.DEVICE_ID, deviceProfileToSend);
+                        continue;
+                    }
+                    else
+                    {
+                        deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
+                        deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.Remove.ToString();
+                    }
+                    if (SyncWorker.CancellationPending)
+                    {
+                        break;
+                    }
+                    (sender as BackgroundWorker).ReportProgress((i * 100) / profiles.Count);
+                }
+
+                if ((deviceProfileToSend.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                        (deviceProfileToSend.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString()))
+                {
+                    deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
+                    deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+
+
+                    DeviceItem.SERVERRESPONSE serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_ADD;
+                    List<DeviceProfiles> sendList = new List<DeviceProfiles>();
+                    sendList.Add(deviceProfileToSend);
+                    if (SelectedDevice.DeviceItem.SendDeviceProfile(SelectedDevice.DEVICE_IP, serRes, sendList, remainProfiles))
+                    {
+                        SqliteDataAccess.UpdateDataDeviceProfiles("DT_DEVICE_PROFILES_" + SelectedDevice.DEVICE_ID, deviceProfileToSend);
+                        continue;
+                    }
+                    else
+                    {
+                        deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
+                        deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
+                    }
+                    if (SyncWorker.CancellationPending)
+                    {
+                        break;
+                    }
+                    (sender as BackgroundWorker).ReportProgress((i * 100) / profiles.Count);
+                }
+            }
         }
 
         private void ManageDeviceProfiles(Device p)
