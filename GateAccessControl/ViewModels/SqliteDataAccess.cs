@@ -257,25 +257,6 @@ namespace GateAccessControl
                 return false;
             }
         }
-
-        //public static bool InsertDataDeviceCardType(DeviceCardType deviceCardType)
-        //{
-        //    try
-        //    {
-        //        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-        //        {
-        //            cnn.Execute("INSERT INTO DT_DEVICE_CLASS " +
-        //                "(DEVICE_ID,CLASS_ID,CHECK_STATUS) " +
-        //                "VALUES (@DEVICE_ID,@CLASS_ID,@CHECK_STATUS)", deviceCardType);
-        //        }
-        //        return true;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        logFile.Error(ex.Message);
-        //        return false;
-        //    }
-        //}
         public static bool InsertDataTimeCheck(TimeRecord timeRecord)
         {
             try
@@ -377,9 +358,9 @@ namespace GateAccessControl
                         "CHECK_DATE_TO_LOCK = @CHECK_DATE_TO_LOCK, " +
                         "LICENSE_PLATE = @LICENSE_PLATE, " +
                         "DATE_CREATED = @DATE_CREATED, " +
-                        "DATE_MODIFIED = @DATE_MODIFIED " +
-                        "SERVER_STATUS = @SERVER_STATUS " +
-                        "CLIENT_STATUS = @CLIENT_STATUS " +
+                        "DATE_MODIFIED = @DATE_MODIFIED, " +
+                        "SERVER_STATUS = @SERVER_STATUS, " +
+                        "CLIENT_STATUS = @CLIENT_STATUS, " +
                         "ACTIVE_TIME = @ACTIVE_TIME " +
                         "WHERE PIN_NO = @PIN_NO", _profile);
                 }
@@ -410,26 +391,7 @@ namespace GateAccessControl
                 return false;
             }
         }
-        //public static bool UpdateDataDeviceCardType(DeviceCardType deviceCardType)
-        //{
-        //    try
-        //    {
-        //        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-        //        {
-        //            cnn.Execute("UPDATE DT_DEVICE_CLASS SET " +
-        //                "DEVICE_ID = @DEVICE_ID, " +
-        //                "CLASS_ID = @CLASS_ID, " +
-        //                "CHECK_STATUS = @CHECK_STATUS " +
-        //                "WHERE DEVICE_CLASS_ID = @DEVICE_CLASS_ID", deviceCardType);
-        //        }
-        //        return true;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        logFile.Error(ex.Message);
-        //        return false;
-        //    }
-        //}
+
         public static bool DeleteDataDevice(Device device)
         {
             try
@@ -618,14 +580,6 @@ namespace GateAccessControl
                         cnn.Execute("CREATE TABLE \"DT_CLASS\" " +
                             "(\"CLASS_ID\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE," +
                             "\"CLASS_NAME\" TEXT NOT NULL UNIQUE)");
-
-                        //cnn.Execute("CREATE TABLE \"DT_DEVICE_CLASS\" " +
-                        //    "(\"DEVICE_CLASS_ID\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE," +
-                        //    "\"DEVICE_ID\" INTEGER NOT NULL," +
-                        //    "\"CLASS_ID\" INTEGER NOT NULL," +
-                        //    "\"CHECK_STATUS\" INTEGER NOT NULL DEFAULT 0," +
-                        //    "CONSTRAINT \"DEVICE_ID_CLASS_ID_UNIQUE\" UNIQUE(\"DEVICE_ID\",\"CLASS_ID\")" +
-                        //    ")");
                     }
                 }
                 catch (Exception ex)

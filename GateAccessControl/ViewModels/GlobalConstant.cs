@@ -24,12 +24,13 @@ namespace GateAccessControl
             None = 0,
             Add = 1,
             Update = 2,
-            Remove = 3
+            Remove = 3,
+            Syncing = 4
         }
 
-        public static readonly string AppPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK";
-        public static readonly string DatabasePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK\DB";
-        public static readonly string ImagePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK\Image";
+        public static readonly string AppPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK\";
+        public static readonly string DatabasePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK\DB\";
+        public static readonly string ImagePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK\Image\";
 
         public static string messageDuplicated = "{0} is duplicated.";
         public static string messageSaveSucced = "Save operation succeeded.";
@@ -63,7 +64,7 @@ namespace GateAccessControl
                 if (!File.Exists(ImagePath + "default.png"))
                 {
                     string DefaultImageFileNamePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK\Image\default.png";
-                    File.Copy(Environment.CurrentDirectory + @"\Resources\default.png", DefaultImageFileNamePath, false);
+                    File.Copy(Environment.CurrentDirectory + @"\Resources\default.png", DefaultImageFileNamePath, true);
                 }
                 if (!Directory.Exists(DatabasePath))
                 {

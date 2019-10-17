@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Timers;
 using WebSocketSharp;
 
 namespace GateAccessControl
@@ -13,6 +14,8 @@ namespace GateAccessControl
     public class DeviceItem :RosSocket
     {
         private static readonly log4net.ILog logFile = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        public System.Timers.Timer checkAlive;
+
 
         public enum STATUSPROFILE
         {
@@ -91,6 +94,10 @@ namespace GateAccessControl
         
         public DeviceItem()
         {
+            WebSocketStatus = "Disconnected";
+            checkAlive = new System.Timers.Timer();
+            checkAlive.Interval = 1000;
+            checkAlive.Elapsed += CheckConnection;
             OnFlagStatusClient.OnConfirmProfileSuccess = CLIENTCMD.CLIENT_READY;
         }
         protected override void OnOpenedEvent()
@@ -106,6 +113,34 @@ namespace GateAccessControl
                 logFile.Error(ex.Message);
             }
         }
+
+        private void CheckConnection(object sender, ElapsedEventArgs e)
+        {
+            try
+            {
+                WebSocket vl = webSocket;
+                if (vl != null)
+                {
+                    if (vl.IsAlive)
+                    {
+                        WebSocketStatus = "Connected";
+                    }
+                    else
+                    {
+                        WebSocketStatus = "Connecting";
+                    }
+                }
+                else
+                {
+                    WebSocketStatus = "Disconnected";
+                    checkAlive.Stop();
+                }
+            }
+            catch
+            {
+                WebSocketStatus = "Pending";
+            }
+        }
         public void createRosTerms()
         {
             int subscription_imagerequest = this.Subscribe("ReqImage", "std_msgs/String", ReqImgHandler);
@@ -116,6 +151,7 @@ namespace GateAccessControl
         }
         protected override void OnClosedEvent(object sender, CloseEventArgs e)
         {
+            //checkAlive.Stop();
             base.OnClosedEvent(sender, e);
         }
         private void DataHandler(Message message)
@@ -282,7 +318,6 @@ namespace GateAccessControl
         }
         public bool SendDeviceProfile(string ip, SERVERRESPONSE serverRes, List<DeviceProfiles> DeviceProfileToSend, bool remainProfiles)
         {
-            IsSendingProfiles = true;
             try
             {
                 JStringDeviceProfile JDeviceProfile = new JStringDeviceProfile();
@@ -310,13 +345,13 @@ namespace GateAccessControl
                     {
                         break;
                     }
-                    Thread.Sleep(1000);
+                    Thread.Sleep(500);
                 }
-                while (cntTimeOut++ < 120);
+                while (cntTimeOut++ < 20);
 
                 if (OnFlagStatusClient.OnConfirmProfileSuccess == CLIENTCMD.CONFIRM_ADD_PROFILE_SUCCESS ||
-                                    OnFlagStatusClient.OnConfirmProfileSuccess == CLIENTCMD.CONFIRM_DELETE_PROFILE_SUCCESS ||
-                                    OnFlagStatusClient.OnConfirmProfileSuccess == CLIENTCMD.CONFIRM_UPDATE_PROFILE_SUCCESS)
+                    OnFlagStatusClient.OnConfirmProfileSuccess == CLIENTCMD.CONFIRM_DELETE_PROFILE_SUCCESS ||
+                    OnFlagStatusClient.OnConfirmProfileSuccess == CLIENTCMD.CONFIRM_UPDATE_PROFILE_SUCCESS)
                 {
                     OnFlagStatusClient.OnConfirmProfileSuccess = CLIENTCMD.CLIENT_READY;
                     statusProfile = STATUSPROFILE.Updated;

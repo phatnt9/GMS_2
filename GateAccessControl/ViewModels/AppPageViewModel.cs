@@ -1,137 +1,37 @@
-﻿using System;
+﻿using GateAccessControl.Views;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
-using System.Windows.Controls;
-using GateAccessControl.Views;
 using System.ComponentModel;
+using System.IO;
+using System.Windows.Controls;
+using System.Windows.Forms;
+using System.Windows.Input;
 using WebSocketSharp;
 
 namespace GateAccessControl
 {
     public class AppPageViewModel : ViewModelBase
     {
-        private static readonly log4net.ILog logFile = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        private Device _selectedDevice;
-
-        private ObservableCollection<Profile> _profiles = new ObservableCollection<Profile>();
-        private ObservableCollection<Device> _devices = new ObservableCollection<Device>();
-        private ObservableCollection<DeviceProfiles> _deviceProfiles = new ObservableCollection<DeviceProfiles>();
-        private ObservableCollection<TimeRecord> _timeChecks = new ObservableCollection<TimeRecord>();
-        private ObservableCollection<CardType> _classes = new ObservableCollection<CardType>();
-
-        public ObservableCollection<Profile> Profiles => _profiles;
-        public ObservableCollection<Device> Devices => _devices;
-        public ObservableCollection<DeviceProfiles> DeviceProfiles => _deviceProfiles;
-        public ObservableCollection<TimeRecord> TimeChecks => _timeChecks;
-        public ObservableCollection<CardType> Classes => _classes;
-
-        private string _search_profiles_class;
-        private string _search_profiles_group;
-        private string _search_profiles_others;
-
-        private string _search_deviceProfiles_class;
-        private string _search_deviceProfiles_group;
-        private string _search_deviceProfiles_others;
-
-        private int _syncProgressValue;
-
-        private BackgroundWorker SyncWorker;
-
-        public int SyncProgressValue
-        {
-            get { return _syncProgressValue; }
-            set
-            {
-                _syncProgressValue = value;
-                RaisePropertyChanged("SyncProgressValue");
-            }
-        }
-
-
-        public Device SelectedDevice
-        {
-            get { return _selectedDevice; }
-            set
-            {
-                _selectedDevice = value;
-                RaisePropertyChanged("SelectedDevice");
-            }
-        }
-
-        public String Search_profiles_class
-        {
-            get { return _search_profiles_class; }
-            set {
-                _search_profiles_class = value;
-                RaisePropertyChanged("Search_profiles_class"); }
-        }
-        public String Search_profiles_group
-        {
-            get { return _search_profiles_group; }
-            set
-            {
-                _search_profiles_group = value;
-                RaisePropertyChanged("Search_profiles_group");
-            }
-        }
-        public String Search_profiles_others
-        {
-            get { return _search_profiles_others; }
-            set
-            {
-                _search_profiles_others = value;
-                RaisePropertyChanged("Search_profiles_others");
-            }
-        }
-        public String Search_deviceProfiles_class
-        {
-            get { return _search_deviceProfiles_class; }
-            set
-            {
-                _search_deviceProfiles_class = value;
-                RaisePropertyChanged("Search_deviceProfiles_class");
-            }
-        }
-        public String Search_deviceProfiles_group
-        {
-            get { return _search_deviceProfiles_group; }
-            set
-            {
-                _search_deviceProfiles_group = value;
-                RaisePropertyChanged("Search_deviceProfiles_group");
-            }
-        }
-        public String Search_deviceProfiles_others
-        {
-            get { return _search_deviceProfiles_others; }
-            set
-            {
-                _search_deviceProfiles_others = value;
-                RaisePropertyChanged("Search_deviceProfiles_others");
-            }
-        }
-
-
         public ICommand AddDeviceCommand { get; set; }
         public ICommand EditDeviceCommand { get; set; }
         public ICommand RemoveDeviceCommand { get; set; }
-
-
         public ICommand SelectDeviceCommand { get; set; }
-        public ICommand DeviceProfilesManageCommand { get; set; }
-
-
-
-
         public ICommand ConnectDeviceCommand { get; set; }
         public ICommand DisconnectDeviceCommand { get; set; }
 
 
+
+        public ICommand AddProfileCommand { get; set; }
+        public ICommand EditProfileCommand { get; set; }
+        public ICommand RemoveProfileCommand { get; set; }
+
+
+
+        public ICommand DeviceProfilesManageCommand { get; set; }
+        
         public ICommand ImportProfilesCommand { get; set; }
         public ICommand ManageClassCommand { get; set; }
-
 
         public ICommand SearchClassProfilesCommand { get; set; }
         public ICommand SearchGroupProfilesCommand { get; set; }
@@ -141,40 +41,30 @@ namespace GateAccessControl
         public ICommand SearchGroupDeviceProfilesCommand { get; set; }
         public ICommand SearchOthersDeviceProfilesCommand { get; set; }
 
-
         public ICommand SyncCommand { get; set; }
         public ICommand StopSyncCommand { get; set; }
+        public ICommand ReplaceProfileImageCommand { get; set; }
 
-        public string CheckDeviceConnected(Device device)
+        public ICommand SetTimeDeviceProfileCommnad { get; set; }
+
+        public string CheckDeviceStatus(Device device)
         {
-            try
+            if (device.DeviceItem.webSocket != null)
             {
-                WebSocket vl = device.DeviceItem.webSocket;
-                if (vl != null)
+                if (device.DeviceItem.webSocket.IsAlive)
                 {
-                    if (vl.IsAlive)
-                    {
-                        device.DeviceItem.WebSocketStatus = "Connected";
-                        return "Connected";
-                    }
-                    else
-                    {
-                        device.DeviceItem.WebSocketStatus = "Connecting";
-                        return "Connecting";
-                    }
+                    return "Connected";
                 }
                 else
                 {
-                    device.DeviceItem.WebSocketStatus = "Disconnected";
-                    return "Disconnected";
+                    return "Connecting";
                 }
             }
-            catch
+            else
             {
-                return "Pending";
+                return "Disconnected";
             }
         }
-
 
         public AppPageViewModel()
         {
@@ -183,65 +73,10 @@ namespace GateAccessControl
             ReloadDataCardTypes();
             SyncProgressValue = 0;
 
-
-            StopSyncCommand = new RelayCommand<Device>(
+            SetTimeDeviceProfileCommnad = new RelayCommand<string>(
                  (p) =>
                  {
-                     if (p.DeviceItem.IsSendingProfiles)
-                     { return true; }
-                     else
-                     { return false; }
-                 },
-                 (p) =>
-                 {
-                     AddDevice();
-                     ReloadDataDevices();
-                 });
-
-
-            SyncCommand = new RelayCommand<List<DeviceProfiles>>(
-                 (p) =>
-                 {
-                     if (SelectedDevice == null)
-                     {
-                         return false;
-                     }
-                     if (p == null || SelectedDevice.DeviceItem.IsSendingProfiles) 
-                     {
-                         return false;
-                     }
-                     if (!CheckDeviceConnected(SelectedDevice).Equals("Connected"))
-                     {
-                         return false;
-                     }
-                     List<DeviceProfiles> CanSyncDeviceProfiles = p.FindAll((u) =>
-                     {
-                         if (
-                         ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                         (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString())) ||
-
-                         ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                         (u.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString())) ||
-
-                         ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                         (u.SERVER_STATUS == GlobalConstant.ServerStatus.Update.ToString())) ||
-
-                         ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
-                         (u.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString())) ||
-
-                         ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
-                         (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString()))
-                         )
-                         {
-                             return true;
-                         }
-                         else
-                         {
-                             return false;
-                         }
-
-                     });
-                     if (p.Count > 0 && CanSyncDeviceProfiles.Count == p.Count)
+                     if (p != null)
                      {
                          return true;
                      }
@@ -250,9 +85,112 @@ namespace GateAccessControl
                          return false;
                      }
                  },
+                 (p) =>
+                 {
+                     AddProfile(p);
+                     string classSearch = Search_profiles_class == "All" ? "" : Search_profiles_class;
+                     string groupSearch = Search_profiles_group == "All" ? "" : Search_profiles_group;
+                     ReloadDataProfiles(classSearch, groupSearch);
+                 });
+
+            AddProfileCommand = new RelayCommand<Profile>(
+                 (p) =>
+                 {
+                     return true;
+                 },
+                 (p) =>
+                 {
+                     AddProfile(p);
+                     string classSearch = Search_profiles_class == "All" ? "" : Search_profiles_class;
+                     string groupSearch = Search_profiles_group == "All" ? "" : Search_profiles_group;
+                     ReloadDataProfiles(classSearch, groupSearch);
+                 });
+
+            EditProfileCommand = new RelayCommand<Profile>(
+                 (p) =>
+                 {
+                     //Cannot when any device is syncing
+                     return (p != null && _numberOfSyncingDevices == 0) ? true : false;
+                 },
+                 (p) =>
+                 {
+                     EditProfile(p);
+                     string classSearch = Search_profiles_class == "All" ? "" : Search_profiles_class;
+                     string groupSearch = Search_profiles_group == "All" ? "" : Search_profiles_group;
+                     ReloadDataProfiles(classSearch, groupSearch);
+                     if(SelectedDevice != null)
+                     {
+                         ReloadDataDeviceProfiles(SelectedDevice);
+                     }
+                 });
+
+            RemoveProfileCommand = new RelayCommand<Profile>(
+                 (p) =>
+                 {
+                     //Cannot when any device is syncing
+                     return (p != null && _numberOfSyncingDevices == 0) ? true : false;
+                 },
+                 (p) =>
+                 {
+                     RemoveProfile(p);
+                     string classSearch = Search_profiles_class == "All" ? "" : Search_profiles_class;
+                     string groupSearch = Search_profiles_group == "All" ? "" : Search_profiles_group;
+                     ReloadDataProfiles(classSearch, groupSearch);
+                 });
+
+            ReplaceProfileImageCommand = new RelayCommand<Profile>(
+                 (p) =>
+                 {
+                     //Can Stop when sending Profiles
+                     return (p != null && SelectedDevice != null) ? true : false;
+                 },
+                 (p) =>
+                 {
+                     string origin = p.IMAGE;
+                     p.IMAGE = "default.png";
+                     ReplaceProfileImage(origin,p);
+                     p.IMAGE = origin;
+                     ReloadDataDeviceProfiles(SelectedDevice);
+
+                 });
+
+            StopSyncCommand = new RelayCommand<Device>(
+                 (p) =>
+                 {
+                     //Can Stop when sending Profiles
+                     return (p!= null && p.DeviceItem.IsSendingProfiles) ? true : false;
+                 },
+                 (p) =>
+                 {
+                     p.SyncWorker.CancelAsync();
+                 });
+
+            SyncCommand = new RelayCommand<List<DeviceProfiles>>(
+                 (p) =>
+                 {
+                     /* 
+                      * User must select a Device and some Profiles to be able to Sync Profiles.
+                      * Device must be connected before Syncing.
+                      * If that Device is in process of Sending something, then you cannot Sync too.
+                      * Get list profiles that can be synced depend on its status and server Status
+                      */
+                     if (SelectedDevice != null && p != null)
+                     {
+                         if (SelectedDevice.DeviceItem.IsSendingProfiles || !CheckDeviceStatus(SelectedDevice).Equals("Connected"))
+                         {
+                             return false;
+                         }
+                         return (GetCanSyncDeviceProfiles(p).Count > 0) ? true : false;
+                     }
+                     else
+                     {
+                         return false;
+                     }
+                 },
                 (p) =>
                 {
-                    SyncDeviceProfiles(p);
+                    //Sync it
+                    SelectedDevice.SyncDeviceProfiles(GetCanSyncDeviceProfiles(p),ref _numberOfSyncingDevices);
                 });
 
             AddDeviceCommand = new RelayCommand<Device>(
@@ -281,7 +219,7 @@ namespace GateAccessControl
                 },
                 (p) =>
                 {
-                    if(RemoveDevice(p))
+                    if (RemoveDevice(p))
                     {
                         ReloadDataDevices(p);
                     }
@@ -294,23 +232,22 @@ namespace GateAccessControl
                 },
                 (p) =>
                 {
-                    SqliteDataAccess.CreateDeviceProfilesTable("DT_DEVICE_PROFILES_"+p.DEVICE_ID);
+                    SqliteDataAccess.CreateDeviceProfilesTable("DT_DEVICE_PROFILES_" + p.DEVICE_ID);
                     ReloadDataDeviceProfiles(p);
                 });
 
             DeviceProfilesManageCommand = new RelayCommand<Device>(
                 (p) =>
                 {
-                    if (p != null)
-                        return true;
-                    else
-                        return false;
+                    return (p != null && !p.DeviceItem.IsSendingProfiles) ? true : false;
                 },
                 (p) =>
                 {
-                    ManageDeviceProfiles(SelectedDevice);
-                    ReloadDataDeviceProfiles(SelectedDevice);
-                    ReloadDataProfiles((Search_profiles_class == "All" ? "" : Search_profiles_class), (Search_profiles_group == "All" ? "" : Search_profiles_group));
+                    ManageDeviceProfiles(p);
+                    ReloadDataDeviceProfiles(p);
+                    string classSearch = Search_profiles_class == "All" ? "" : Search_profiles_class;
+                    string groupSearch = Search_profiles_group == "All" ? "" : Search_profiles_group;
+                    ReloadDataProfiles(classSearch, groupSearch);
                 });
 
             ConnectDeviceCommand = new RelayCommand<Device>(
@@ -324,9 +261,9 @@ namespace GateAccessControl
                 });
 
             DisconnectDeviceCommand = new RelayCommand<Device>(
-                (p) => 
+                (p) =>
                 {
-                    if (p.DeviceItem.IsSendingProfiles)
+                    if (p == null || p.DeviceItem.IsSendingProfiles)
                     {
                         return false;
                     }
@@ -358,28 +295,34 @@ namespace GateAccessControl
                 (p) => true,
                 (p) =>
                 {
-                    ReloadDataProfiles((Search_profiles_class=="All"?"":Search_profiles_class), (Search_profiles_group=="All"?"": Search_profiles_group));
+                    string classSearch = Search_profiles_class == "All" ? "" : Search_profiles_class;
+                    string groupSearch = Search_profiles_group == "All" ? "" : Search_profiles_group;
+                    ReloadDataProfiles(classSearch, groupSearch);
                 });
+
+            SearchGroupProfilesCommand = new RelayCommand<ItemCollection>(
+                 (p) => true,
+                 (p) =>
+                 {
+                     string classSearch = Search_profiles_class == "All" ? "" : Search_profiles_class;
+                     string groupSearch = Search_profiles_group == "All" ? "" : Search_profiles_group;
+                     ReloadDataProfiles(classSearch, groupSearch);
+                 });
 
             SearchClassDeviceProfilesCommand = new RelayCommand<ItemCollection>(
                 (p) => true,
                 (p) =>
                 {
-                    ReloadDataDeviceProfiles(SelectedDevice, (Search_deviceProfiles_class=="All"?"": Search_deviceProfiles_class), (Search_deviceProfiles_group=="All"?"": Search_deviceProfiles_group));
+                    ReloadDataDeviceProfiles(SelectedDevice, (Search_deviceProfiles_class == "All" ? "" : Search_deviceProfiles_class), (Search_deviceProfiles_group == "All" ? "" : Search_deviceProfiles_group));
                 });
 
-            SearchGroupProfilesCommand = new RelayCommand<ItemCollection>(
-                (p) => true,
-                (p) =>
-                {
-                    ReloadDataProfiles((Search_profiles_class == "All" ? "" : Search_profiles_class), (Search_profiles_group == "All" ? "" : Search_profiles_group));
-                });
+            
 
             SearchGroupDeviceProfilesCommand = new RelayCommand<ItemCollection>(
                 (p) => true,
                 (p) =>
                 {
-                    ReloadDataDeviceProfiles(SelectedDevice, (Search_deviceProfiles_class == "All"?"": Search_deviceProfiles_class), (Search_deviceProfiles_group == "All"?"": Search_deviceProfiles_group));
+                    ReloadDataDeviceProfiles(SelectedDevice, (Search_deviceProfiles_class == "All" ? "" : Search_deviceProfiles_class), (Search_deviceProfiles_group == "All" ? "" : Search_deviceProfiles_group));
                 });
 
             ImportProfilesCommand = new RelayCommand<Profile>(
@@ -390,7 +333,9 @@ namespace GateAccessControl
                     IEnumerable<CardType> obsCollection = (IEnumerable<CardType>)Classes;
                     List<CardType> list = new List<CardType>(obsCollection);
                     ImportProfiles(list);
-                    ReloadDataProfiles((Search_profiles_class == "All" ? "" : Search_profiles_class), (Search_profiles_group == "All" ? "" : Search_profiles_group));
+                    string classSearch = Search_profiles_class == "All" ? "" : Search_profiles_class;
+                    string groupSearch = Search_profiles_group == "All" ? "" : Search_profiles_group;
+                    ReloadDataProfiles(classSearch, groupSearch);
                 });
 
             ManageClassCommand = new RelayCommand<CardType>(
@@ -402,189 +347,145 @@ namespace GateAccessControl
                 });
         }
 
-        private void SyncDeviceProfiles(List<DeviceProfiles> profiles)
+        private void RemoveProfile(Profile p)
         {
-            SyncWorker = new BackgroundWorker();
-            SyncWorker.WorkerSupportsCancellation = true;
-            SyncWorker.WorkerReportsProgress = true;
-            SyncWorker.DoWork += SyncWorker_DoWork;
-            SyncWorker.RunWorkerCompleted += SyncWorker_RunWorkerCompleted;
-            SyncWorker.ProgressChanged += SyncWorker_ProgressChanged;
-            SyncWorker.RunWorkerAsync(argument: profiles);
-        }
-
-        private void SyncWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            SyncProgressValue = e.ProgressPercentage;
-        }
-
-        private void SyncWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            if (e.Error != null)
+            if (String.IsNullOrEmpty(p.LIST_DEVICE_ID))
             {
-                // handle the error
-                //PgbStatus = AppStatus.Error;
+                SqliteDataAccess.DeleteDataProfile(p);
             }
-            else if (e.Cancelled)
+        }
+
+        private void AddProfile(Profile p)
+        {
+            AddProfileWindow addProfileWindow = new AddProfileWindow();
+            addProfileWindow.ShowDialog();
+        }
+
+        private void EditProfile(Profile p)
+        {
+            EditProfileWindow editProfileWindow = new EditProfileWindow(p);
+            editProfileWindow.ShowDialog();
+        }
+
+        private void ReplaceProfileImage(string origin, Profile p)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog
             {
-                // handle cancellation
-                //PgbStatus = AppStatus.Cancelled;
+                Title = "Browse JPEG Image",
+                Multiselect = false,
+                CheckFileExists = true,
+                CheckPathExists = true,
+
+                DefaultExt = "JPEG",
+                Filter = "All JPEG Files (*.jpg)|*.jpg",
+                FilterIndex = 1,
+                RestoreDirectory = true
+                //ReadOnlyChecked = true,
+                //ShowReadOnly = true
+            };
+
+            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                //img_profile.Source = null;
+                //string oldFilePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK\Image\" + tb_image.Text;
+                //File.Delete(oldFilePath);
+                string importFilePath = openFileDialog1.FileName;
+                File.Copy(importFilePath,
+               Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK\Image\" + origin, true);
+
+                p.IMAGE = origin;
+                SaveProfile(p);
+
+
+            }
+        }
+        private bool SaveProfile(Profile p)
+        {
+            if (p.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Active.ToString()))
+            {
+                if (p.CHECK_DATE_TO_LOCK && DateTime.Now.CompareTo(p.DATE_TO_LOCK) >= 0)
+                {
+                    //Today is later then date to lock
+                    p.CHECK_DATE_TO_LOCK = false;
+                    p.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
+                    p.LOCK_DATE = DateTime.Now;
+                    p.DATE_MODIFIED = DateTime.Now;
+                }
             }
             else
             {
-                //PgbStatus = AppStatus.Completed;
+                p.CHECK_DATE_TO_LOCK = false;
+                p.LOCK_DATE = DateTime.Now;
+                p.DATE_MODIFIED = DateTime.Now;
             }
-            SyncProgressValue = 0;
-        }
 
-        private void SyncWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            bool remainProfiles = true;
-            List<DeviceProfiles> profiles = (List<DeviceProfiles>)e.Argument;
-            for (int i = 0; i < profiles.Count; i++)
+            if (UpdateProfileToAllDevice(p))
             {
-                if (i == (profiles.Count - 1))
+                if (SqliteDataAccess.UpdateDataProfile(p))
                 {
-                    remainProfiles = false;
+                    return true;
                 }
-                DeviceProfiles deviceProfileToSend = profiles[i];
-
-                if ((deviceProfileToSend.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                        (deviceProfileToSend.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString()))
+                else
                 {
-                    deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                    deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
-
-
-                    DeviceItem.SERVERRESPONSE serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_ADD;
-                    List<DeviceProfiles> sendList = new List<DeviceProfiles>();
-                    sendList.Add(deviceProfileToSend);
-                    if (SelectedDevice.DeviceItem.SendDeviceProfile(SelectedDevice.DEVICE_IP, serRes, sendList, remainProfiles))
-                    {
-                        SqliteDataAccess.UpdateDataDeviceProfiles("DT_DEVICE_PROFILES_" + SelectedDevice.DEVICE_ID, deviceProfileToSend);
-                        continue;
-                    }
-                    else
-                    {
-                        deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                        deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
-                    }
-                    if (SyncWorker.CancellationPending)
-                    {
-                        break;
-                    }
-                    (sender as BackgroundWorker).ReportProgress((i * 100) / profiles.Count);
-                }
-
-                if ((deviceProfileToSend.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                        (deviceProfileToSend.SERVER_STATUS == GlobalConstant.ServerStatus.Update.ToString()))
-                {
-                    deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                    deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
-
-
-                    DeviceItem.SERVERRESPONSE serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_UPDATE;
-                    List<DeviceProfiles> sendList = new List<DeviceProfiles>();
-                    sendList.Add(deviceProfileToSend);
-                    if (SelectedDevice.DeviceItem.SendDeviceProfile(SelectedDevice.DEVICE_IP, serRes, sendList, remainProfiles))
-                    {
-                        SqliteDataAccess.UpdateDataDeviceProfiles("DT_DEVICE_PROFILES_" + SelectedDevice.DEVICE_ID, deviceProfileToSend);
-                        continue;
-                    }
-                    else
-                    {
-                        deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                        deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.Update.ToString();
-                    }
-                    if (SyncWorker.CancellationPending)
-                    {
-                        break;
-                    }
-                    (sender as BackgroundWorker).ReportProgress((i * 100) / profiles.Count);
-                }
-
-                if ((deviceProfileToSend.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                        (deviceProfileToSend.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString()))
-                {
-                    deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
-                    deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
-
-
-                    DeviceItem.SERVERRESPONSE serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_DELETE;
-                    List<DeviceProfiles> sendList = new List<DeviceProfiles>();
-                    sendList.Add(deviceProfileToSend);
-                    if (SelectedDevice.DeviceItem.SendDeviceProfile(SelectedDevice.DEVICE_IP, serRes, sendList, remainProfiles))
-                    {
-                        SqliteDataAccess.UpdateDataDeviceProfiles("DT_DEVICE_PROFILES_" + SelectedDevice.DEVICE_ID, deviceProfileToSend);
-                        continue;
-                    }
-                    else
-                    {
-                        deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                        deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.Remove.ToString();
-                    }
-                    if (SyncWorker.CancellationPending)
-                    {
-                        break;
-                    }
-                    (sender as BackgroundWorker).ReportProgress((i * 100) / profiles.Count);
-                }
-
-                if ((deviceProfileToSend.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
-                        (deviceProfileToSend.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString()))
-                {
-                    deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
-                    deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
-
-
-                    DeviceItem.SERVERRESPONSE serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_DELETE;
-                    List<DeviceProfiles> sendList = new List<DeviceProfiles>();
-                    sendList.Add(deviceProfileToSend);
-                    if (SelectedDevice.DeviceItem.SendDeviceProfile(SelectedDevice.DEVICE_IP, serRes, sendList, remainProfiles))
-                    {
-                        SqliteDataAccess.UpdateDataDeviceProfiles("DT_DEVICE_PROFILES_" + SelectedDevice.DEVICE_ID, deviceProfileToSend);
-                        continue;
-                    }
-                    else
-                    {
-                        deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
-                        deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.Remove.ToString();
-                    }
-                    if (SyncWorker.CancellationPending)
-                    {
-                        break;
-                    }
-                    (sender as BackgroundWorker).ReportProgress((i * 100) / profiles.Count);
-                }
-
-                if ((deviceProfileToSend.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
-                        (deviceProfileToSend.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString()))
-                {
-                    deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                    deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
-
-
-                    DeviceItem.SERVERRESPONSE serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_ADD;
-                    List<DeviceProfiles> sendList = new List<DeviceProfiles>();
-                    sendList.Add(deviceProfileToSend);
-                    if (SelectedDevice.DeviceItem.SendDeviceProfile(SelectedDevice.DEVICE_IP, serRes, sendList, remainProfiles))
-                    {
-                        SqliteDataAccess.UpdateDataDeviceProfiles("DT_DEVICE_PROFILES_" + SelectedDevice.DEVICE_ID, deviceProfileToSend);
-                        continue;
-                    }
-                    else
-                    {
-                        deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
-                        deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
-                    }
-                    if (SyncWorker.CancellationPending)
-                    {
-                        break;
-                    }
-                    (sender as BackgroundWorker).ReportProgress((i * 100) / profiles.Count);
+                    return false;
                 }
             }
+            else
+            {
+                return true;
+            }
         }
+
+        private bool UpdateProfileToAllDevice(Profile p)
+        {
+            int count = 0;
+            List<int> listDeviceId = new List<int>();
+            DeviceProfiles deviceProfiles = new DeviceProfiles(p);
+
+            if (deviceProfiles.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString())
+            {
+                deviceProfiles.SERVER_STATUS = GlobalConstant.ServerStatus.Remove.ToString();
+            }
+
+            if (deviceProfiles.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString())
+            {
+                deviceProfiles.SERVER_STATUS = GlobalConstant.ServerStatus.Update.ToString();
+            }
+
+            if (!String.IsNullOrEmpty(p.LIST_DEVICE_ID))
+            {
+                string[] listVar = p.LIST_DEVICE_ID.Split(',');
+                foreach (string var in listVar)
+                {
+                    int temp;
+                    Int32.TryParse(var, out temp);
+                    if (temp != 0)
+                    {
+                        listDeviceId.Add(temp);
+                    }
+                }
+                foreach (int id in listDeviceId)
+                {
+                    if (SqliteDataAccess.UpdateDataDeviceProfiles("DT_DEVICE_PROFILES_" + id, deviceProfiles))
+                    {
+                        count++;
+                    }
+                }
+                if (count > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return true;
+            }
+        }
+
 
         private void ManageDeviceProfiles(Device p)
         {
@@ -607,7 +508,7 @@ namespace GateAccessControl
         private bool RemoveDevice(Device p)
         {
             //Remove Device in database
-            if(SqliteDataAccess.DeleteDataDevice(p))
+            if (SqliteDataAccess.DeleteDataDevice(p))
             {
                 //Succeed
                 Console.WriteLine("Succeed");
@@ -631,7 +532,6 @@ namespace GateAccessControl
                 {
                     _deviceProfiles.Add(item);
                 }
-
             }
             catch (Exception ex)
             {
@@ -646,6 +546,7 @@ namespace GateAccessControl
 
         private void ConnectDevice(Device p)
         {
+            p.DeviceItem.checkAlive.Start();
             p.DeviceItem.Start("ws://" + p.DEVICE_IP + ":9090");
         }
 
@@ -761,7 +662,6 @@ namespace GateAccessControl
                 {
                     _profiles.Add(item);
                 }
-
             }
             catch (Exception ex)
             {
@@ -779,7 +679,6 @@ namespace GateAccessControl
                 {
                     _deviceProfiles.Add(item);
                 }
-
             }
             catch (Exception ex)
             {
@@ -789,9 +688,9 @@ namespace GateAccessControl
 
         private bool CanEditOrRemoveDevice(Device p)
         {
-            if (p != null)
+            if (p != null && p.DeviceItem.WebSocketStatus != null)
             {
-                if (p.DeviceItem.webSocket == null) // Disconnected
+                if (p.DeviceItem.WebSocketStatus.Equals("Disconnected"))
                 {
                     return true;
                 }
@@ -833,5 +732,161 @@ namespace GateAccessControl
                 return false;
             }
         }
+
+
+
+        private static readonly log4net.ILog logFile = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        private string _search_profiles_class;
+        private string _search_profiles_group;
+        private string _search_profiles_others;
+
+        private string _search_deviceProfiles_class;
+        private string _search_deviceProfiles_group;
+        private string _search_deviceProfiles_others;
+
+        private Device _selectedDevice;
+        private bool _isADeviceIsSyncing;
+        private int _syncProgressValue;
+        private int _numberOfSyncingDevices;
+
+        private ObservableCollection<Profile> _profiles = new ObservableCollection<Profile>();
+        private ObservableCollection<Device> _devices = new ObservableCollection<Device>();
+        private ObservableCollection<DeviceProfiles> _deviceProfiles = new ObservableCollection<DeviceProfiles>();
+        private ObservableCollection<TimeRecord> _timeChecks = new ObservableCollection<TimeRecord>();
+        private ObservableCollection<CardType> _classes = new ObservableCollection<CardType>();
+
+
+        public ObservableCollection<Profile> Profiles => _profiles;
+        public ObservableCollection<Device> Devices => _devices;
+        public ObservableCollection<DeviceProfiles> DeviceProfiles => _deviceProfiles;
+        public ObservableCollection<TimeRecord> TimeChecks => _timeChecks;
+        public ObservableCollection<CardType> Classes => _classes;
+
+        
+
+
+        public bool IsADeviceIsSyncing
+        {
+            get => _isADeviceIsSyncing;
+            set
+            {
+                _isADeviceIsSyncing = value;
+                RaisePropertyChanged("IsADeviceIsSyncing");
+            }
+        }
+
+
+        public int SyncProgressValue
+        {
+            get => _syncProgressValue;
+            set
+            {
+                _syncProgressValue = value;
+                RaisePropertyChanged("SyncProgressValue");
+            }
+        }
+
+        public Device SelectedDevice
+        {
+            get => _selectedDevice;
+            set
+            {
+                _selectedDevice = value;
+                RaisePropertyChanged("SelectedDevice");
+            }
+        }
+
+        public String Search_profiles_class
+        {
+            get => _search_profiles_class;
+            set
+            {
+                _search_profiles_class = value;
+                RaisePropertyChanged("Search_profiles_class");
+            }
+        }
+
+        public String Search_profiles_group
+        {
+            get => _search_profiles_group;
+            set
+            {
+                _search_profiles_group = value;
+                RaisePropertyChanged("Search_profiles_group");
+            }
+        }
+
+        public String Search_profiles_others
+        {
+            get => _search_profiles_others;
+            set
+            {
+                _search_profiles_others = value;
+                RaisePropertyChanged("Search_profiles_others");
+            }
+        }
+
+        public String Search_deviceProfiles_class
+        {
+            get => _search_deviceProfiles_class;
+            set
+            {
+                _search_deviceProfiles_class = value;
+                RaisePropertyChanged("Search_deviceProfiles_class");
+            }
+        }
+
+        public String Search_deviceProfiles_group
+        {
+            get => _search_deviceProfiles_group;
+            set
+            {
+                _search_deviceProfiles_group = value;
+                RaisePropertyChanged("Search_deviceProfiles_group");
+            }
+        }
+
+        public String Search_deviceProfiles_others
+        {
+            get => _search_deviceProfiles_others;
+            set
+            {
+                _search_deviceProfiles_others = value;
+                RaisePropertyChanged("Search_deviceProfiles_others");
+            }
+        }
+
+        public List<DeviceProfiles> GetCanSyncDeviceProfiles(List<DeviceProfiles> p)
+        {
+            List<DeviceProfiles> CanSyncDeviceProfiles = p.FindAll((u) =>
+            {
+                if (
+                ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString())) ||
+
+                ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                (u.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString())) ||
+
+                ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                (u.SERVER_STATUS == GlobalConstant.ServerStatus.Update.ToString())) ||
+
+                ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                (u.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString())) ||
+
+                ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString()))
+                )
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            });
+            return CanSyncDeviceProfiles;
+        }
+
     }
 }

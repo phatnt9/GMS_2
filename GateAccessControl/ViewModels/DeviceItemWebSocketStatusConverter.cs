@@ -16,6 +16,7 @@ namespace GateAccessControl
                 WebSocket vl = value as WebSocket;
                 if (vl != null)
                 {
+                    Console.WriteLine(vl.IsAlive);
                     if (vl.IsAlive)
                     {
                         //di.WebSocketStatus = "Connected";
@@ -24,7 +25,7 @@ namespace GateAccessControl
                     else
                     {
                         //di.WebSocketStatus = "Connecting";
-                        return "Connecting";
+                        return "Disconnected";
                     }
                 }
                 else

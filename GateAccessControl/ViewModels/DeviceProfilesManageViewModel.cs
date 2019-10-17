@@ -61,19 +61,27 @@ namespace GateAccessControl
             DeactiveDeviceProfilesCommand = new RelayCommand<List<DeviceProfiles>>(
                 (p) =>
                 {
-                    if (p == null)
+                    if (p != null)
                     {
-                        return false;
-                    }
-                    List<DeviceProfiles> CanDeactiveDeviceProfiles = p.FindAll((u) =>
-                    {
-                        if (
-                        ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                        (u.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString())) ||
+                        List<DeviceProfiles> CanDeactiveDeviceProfiles = p.FindAll((u) =>
+                        {
+                            if (
+                            ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                            (u.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString())) ||
 
-                        ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
-                        (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString()))
-                        )
+                            ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                            (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString()))
+                            )
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+
+                        });
+                        if (p.Count > 0 && CanDeactiveDeviceProfiles.Count == p.Count)
                         {
                             return true;
                         }
@@ -81,39 +89,43 @@ namespace GateAccessControl
                         {
                             return false;
                         }
-
-                    });
-                    if (p.Count > 0 && CanDeactiveDeviceProfiles.Count == p.Count)
-                    {
-                        return true;
                     }
                     else
                     {
                         return false;
                     }
+                    
                 },
                 (p) =>
                 {
                     DeactiveDeviceProfiles(p);
-                    ReloadDataDeviceProfiles(Device);
+                    //ReloadDataDeviceProfiles(Device);
                 });
 
             ActiveDeviceProfilesCommand = new RelayCommand<List<DeviceProfiles>>(
                 (p) =>
                 {
-                    if(p == null)
+                    if(p != null)
                     {
-                        return false;
-                    }
-                    List<DeviceProfiles> CanActiveDeviceProfiles = p.FindAll((u) =>
-                    {
-                        if (
-                        ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                        (u.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString())) ||
+                        List<DeviceProfiles> CanActiveDeviceProfiles = p.FindAll((u) =>
+                        {
+                            if (
+                            ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                            (u.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString())) ||
 
-                        ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
-                        (u.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString()))
-                        )
+                            ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                            (u.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString()))
+                            )
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+
+                        });
+                        if (p.Count > 0 && CanActiveDeviceProfiles.Count == p.Count)
                         {
                             return true;
                         }
@@ -121,11 +133,6 @@ namespace GateAccessControl
                         {
                             return false;
                         }
-
-                    });
-                    if (p.Count > 0 && CanActiveDeviceProfiles.Count == p.Count)
-                    {
-                        return true;
                     }
                     else
                     {
@@ -135,28 +142,36 @@ namespace GateAccessControl
                 (p) =>
                 {
                     ActiveDeviceProfiles(p);
-                    ReloadDataDeviceProfiles(Device);
+                    //ReloadDataDeviceProfiles(Device);
                 });
 
             DeleteDeviceProfilesCommand = new RelayCommand<List<DeviceProfiles>>(
                 (p) =>
                 {
-                    if (p == null)
+                    if (p != null)
                     {
-                        return false;
-                    }
-                    List< DeviceProfiles> CanDeleteDeviceProfiles = p.FindAll((u) => 
-                    {
-                        if (
-                        ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                        (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString())) ||
+                        List<DeviceProfiles> CanDeleteDeviceProfiles = p.FindAll((u) =>
+                        {
+                            if (
+                            ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                            (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString())) ||
 
-                        ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
-                        (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString())) ||
+                            ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                            (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString())) ||
 
-                        ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
-                        (u.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString()))
-                        )
+                            ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                            (u.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString()))
+                            )
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+
+                        });
+                        if (p.Count > 0 && CanDeleteDeviceProfiles.Count == p.Count)
                         {
                             return true;
                         }
@@ -164,11 +179,6 @@ namespace GateAccessControl
                         {
                             return false;
                         }
-
-                    });
-                if (p.Count > 0 && CanDeleteDeviceProfiles.Count == p.Count)
-                    {
-                        return true;
                     }
                     else
                     {
@@ -184,15 +194,23 @@ namespace GateAccessControl
             SelectProfilesCommand = new RelayCommand<List<Profile>>(
                 (p) =>
                 {
-                    if (p == null)
+                    if (p != null)
                     {
-                        return false;
-                    }
-                    List<Profile> CanInserDeviceProfiles = p.FindAll((u) =>
-                    {
-                        if (
-                        (u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString())
-                        )
+                        List<Profile> CanInserDeviceProfiles = p.FindAll((u) =>
+                        {
+                            if (
+                            (u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString())
+                            )
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+
+                        });
+                        if (p.Count > 0 && CanInserDeviceProfiles.Count == p.Count)
                         {
                             return true;
                         }
@@ -200,11 +218,6 @@ namespace GateAccessControl
                         {
                             return false;
                         }
-
-                    });
-                    if (p.Count > 0 && CanInserDeviceProfiles.Count == p.Count)
-                    {
-                        return true;
                     }
                     else
                     {

@@ -10,28 +10,19 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace GateAccessControl.Views
 {
     /// <summary>
-    /// Interaction logic for LoginPage.xaml
+    /// Interaction logic for AddProfileWindow.xaml
     /// </summary>
-    public partial class LoginPage : Page
+    public partial class AddProfileWindow : Window
     {
-        Frame frame;
-        public LoginPage(Frame frame)
+        public AddProfileWindow()
         {
-            this.frame = frame;
             InitializeComponent();
-        }
-
-        private void Btn_login_Click(object sender, RoutedEventArgs e)
-        {
-            GlobalConstant.CreateFolderToSaveData();
-            SqliteDataAccess.CreateDatabase();
-            frame.Content = new AppPage();
+            DataContext = new AddProfileViewModel();
         }
     }
 }

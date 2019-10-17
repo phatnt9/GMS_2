@@ -86,11 +86,14 @@ namespace GateAccessControl
                 {
                     if(id != deviceId)
                     {
-                        LIST_DEVICE_ID += deviceId + ",";
+                        LIST_DEVICE_ID += id + ",";
                     }
                 }
             }
         }
+
+
+
         public int PROFILE_ID
         {
             get
