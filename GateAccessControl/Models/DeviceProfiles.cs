@@ -37,8 +37,31 @@ namespace GateAccessControl
             DATE_CREATED = p.DATE_CREATED;
             DATE_MODIFIED = p.DATE_MODIFIED;
             SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
-            CLIENT_STATUS = "Unknow";
+            CLIENT_STATUS = GlobalConstant.ClientStatus.Unknow.ToString();
             ACTIVE_TIME = "00:00,23:59;00:00,23:59";
+        }
+
+        public void CloneDataFromProfile(Profile p)
+        {
+            PIN_NO = p.PIN_NO;
+            AD_NO = p.AD_NO;
+            PROFILE_NAME = p.PROFILE_NAME;
+            CLASS_NAME = p.CLASS_NAME;
+            SUB_CLASS = p.SUB_CLASS;
+            GENDER = p.GENDER;
+            DOB = p.DOB;
+            DISU = p.DISU;
+            EMAIL = p.EMAIL;
+            ADDRESS = p.ADDRESS;
+            PHONE = p.PHONE;
+            //PROFILE_STATUS = p.PROFILE_STATUS;
+            IMAGE = p.IMAGE;
+            LOCK_DATE = p.LOCK_DATE;
+            DATE_TO_LOCK = p.DATE_TO_LOCK;
+            CHECK_DATE_TO_LOCK = p.CHECK_DATE_TO_LOCK;
+            LICENSE_PLATE = p.LICENSE_PLATE;
+            DATE_CREATED = p.DATE_CREATED;
+            DATE_MODIFIED = p.DATE_MODIFIED;
         }
         
         public int PROFILE_ID

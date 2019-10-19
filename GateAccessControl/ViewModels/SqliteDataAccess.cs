@@ -60,7 +60,7 @@ namespace GateAccessControl
                 return null;
             }
         }
-        public static List<DeviceProfiles> LoadAllDeviceProfiles(Device device, string className = "", string subClass = "")
+        public static List<DeviceProfiles> LoadAllDeviceProfiles(int deviceId, string className = "", string subClass = "", string pinNo = "")
         {
             try
             {
@@ -69,7 +69,8 @@ namespace GateAccessControl
                     var p = new DynamicParameters();
                     p.Add("@CLASS_NAME", "%" + className + "%");
                     p.Add("@SUB_CLASS", "%" + subClass + "%");
-                    var output = cnn.Query<DeviceProfiles>("SELECT * FROM DT_DEVICE_PROFILES_" + device.DEVICE_ID + " WHERE ((CLASS_NAME LIKE (@CLASS_NAME)) AND (SUB_CLASS LIKE (@SUB_CLASS)))", p);
+                    p.Add("@PIN_NO", "%" + pinNo + "%");
+                    var output = cnn.Query<DeviceProfiles>("SELECT * FROM DT_DEVICE_PROFILES_" + deviceId + " WHERE ((CLASS_NAME LIKE (@CLASS_NAME)) AND (SUB_CLASS LIKE (@SUB_CLASS)) AND (PIN_NO LIKE (@PIN_NO)))", p);
                     return output.ToList();
                 }
             }
@@ -235,13 +236,13 @@ namespace GateAccessControl
                 return false;
             }
         }
-        public static bool InsertDataDeviceProfiles(string _tableName, DeviceProfiles _profile)
+        public static bool InsertDataDeviceProfiles(int deviceId, DeviceProfiles _profile)
         {
             try
             {
                 using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
                 {
-                    cnn.Execute("INSERT INTO " + _tableName +
+                    cnn.Execute("INSERT INTO DT_DEVICE_PROFILES_" + deviceId +
                         " (PIN_NO,AD_NO,PROFILE_NAME,CLASS_NAME,SUB_CLASS,GENDER,DOB,DISU,EMAIL,ADDRESS," +
                         "PHONE,PROFILE_STATUS,IMAGE,LOCK_DATE,DATE_TO_LOCK,CHECK_DATE_TO_LOCK," +
                         "LICENSE_PLATE,DATE_CREATED,DATE_MODIFIED,SERVER_STATUS,CLIENT_STATUS,ACTIVE_TIME) " +
@@ -333,13 +334,13 @@ namespace GateAccessControl
             }
         }
 
-        public static bool UpdateDataDeviceProfiles(string _tableName, DeviceProfiles _profile)
+        public static bool UpdateDataDeviceProfiles(int deviceId, DeviceProfiles _profile)
         {
             try
             {
                 using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
                 {
-                    cnn.Execute("UPDATE " + _tableName + " SET " +
+                    cnn.Execute("UPDATE DT_DEVICE_PROFILES_" + deviceId + " SET " +
                         "PIN_NO = @PIN_NO, " +
                         "AD_NO = @AD_NO, " +
                         "PROFILE_NAME = @PROFILE_NAME, " +
@@ -461,13 +462,13 @@ namespace GateAccessControl
             }
         }
 
-        public static bool DeleteDataDeviceProfiles(string _tableName, DeviceProfiles _profile)
+        public static bool DeleteDataDeviceProfiles(int deviceId, DeviceProfiles _profile)
         {
             try
             {
                 using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
                 {
-                    cnn.Execute("DELETE FROM "+ _tableName + " WHERE PROFILE_ID = @PROFILE_ID", _profile);
+                    cnn.Execute("DELETE FROM DT_DEVICE_PROFILES_" + deviceId + " WHERE PIN_NO = @PIN_NO", _profile);
                 }
                 return true;
             }

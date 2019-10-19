@@ -467,7 +467,7 @@
                                                 Width="Auto"
                                                 Binding="{Binding Path=PROFILE_ID, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                 Header="Id"
-                                                Visibility="Visible" />
+                                                Visibility="Hidden" />
                                             <DataGridTextColumn
                                                 Width="Auto"
                                                 Binding="{Binding Path=PIN_NO, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
@@ -502,12 +502,83 @@
                                                 Width="Auto"
                                                 Binding="{Binding Path=PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                 Header="Status"
-                                                Visibility="Visible" />
+                                                Visibility="Visible">
+                                                <DataGridTextColumn.CellStyle>
+                                                    <Style TargetType="{x:Type DataGridCell}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Path=PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Active">
+                                                                <Setter Property="Foreground" Value="White" />
+                                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                                <Setter Property="Background" Value="#69B578" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Path=PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Suspended">
+                                                                <Setter Property="Foreground" Value="White" />
+                                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                                <Setter Property="Background" Value="#E15554" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </DataGridTextColumn.CellStyle>
+                                            </DataGridTextColumn>
                                             <DataGridTextColumn
                                                 Width="Auto"
                                                 Binding="{Binding Path=SERVER_STATUS, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                 Header="Request"
-                                                Visibility="Visible" />
+                                                Visibility="Visible">
+                                                <DataGridTextColumn.CellStyle>
+                                                    <Style TargetType="{x:Type DataGridCell}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Path=SERVER_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="None">
+                                                                <Setter Property="Foreground" Value="Blue" />
+                                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                                <Setter Property="Background" Value="#F7D23D" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Path=SERVER_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Update">
+                                                                <Setter Property="Foreground" Value="White" />
+                                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                                <Setter Property="Background" Value="#4D9DE0" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Path=SERVER_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Add">
+                                                                <Setter Property="Foreground" Value="White" />
+                                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                                <Setter Property="Background" Value="#69B578" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Path=SERVER_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Remove">
+                                                                <Setter Property="Foreground" Value="White" />
+                                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                                <Setter Property="Background" Value="#E15554" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </DataGridTextColumn.CellStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn
+                                                Width="Auto"
+                                                Binding="{Binding Path=CLIENT_STATUS, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Header="Client"
+                                                Visibility="Visible">
+                                                <DataGridTextColumn.CellStyle>
+                                                    <Style TargetType="{x:Type DataGridCell}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Path=CLIENT_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Unknow">
+                                                                <Setter Property="Foreground" Value="Blue" />
+                                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                                <Setter Property="Background" Value="#F7D23D" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Path=CLIENT_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Delete">
+                                                                <Setter Property="Foreground" Value="White" />
+                                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                                <Setter Property="Background" Value="#4D9DE0" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Path=CLIENT_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Deleted">
+                                                                <Setter Property="Foreground" Value="White" />
+                                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                                <Setter Property="Background" Value="#E15554" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </DataGridTextColumn.CellStyle>
+                                            </DataGridTextColumn>
                                             <DataGridCheckBoxColumn
                                                 Width="Auto"
                                                 Binding="{Binding Path=CHECK_DATE_TO_LOCK, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
@@ -545,7 +616,7 @@
                                             Width="100"
                                             VerticalAlignment="Center"
                                             Background="Coral"
-                                            Text="{Binding ElementName=dg_device_profiles, Path=SelectedItems.Count}"
+                                            Text="{Binding ElementName=dg_device_profiles, Path=Items.Count}"
                                             TextAlignment="Center" />
                                         <Button
                                             x:Name="btn_device_sync_each"
@@ -555,8 +626,8 @@
                                             Content="Sync">
                                             <Button.CommandParameter>
                                                 <MultiBinding Converter="{StaticResource myDeviceProfilesSelectedItemsConverter}" UpdateSourceTrigger="PropertyChanged">
-                                                    <Binding ElementName="dg_device_profiles" Path="SelectedItems.Count" />
-                                                    <Binding ElementName="dg_device_profiles" Path="SelectedItems" />
+                                                    <Binding ElementName="dg_device_profiles" Path="Items.Count" />
+                                                    <Binding ElementName="dg_device_profiles" Path="Items" />
                                                 </MultiBinding>
                                             </Button.CommandParameter>
                                         </Button>
@@ -757,7 +828,7 @@
                                             Width="Auto"
                                             Binding="{Binding Path=PROFILE_ID, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                             Header="Id"
-                                            Visibility="Visible" />
+                                            Visibility="Hidden" />
                                         <DataGridTextColumn
                                             Width="Auto"
                                             Binding="{Binding Path=PIN_NO, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"

@@ -44,11 +44,11 @@
                                             <Label
                                                 Height="26"
                                                 HorizontalAlignment="Right"
-                                                Content="Date of Birth:" />
+                                                Content="Date of Birth (*):" />
                                             <Label
                                                 Height="26"
                                                 HorizontalAlignment="Right"
-                                                Content="Date Issue:" />
+                                                Content="Date Issue (*):" />
                                             <Label
                                                 Height="26"
                                                 HorizontalAlignment="Right"
@@ -120,19 +120,19 @@
                                     <Label
                                         Height="26"
                                         HorizontalAlignment="Right"
-                                        Content="Pin No:" />
+                                        Content="Pin No (*):" />
                                     <Label
                                         Height="26"
                                         HorizontalAlignment="Right"
-                                        Content="Ad No:" />
+                                        Content="Ad No (*):" />
                                     <Label
                                         Height="26"
                                         HorizontalAlignment="Right"
-                                        Content="Name:" />
+                                        Content="Name (*):" />
                                     <Label
                                         Height="26"
                                         HorizontalAlignment="Right"
-                                        Content="Type:" />
+                                        Content="Type (*):" />
                                     <Label
                                         Height="26"
                                         HorizontalAlignment="Right"
@@ -140,7 +140,7 @@
                                     <Label
                                         Height="26"
                                         HorizontalAlignment="Right"
-                                        Content="Gender:" />
+                                        Content="Gender (*):" />
                                     <Label
                                         Height="26"
                                         HorizontalAlignment="Right"
@@ -156,11 +156,11 @@
                                     <Label
                                         Height="26"
                                         HorizontalAlignment="Right"
-                                        Content="Status:" />
+                                        Content="Status (*):" />
                                     <Label
                                         Height="26"
                                         HorizontalAlignment="Right"
-                                        Content="Image:" />
+                                        Content="Image (*):" />
                                     <Label
                                         Height="26"
                                         HorizontalAlignment="Right"
@@ -184,21 +184,40 @@
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
                                         Text="{Binding EditProfile.PROFILE_NAME, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-                                    <TextBox
+                                    <local:CommandComboBox
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
-                                        Text="{Binding EditProfile.CLASS_NAME, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-                                    <TextBox
+                                        DisplayMemberPath="CLASS_NAME"
+                                        ItemsSource="{Binding Classes, UpdateSourceTrigger=PropertyChanged}"
+                                        SelectedIndex="0"
+                                        Text="{Binding EditProfile.CLASS_NAME, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}" />
+                                    <local:CommandComboBox
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
-                                        Text="{Binding EditProfile.SUB_CLASS, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-                                    <TextBox
+                                        SelectedIndex="0"
+                                        Text="{Binding EditProfile.SUB_CLASS, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}">
+                                        <ComboBoxItem>Group 1</ComboBoxItem>
+                                        <ComboBoxItem>Group 2</ComboBoxItem>
+                                        <ComboBoxItem>Group 3</ComboBoxItem>
+                                        <ComboBoxItem>Group 4</ComboBoxItem>
+                                        <ComboBoxItem>Group 5</ComboBoxItem>
+                                        <ComboBoxItem>Group 6</ComboBoxItem>
+                                        <ComboBoxItem>Group 7</ComboBoxItem>
+                                        <ComboBoxItem>Group 8</ComboBoxItem>
+                                        <ComboBoxItem>Group 9</ComboBoxItem>
+                                        <ComboBoxItem>Group 10</ComboBoxItem>
+                                    </local:CommandComboBox>
+                                    <local:CommandComboBox
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
-                                        Text="{Binding EditProfile.GENDER, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                        SelectedIndex="0"
+                                        Text="{Binding EditProfile.GENDER, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}">
+                                        <ComboBoxItem>Male</ComboBoxItem>
+                                        <ComboBoxItem>Female</ComboBoxItem>
+                                    </local:CommandComboBox>
                                     <TextBox
                                         Height="22"
                                         Margin="5,2"
@@ -214,11 +233,14 @@
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
                                         Text="{Binding EditProfile.PHONE, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-                                    <TextBox
+                                    <local:CommandComboBox
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
-                                        Text="{Binding EditProfile.PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                        Text="{Binding EditProfile.PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                        <ComboBoxItem>Active</ComboBoxItem>
+                                        <ComboBoxItem>Suspended</ComboBoxItem>
+                                    </local:CommandComboBox>
                                     <TextBox
                                         Height="22"
                                         Margin="5,2"

@@ -16,16 +16,16 @@ namespace GateAccessControl
         }
         public enum ClientStatus
         {
-            Synced = 0,
-            Unsync = 1
+            Unknow = 0,
+            Delete = 1,
+            Deleted = 2
         }
         public enum ServerStatus
         {
             None = 0,
             Add = 1,
             Update = 2,
-            Remove = 3,
-            Syncing = 4
+            Remove = 3
         }
 
         public static readonly string AppPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK\";

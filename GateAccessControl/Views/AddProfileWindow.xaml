@@ -234,11 +234,14 @@
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
                                         Text="{Binding AddProfile.PHONE, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-                                    <TextBox
+                                    <md:CommandComboBox
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
-                                        Text="{Binding AddProfile.PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                        Text="{Binding AddProfile.PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                        <ComboBoxItem>Active</ComboBoxItem>
+                                        <ComboBoxItem>Suspended</ComboBoxItem>
+                                    </md:CommandComboBox>
                                     <TextBox
                                         Height="22"
                                         Margin="5,2"

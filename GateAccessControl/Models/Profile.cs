@@ -310,18 +310,6 @@ namespace GateAccessControl
                 OnPropertyChanged("LICENSE_PLATE");
             }
         }
-        public String LIST_DEVICE_ID
-        {
-            get
-            {
-                return _listDeviceId;
-            }
-            set
-            {
-                _listDeviceId = value;
-                OnPropertyChanged("LIST_DEVICE_ID");
-            }
-        }
         public DateTime DATE_CREATED
         {
             get
@@ -344,6 +332,18 @@ namespace GateAccessControl
             {
                 _dateModified = value;
                 OnPropertyChanged("DATE_MODIFIED");
+            }
+        }
+        public String LIST_DEVICE_ID
+        {
+            get
+            {
+                return _listDeviceId;
+            }
+            set
+            {
+                _listDeviceId = value;
+                OnPropertyChanged("LIST_DEVICE_ID");
             }
         }
 

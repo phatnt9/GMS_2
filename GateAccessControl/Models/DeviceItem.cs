@@ -316,8 +316,17 @@ namespace GateAccessControl
                 }
             }
         }
+
+        public bool NextBool(Random r, int truePercentage = 50)
+        {
+            return r.NextDouble() < truePercentage / 100.0;
+        }
+
+
         public bool SendDeviceProfile(string ip, SERVERRESPONSE serverRes, List<DeviceProfiles> DeviceProfileToSend, bool remainProfiles)
         {
+            Random r = new Random();
+            return NextBool(r,90); //wrong
             try
             {
                 JStringDeviceProfile JDeviceProfile = new JStringDeviceProfile();

@@ -87,7 +87,7 @@ namespace GateAccessControl
                  },
                  (p) =>
                  {
-                     AddProfile(p);
+                     //AddProfile(p);
                      string classSearch = Search_profiles_class == "All" ? "" : Search_profiles_class;
                      string groupSearch = Search_profiles_group == "All" ? "" : Search_profiles_group;
                      ReloadDataProfiles(classSearch, groupSearch);
@@ -176,10 +176,10 @@ namespace GateAccessControl
                       */
                      if (SelectedDevice != null && p != null)
                      {
-                         if (SelectedDevice.DeviceItem.IsSendingProfiles || !CheckDeviceStatus(SelectedDevice).Equals("Connected"))
-                         {
-                             return false;
-                         }
+                         //if (SelectedDevice.DeviceItem.IsSendingProfiles || !CheckDeviceStatus(SelectedDevice).Equals("Connected"))
+                         //{
+                         //    return false;
+                         //} //wrong
                          return (GetCanSyncDeviceProfiles(p).Count > 0) ? true : false;
                      }
                      else
@@ -394,98 +394,16 @@ namespace GateAccessControl
                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK\Image\" + origin, true);
 
                 p.IMAGE = origin;
-                SaveProfile(p);
+                SaveProfileUpdateImage(p);
 
 
             }
         }
-        private bool SaveProfile(Profile p)
+        
+        public void SaveProfileUpdateImage(Profile p)
         {
-            if (p.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Active.ToString()))
-            {
-                if (p.CHECK_DATE_TO_LOCK && DateTime.Now.CompareTo(p.DATE_TO_LOCK) >= 0)
-                {
-                    //Today is later then date to lock
-                    p.CHECK_DATE_TO_LOCK = false;
-                    p.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
-                    p.LOCK_DATE = DateTime.Now;
-                    p.DATE_MODIFIED = DateTime.Now;
-                }
-            }
-            else
-            {
-                p.CHECK_DATE_TO_LOCK = false;
-                p.LOCK_DATE = DateTime.Now;
-                p.DATE_MODIFIED = DateTime.Now;
-            }
 
-            if (UpdateProfileToAllDevice(p))
-            {
-                if (SqliteDataAccess.UpdateDataProfile(p))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return true;
-            }
         }
-
-        private bool UpdateProfileToAllDevice(Profile p)
-        {
-            int count = 0;
-            List<int> listDeviceId = new List<int>();
-            DeviceProfiles deviceProfiles = new DeviceProfiles(p);
-
-            if (deviceProfiles.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString())
-            {
-                deviceProfiles.SERVER_STATUS = GlobalConstant.ServerStatus.Remove.ToString();
-            }
-
-            if (deviceProfiles.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString())
-            {
-                deviceProfiles.SERVER_STATUS = GlobalConstant.ServerStatus.Update.ToString();
-            }
-
-            if (!String.IsNullOrEmpty(p.LIST_DEVICE_ID))
-            {
-                string[] listVar = p.LIST_DEVICE_ID.Split(',');
-                foreach (string var in listVar)
-                {
-                    int temp;
-                    Int32.TryParse(var, out temp);
-                    if (temp != 0)
-                    {
-                        listDeviceId.Add(temp);
-                    }
-                }
-                foreach (int id in listDeviceId)
-                {
-                    if (SqliteDataAccess.UpdateDataDeviceProfiles("DT_DEVICE_PROFILES_" + id, deviceProfiles))
-                    {
-                        count++;
-                    }
-                }
-                if (count > 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return true;
-            }
-        }
-
 
         private void ManageDeviceProfiles(Device p)
         {
@@ -527,7 +445,7 @@ namespace GateAccessControl
             try
             {
                 _deviceProfiles.Clear();
-                List<DeviceProfiles> deviceProfileList = SqliteDataAccess.LoadAllDeviceProfiles(p);
+                List<DeviceProfiles> deviceProfileList = SqliteDataAccess.LoadAllDeviceProfiles(p.DEVICE_ID);
                 foreach (DeviceProfiles item in deviceProfileList)
                 {
                     _deviceProfiles.Add(item);
@@ -674,7 +592,7 @@ namespace GateAccessControl
             try
             {
                 _deviceProfiles.Clear();
-                List<DeviceProfiles> deviceProfileList = SqliteDataAccess.LoadAllDeviceProfiles(device, className, subClass);
+                List<DeviceProfiles> deviceProfileList = SqliteDataAccess.LoadAllDeviceProfiles(device.DEVICE_ID, className, subClass);
                 foreach (DeviceProfiles item in deviceProfileList)
                 {
                     _deviceProfiles.Add(item);
@@ -861,28 +779,46 @@ namespace GateAccessControl
         {
             List<DeviceProfiles> CanSyncDeviceProfiles = p.FindAll((u) =>
             {
-                if (
-                ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString())) ||
-
-                ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                (u.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString())) ||
-
-                ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                (u.SERVER_STATUS == GlobalConstant.ServerStatus.Update.ToString())) ||
-
-                ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
-                (u.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString())) ||
-
-                ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
-                (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString()))
-                )
+                switch(u.CLIENT_STATUS)
                 {
-                    return true;
-                }
-                else
-                {
-                    return false;
+                    case "Unknow":
+                    {
+                        goto case "Delete";
+                    }
+                    case "Delete":
+                    {
+                        if (
+                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString())) ||
+
+                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString())) ||
+
+                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Update.ToString())) ||
+
+                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString())) ||
+
+                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString()))
+                           )
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    case "Deleted":
+                    {
+                        return false;
+                    }
+                    default:
+                    {
+                        return false;
+                    }
                 }
             });
             return CanSyncDeviceProfiles;

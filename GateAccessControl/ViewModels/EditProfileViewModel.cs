@@ -40,13 +40,16 @@ namespace GateAccessControl
             }
         }
 
+        private ObservableCollection<CardType> _classes = new ObservableCollection<CardType>();
+        public ObservableCollection<CardType> Classes => _classes;
+
         public ICommand SaveProfileCommand { get; set; }
         public ICommand CloseEditProfileCommand { get; set; }
 
         public EditProfileViewModel(Profile profile)
         {
             EditProfile = profile;
-
+            ReloadDataCardTypes();
             SaveProfileCommand = new RelayCommand<Profile>(
                  (p) =>
                  {
@@ -88,45 +91,28 @@ namespace GateAccessControl
             else
             {
                 p.CHECK_DATE_TO_LOCK = false;
-                p.LOCK_DATE = DateTime.Now;
                 p.DATE_MODIFIED = DateTime.Now;
             }
 
-            if (UpdateProfileToAllDevice(p))
+            if (SqliteDataAccess.UpdateDataProfile(p))
             {
-                if(SqliteDataAccess.UpdateDataProfile(p))
-                {
-                    MessageBox.Show("Profile saved!");
-                    return true;
-                }
-                else
-                {
-                    MessageBox.Show("Field with (*) is mandatory!");
-                    return false;
-                }
+                MessageBox.Show("Profile saved!");
+                UpdateProfileToAllDevice(p);
+                return true;
             }
             else
             {
-                MessageBox.Show("Profile saved!");
-                return true;
+                MessageBox.Show("Field with (*) is mandatory!");
+                return false;
             }
+
+            
         }
 
         private bool UpdateProfileToAllDevice(Profile p)
         {
             int count = 0;
             List<int> listDeviceId = new List<int>();
-            DeviceProfiles deviceProfiles = new DeviceProfiles(p);
-
-            if (deviceProfiles.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString())
-            {
-                deviceProfiles.SERVER_STATUS = GlobalConstant.ServerStatus.Remove.ToString();
-            }
-
-            if (deviceProfiles.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString())
-            {
-                deviceProfiles.SERVER_STATUS = GlobalConstant.ServerStatus.Update.ToString();
-            }
 
             if (!String.IsNullOrEmpty(p.LIST_DEVICE_ID))
             {
@@ -142,10 +128,34 @@ namespace GateAccessControl
                 }
                 foreach (int id in listDeviceId)
                 {
-                    if (SqliteDataAccess.UpdateDataDeviceProfiles("DT_DEVICE_PROFILES_" + id, deviceProfiles))
+                    List<DeviceProfiles> getCloneDeviceProfile = SqliteDataAccess.LoadAllDeviceProfiles(id,"","",p.PIN_NO);
+
+                    foreach (DeviceProfiles DP in getCloneDeviceProfile)
                     {
-                        count++;
+                        DP.CloneDataFromProfile(p);
+
+                        if (p.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Suspended.ToString()))
+                        {
+                            if (!DP.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Deleted.ToString()))
+                            {
+                                DP.CLIENT_STATUS = GlobalConstant.ClientStatus.Delete.ToString();
+                            }
+                        }
+                        else
+                        {
+                            DP.CLIENT_STATUS = GlobalConstant.ClientStatus.Unknow.ToString();
+                            if (DP.SERVER_STATUS.Equals(GlobalConstant.ServerStatus.None.ToString()))
+                            {
+                                DP.SERVER_STATUS = GlobalConstant.ServerStatus.Update.ToString();
+                            }
+                        }
+
+                        if (SqliteDataAccess.UpdateDataDeviceProfiles(id, DP))
+                        {
+                            count++;
+                        }
                     }
+                    
                 }
                 if (count > 0)
                 {
@@ -159,6 +169,22 @@ namespace GateAccessControl
             else
             {
                 return true;
+            }
+        }
+        public void ReloadDataCardTypes()
+        {
+            try
+            {
+                _classes.Clear();
+                List<CardType> classesList = SqliteDataAccess.LoadAllCardType();
+                foreach (CardType item in classesList)
+                {
+                    _classes.Add(item);
+                }
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
             }
         }
     }

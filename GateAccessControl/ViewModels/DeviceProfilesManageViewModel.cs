@@ -67,9 +67,11 @@ namespace GateAccessControl
                         {
                             if (
                             ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                            (u.CLIENT_STATUS == GlobalConstant.ClientStatus.Unknow.ToString()) &&
                             (u.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString())) ||
 
                             ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                            (u.CLIENT_STATUS == GlobalConstant.ClientStatus.Unknow.ToString()) &&
                             (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString()))
                             )
                             {
@@ -111,9 +113,11 @@ namespace GateAccessControl
                         {
                             if (
                             ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                            (u.CLIENT_STATUS == GlobalConstant.ClientStatus.Unknow.ToString()) &&
                             (u.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString())) ||
 
                             ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                            (u.CLIENT_STATUS == GlobalConstant.ClientStatus.Unknow.ToString()) &&
                             (u.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString()))
                             )
                             {
@@ -251,7 +255,7 @@ namespace GateAccessControl
                     item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
                     item.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
 
-                    if (SqliteDataAccess.UpdateDataDeviceProfiles("DT_DEVICE_PROFILES_" + Device.DEVICE_ID, item))
+                    if (SqliteDataAccess.UpdateDataDeviceProfiles(Device.DEVICE_ID, item))
                     {
                         continue;
                     }
@@ -269,7 +273,7 @@ namespace GateAccessControl
                     item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
                     item.SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
 
-                    if (SqliteDataAccess.UpdateDataDeviceProfiles("DT_DEVICE_PROFILES_" + Device.DEVICE_ID, item))
+                    if (SqliteDataAccess.UpdateDataDeviceProfiles(Device.DEVICE_ID, item))
                     {
                         continue;
                     }
@@ -293,7 +297,7 @@ namespace GateAccessControl
                     item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
                     item.SERVER_STATUS = GlobalConstant.ServerStatus.Remove.ToString();
 
-                    if (SqliteDataAccess.UpdateDataDeviceProfiles("DT_DEVICE_PROFILES_" + Device.DEVICE_ID, item))
+                    if (SqliteDataAccess.UpdateDataDeviceProfiles(Device.DEVICE_ID, item))
                     {
                         continue;
                     }
@@ -310,7 +314,7 @@ namespace GateAccessControl
                     item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
                     item.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
 
-                    if (SqliteDataAccess.UpdateDataDeviceProfiles("DT_DEVICE_PROFILES_" + Device.DEVICE_ID, item))
+                    if (SqliteDataAccess.UpdateDataDeviceProfiles(Device.DEVICE_ID, item))
                     {
                         continue;
                     }
@@ -327,7 +331,7 @@ namespace GateAccessControl
         {
             foreach (DeviceProfiles item in profiles)
             {
-                if(SqliteDataAccess.DeleteDataDeviceProfiles("DT_DEVICE_PROFILES_" + Device.DEVICE_ID, item))
+                if(SqliteDataAccess.DeleteDataDeviceProfiles(Device.DEVICE_ID, item))
                 {
                     List<Profile> listProfiles = Profiles.Where(x => x.PIN_NO.Equals(item.PIN_NO)).Cast<Profile>().ToList();
                     foreach (Profile pf in listProfiles)
@@ -343,7 +347,7 @@ namespace GateAccessControl
         {
             foreach (Profile item in profiles)
             {
-                if (SqliteDataAccess.InsertDataDeviceProfiles("DT_DEVICE_PROFILES_" + Device.DEVICE_ID, new DeviceProfiles(item)))
+                if (SqliteDataAccess.InsertDataDeviceProfiles(Device.DEVICE_ID, new DeviceProfiles(item)))
                 {
                     item.AddDeviceId(Device.DEVICE_ID);
                     SqliteDataAccess.UpdateDataProfile(item);
@@ -357,7 +361,7 @@ namespace GateAccessControl
             try
             {
                 _deviceProfiles.Clear();
-                List<DeviceProfiles> deviceProfileList = SqliteDataAccess.LoadAllDeviceProfiles(p);
+                List<DeviceProfiles> deviceProfileList = SqliteDataAccess.LoadAllDeviceProfiles(p.DEVICE_ID);
                 foreach (DeviceProfiles item in deviceProfileList)
                 {
                     _deviceProfiles.Add(item);
