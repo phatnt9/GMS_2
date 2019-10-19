@@ -24,7 +24,7 @@ namespace GateAccessControl.ViewModels
                     bitmap.CacheOption = BitmapCacheOption.OnLoad;
                     bitmap.UriSource = new Uri(imagePath);
                     bitmap.EndInit();
-                    Console.WriteLine("Tra hinh moi");
+                    //Console.WriteLine("Tra hinh moi");
                     return bitmap;
                 }
                 else

@@ -326,6 +326,7 @@ namespace GateAccessControl
         public bool SendDeviceProfile(string ip, SERVERRESPONSE serverRes, List<DeviceProfiles> DeviceProfileToSend, bool remainProfiles)
         {
             Random r = new Random();
+            Thread.Sleep(400);
             return NextBool(r,90); //wrong
             try
             {
@@ -380,6 +381,23 @@ namespace GateAccessControl
                 return false;
             }
         }
+
+        public void RequestPersonListImmediately()
+        {
+            try
+            {
+                dynamic product = new JObject();
+                product.status = SERVERRESPONSE.RESP_REQ_PERSONLIST_IMMEDIATELY;
+                StandardString msg = new StandardString();
+                msg.data = product.ToString();
+                Publish(publishdata, msg);
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+            }
+        }
+
         public bool CheckinServer(string ip, List<CheckinData> person)
         {
             try

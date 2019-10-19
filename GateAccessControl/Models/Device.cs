@@ -16,12 +16,10 @@ namespace GateAccessControl
         private string _deviceNote;
         private DeviceItem _deviceItem;
         private int _syncProgressValue;
-        private int _numberOfSyncingDevices;
         public BackgroundWorker SyncWorker;
 
-        public void SyncDeviceProfiles(List<DeviceProfiles> profiles,ref int NoSyncingDevice)
+        public void SyncDeviceProfiles(List<DeviceProfiles> profiles)
         {
-            NumberOfSyncingDevices = NoSyncingDevice;
             List<DeviceProfiles> syncList = new List<DeviceProfiles>(profiles);
             SyncWorker = new BackgroundWorker();
             SyncWorker.WorkerSupportsCancellation = true;
@@ -54,13 +52,11 @@ namespace GateAccessControl
                 //PgbStatus = AppStatus.Completed;
             }
             DeviceItem.IsSendingProfiles = false;
-            NumberOfSyncingDevices--;
             SyncProgressValue = 0;
         }
 
         private void SyncWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            NumberOfSyncingDevices++;
             bool remainProfiles = true;
             DeviceItem.IsSendingProfiles = true;
             List<DeviceProfiles> profiles = e.Argument as List<DeviceProfiles>;
@@ -401,16 +397,6 @@ namespace GateAccessControl
             {
                 _deviceNote = value;
                 OnPropertyChanged("DEVICE_NOTE");
-            }
-        }
-
-        public int NumberOfSyncingDevices
-        {
-            get => _numberOfSyncingDevices;
-            set
-            {
-                _numberOfSyncingDevices = value;
-                OnPropertyChanged("NumberOfSyncingDevices");
             }
         }
 

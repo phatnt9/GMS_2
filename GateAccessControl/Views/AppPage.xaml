@@ -13,6 +13,7 @@
     mc:Ignorable="d">
     <Page.Resources>
         <md:DeviceItemWebSocketStatusConverter x:Key="myDeviceItemWebSocketStatusConverter" />
+        <vmd:LoadTimeCheckParametersConverter x:Key="myLoadTimeCheckParametersConverter" />
         <vmd:ProfileSelectedItemsConverter x:Key="myProfileSelectedItemsConverter" />
         <vmd:DeviceProfilesActiveTimeConverter x:Key="myDeviceProfilesActiveTimeConverter" />
         <vmd:DeviceProfilesSelectedItemsConverter x:Key="myDeviceProfilesSelectedItemsConverter" />
@@ -183,7 +184,7 @@
                                                 Binding="{Binding Path=DEVICE_ID, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                 Header="ID"
                                                 IsReadOnly="True"
-                                                Visibility="Visible" />
+                                                Visibility="Hidden" />
                                             <DataGridTextColumn
                                                 Width="*"
                                                 Binding="{Binding Path=DEVICE_NAME, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
@@ -196,6 +197,18 @@
                                                 Header="IP"
                                                 IsReadOnly="True"
                                                 Visibility="Visible" />
+                                            <DataGridTextColumn
+                                                Width="*"
+                                                Binding="{Binding Path=SyncProgressValue, StringFormat=\{0\}%, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Header="Syncing"
+                                                IsReadOnly="True"
+                                                Visibility="Visible">
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
                                             <DataGridTextColumn
                                                 Width="*"
                                                 Binding="{Binding Path=DeviceItem.WebSocketStatus, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
@@ -816,13 +829,20 @@
                                 </DockPanel>
                             </Grid>
                             <Grid Grid.Row="2">
-                                <DataGrid
+                                <md:CommandDataGrid
                                     x:Name="dg_main_profiles"
                                     AutoGenerateColumns="False"
                                     CanUserAddRows="False"
                                     CanUserDeleteRows="False"
+                                    Command="{Binding SelectProfileCommand}"
                                     IsReadOnly="True"
                                     ItemsSource="{Binding Profiles, UpdateSourceTrigger=PropertyChanged}">
+                                    <md:CommandDataGrid.CommandParameter>
+                                        <MultiBinding UpdateSourceTrigger="PropertyChanged" Converter="{StaticResource myLoadTimeCheckParametersConverter}">
+                                            <Binding ElementName="dg_main_profiles" Path="SelectedItem" />
+                                            <Binding ElementName="dtp_timecheck_date" Path="SelectedDate" />
+                                        </MultiBinding>
+                                    </md:CommandDataGrid.CommandParameter>
                                     <DataGrid.Columns>
                                         <DataGridTextColumn
                                             Width="Auto"
@@ -863,7 +883,24 @@
                                             Width="Auto"
                                             Binding="{Binding Path=PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                             Header="Status"
-                                            Visibility="Visible" />
+                                            Visibility="Visible">
+                                            <DataGridTextColumn.CellStyle>
+                                                <Style TargetType="{x:Type DataGridCell}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Path=PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Active">
+                                                            <Setter Property="Foreground" Value="White" />
+                                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                                            <Setter Property="Background" Value="#69B578" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Path=PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Suspended">
+                                                            <Setter Property="Foreground" Value="White" />
+                                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                                            <Setter Property="Background" Value="#E15554" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </DataGridTextColumn.CellStyle>
+                                        </DataGridTextColumn>
                                         <DataGridCheckBoxColumn
                                             Width="Auto"
                                             Binding="{Binding Path=CHECK_DATE_TO_LOCK, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
@@ -885,7 +922,7 @@
                                             Header="Date Modified"
                                             Visibility="Visible" />
                                     </DataGrid.Columns>
-                                </DataGrid>
+                                </md:CommandDataGrid>
                             </Grid>
                             <Grid Grid.Row="3" Background="Cornsilk">
                                 <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">

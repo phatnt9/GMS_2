@@ -27,7 +27,6 @@ namespace GateAccessControl
             //string test = "Data Source=" + GlobalConstant.DatabasePath + @".\Datastore.db;Version=3;";
             return test;
         }
-
         public static List<CardType> LoadAllCardType()
         {
             try
@@ -100,7 +99,7 @@ namespace GateAccessControl
                 return null;
             }
         }
-        public static List<TimeRecord> LoadTimeChecks(string PIN_NO, DateTime time, string ip = null)
+        public static List<TimeRecord> LoadAllTimeCheck(string PIN_NO, DateTime time, string ip = null)
         {
             try
             {

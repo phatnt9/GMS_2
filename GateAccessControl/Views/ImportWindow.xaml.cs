@@ -60,7 +60,7 @@ namespace GateAccessControl.Views
                 importFileFolder = System.IO.Path.GetDirectoryName(openFileDialog1.FileName);
                 string fileName = "DataImport.xlsx";
                 string path = System.IO.Path.Combine(Environment.CurrentDirectory, fileName);
-                Console.WriteLine(path);
+                //Console.WriteLine(path);
                 //FileInfo fileInfo = new FileInfo("DataImport");
                 //Console.WriteLine(fileInfo.DirectoryName);
             }

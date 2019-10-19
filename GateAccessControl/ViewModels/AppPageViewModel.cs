@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -25,6 +27,7 @@ namespace GateAccessControl
         public ICommand AddProfileCommand { get; set; }
         public ICommand EditProfileCommand { get; set; }
         public ICommand RemoveProfileCommand { get; set; }
+        public ICommand SelectProfileCommand { get; set; }
 
 
 
@@ -72,6 +75,8 @@ namespace GateAccessControl
             ReloadDataProfiles();
             ReloadDataCardTypes();
             SyncProgressValue = 0;
+            CreateCheckSuspendProfilesTimer();
+            CreateRequestTimeChecksTimer();
 
             SetTimeDeviceProfileCommnad = new RelayCommand<string>(
                  (p) =>
@@ -110,7 +115,8 @@ namespace GateAccessControl
                  (p) =>
                  {
                      //Cannot when any device is syncing
-                     return (p != null && _numberOfSyncingDevices == 0) ? true : false;
+                     //Console.WriteLine("_numberOfSyncingDevices: "+ CheckNoDeviceIsSyncing());
+                     return (p != null && CheckNoDeviceIsSyncing() == 0) ? true : false;
                  },
                  (p) =>
                  {
@@ -128,7 +134,7 @@ namespace GateAccessControl
                  (p) =>
                  {
                      //Cannot when any device is syncing
-                     return (p != null && _numberOfSyncingDevices == 0) ? true : false;
+                     return (p != null && CheckNoDeviceIsSyncing() == 0) ? true : false;
                  },
                  (p) =>
                  {
@@ -136,6 +142,16 @@ namespace GateAccessControl
                      string classSearch = Search_profiles_class == "All" ? "" : Search_profiles_class;
                      string groupSearch = Search_profiles_group == "All" ? "" : Search_profiles_group;
                      ReloadDataProfiles(classSearch, groupSearch);
+                 });
+
+            SelectProfileCommand = new RelayCommand<List<TimeRecord>>(
+                 (p) =>
+                 {
+                     return true;
+                 },
+                 (p) =>
+                 {
+                     ReloadDataTimeCheck(p);
                  });
 
             ReplaceProfileImageCommand = new RelayCommand<Profile>(
@@ -179,7 +195,11 @@ namespace GateAccessControl
                          //if (SelectedDevice.DeviceItem.IsSendingProfiles || !CheckDeviceStatus(SelectedDevice).Equals("Connected"))
                          //{
                          //    return false;
-                         //} //wrong
+                         //} //right
+                         if (SelectedDevice.DeviceItem.IsSendingProfiles)
+                         {
+                             return false;
+                         } //wrong
                          return (GetCanSyncDeviceProfiles(p).Count > 0) ? true : false;
                      }
                      else
@@ -190,7 +210,7 @@ namespace GateAccessControl
                 (p) =>
                 {
                     //Sync it
-                    SelectedDevice.SyncDeviceProfiles(GetCanSyncDeviceProfiles(p),ref _numberOfSyncingDevices);
+                    SelectedDevice.SyncDeviceProfiles(GetCanSyncDeviceProfiles(p));
                 });
 
             AddDeviceCommand = new RelayCommand<Device>(
@@ -345,6 +365,162 @@ namespace GateAccessControl
                     ManageClass();
                     ReloadDataCardTypes();
                 });
+        }
+
+        private void CreateRequestTimeChecksTimer()
+        {
+            System.Timers.Timer RequestTimeChecksTimer = new System.Timers.Timer(); //One second, (use less to add precision, use more to consume less processor time
+            RequestTimeChecksTimer.Interval = Properties.Settings.Default.RequestTimeCheckInterval;
+            RequestTimeChecksTimer.Elapsed += RequestTimeChecksTimer_Elapsed;
+            RequestTimeChecksTimer.AutoReset = true;
+            RequestTimeChecksTimer.Start();
+        }
+
+        private void RequestTimeChecksTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            Console.WriteLine("RequestTimeChecksTimer_Elapsed");
+            Task.Run(() =>
+            {
+                try
+                {
+                    foreach (Device device in Devices)
+                    {
+                        device.DeviceItem.RequestPersonListImmediately();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logFile.Error(ex.Message);
+                }
+            });
+        }
+        
+        private void CreateCheckSuspendProfilesTimer()
+        {
+            System.Timers.Timer SuspendStudentCheckTimer = new System.Timers.Timer(30000); //One second, (use less to add precision, use more to consume less processor time
+            lastHour = DateTime.Now.Hour;
+            lastSec = DateTime.Now.Second;
+            SuspendStudentCheckTimer.Elapsed += SuspendStudentCheckTimer_Elapsed;
+            SuspendStudentCheckTimer.Start();
+        }
+        private void SuspendStudentCheckTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            if(CheckNoDeviceIsSyncing() == 0)
+            {
+                if (lastHour < DateTime.Now.Hour || (lastHour == 23 && DateTime.Now.Hour == 0))
+                {
+                    lastHour = DateTime.Now.Hour;
+                    Console.WriteLine("Catch " + DateTime.Now.ToLongTimeString() + "s.");
+                    CheckSuspendAllProfile();
+                }
+            }
+        }
+
+        public void CheckSuspendAllProfile()
+        {
+            try
+            {
+                //Get all Profile
+                List<Profile> profiles = SqliteDataAccess.LoadAllProfiles();
+
+                //Check status --> check date to Suspend --> Suspend(active)
+                foreach (Profile profile in profiles)
+                {
+                    if (profile.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Active.ToString()) && 
+                        profile.CHECK_DATE_TO_LOCK == true)
+                    {
+                        if (DateTime.Now > profile.DATE_TO_LOCK)
+                        {
+                            profile.CHECK_DATE_TO_LOCK = false;
+                            profile.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
+                            profile.LOCK_DATE = DateTime.Now;
+                            profile.DATE_MODIFIED = DateTime.Now;
+                            if (SqliteDataAccess.UpdateDataProfile(profile))
+                            {
+                                //MessageBox.Show("Profile saved!");
+                                UpdateProfileToAllDevice(profile);
+                            }
+                            else
+                            {
+                                //MessageBox.Show("Field with (*) is mandatory!");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+            }
+            finally
+            {
+                string classSearch = Search_profiles_class == "All" ? "" : Search_profiles_class;
+                string groupSearch = Search_profiles_group == "All" ? "" : Search_profiles_group;
+                ReloadDataProfiles(classSearch, groupSearch);
+            }
+        }
+
+        private bool UpdateProfileToAllDevice(Profile p)
+        {
+            int count = 0;
+            List<int> listDeviceId = new List<int>();
+
+            if (!String.IsNullOrEmpty(p.LIST_DEVICE_ID))
+            {
+                string[] listVar = p.LIST_DEVICE_ID.Split(',');
+                foreach (string var in listVar)
+                {
+                    int temp;
+                    Int32.TryParse(var, out temp);
+                    if (temp != 0)
+                    {
+                        listDeviceId.Add(temp);
+                    }
+                }
+                foreach (int id in listDeviceId)
+                {
+                    List<DeviceProfiles> getCloneDeviceProfile = SqliteDataAccess.LoadAllDeviceProfiles(id, "", "", p.PIN_NO);
+
+                    foreach (DeviceProfiles DP in getCloneDeviceProfile)
+                    {
+                        DP.CloneDataFromProfile(p);
+
+                        if (p.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Suspended.ToString()))
+                        {
+                            if (!DP.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Deleted.ToString()))
+                            {
+                                DP.CLIENT_STATUS = GlobalConstant.ClientStatus.Delete.ToString();
+                            }
+                        }
+                        else
+                        {
+                            DP.CLIENT_STATUS = GlobalConstant.ClientStatus.Unknow.ToString();
+                            if (DP.SERVER_STATUS.Equals(GlobalConstant.ServerStatus.None.ToString()))
+                            {
+                                DP.SERVER_STATUS = GlobalConstant.ServerStatus.Update.ToString();
+                            }
+                        }
+
+                        if (SqliteDataAccess.UpdateDataDeviceProfiles(id, DP))
+                        {
+                            count++;
+                        }
+                    }
+
+                }
+                if (count > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return true;
+            }
         }
 
         private void RemoveProfile(Profile p)
@@ -604,11 +780,27 @@ namespace GateAccessControl
             }
         }
 
+        public void ReloadDataTimeCheck(List<TimeRecord> timeCheckList)
+        {
+            try
+            {
+                _timeChecks.Clear();
+                foreach (TimeRecord item in timeCheckList)
+                {
+                    _timeChecks.Add(item);
+                }
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+            }
+        }
+
         private bool CanEditOrRemoveDevice(Device p)
         {
             if (p != null && p.DeviceItem.WebSocketStatus != null)
             {
-                if (p.DeviceItem.WebSocketStatus.Equals("Disconnected"))
+                if (p.DeviceItem.WebSocketStatus.Equals("Disconnected") && !p.DeviceItem.IsSendingProfiles)
                 {
                     return true;
                 }
@@ -651,6 +843,19 @@ namespace GateAccessControl
             }
         }
 
+        public int CheckNoDeviceIsSyncing()
+        {
+            int _noDeviceSyncing = 0;
+            foreach (Device item in Devices)
+            {
+                if(item.DeviceItem.IsSendingProfiles)
+                {
+                    _noDeviceSyncing++;
+                }
+            }
+            return _noDeviceSyncing;
+        }
+
 
 
         private static readonly log4net.ILog logFile = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -664,9 +869,10 @@ namespace GateAccessControl
         private string _search_deviceProfiles_others;
 
         private Device _selectedDevice;
-        private bool _isADeviceIsSyncing;
         private int _syncProgressValue;
-        private int _numberOfSyncingDevices;
+
+        private int lastHour = DateTime.Now.Hour;
+        private int lastSec = DateTime.Now.Second;
 
         private ObservableCollection<Profile> _profiles = new ObservableCollection<Profile>();
         private ObservableCollection<Device> _devices = new ObservableCollection<Device>();
@@ -682,19 +888,6 @@ namespace GateAccessControl
         public ObservableCollection<CardType> Classes => _classes;
 
         
-
-
-        public bool IsADeviceIsSyncing
-        {
-            get => _isADeviceIsSyncing;
-            set
-            {
-                _isADeviceIsSyncing = value;
-                RaisePropertyChanged("IsADeviceIsSyncing");
-            }
-        }
-
-
         public int SyncProgressValue
         {
             get => _syncProgressValue;
