@@ -379,20 +379,23 @@ namespace GateAccessControl
         private void RequestTimeChecksTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             Console.WriteLine("RequestTimeChecksTimer_Elapsed");
-            Task.Run(() =>
+            if (CheckNoDeviceIsSyncing() == 0)
             {
-                try
+                Task.Run(() =>
                 {
-                    foreach (Device device in Devices)
+                    try
                     {
-                        device.DeviceItem.RequestPersonListImmediately();
+                        foreach (Device device in Devices)
+                        {
+                            device.DeviceItem.RequestPersonListImmediately();
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    logFile.Error(ex.Message);
-                }
-            });
+                    catch (Exception ex)
+                    {
+                        logFile.Error(ex.Message);
+                    }
+                });
+            }
         }
         
         private void CreateCheckSuspendProfilesTimer()
