@@ -192,14 +192,14 @@ namespace GateAccessControl
                       */
                      if (SelectedDevice != null && p != null)
                      {
-                         //if (SelectedDevice.DeviceItem.IsSendingProfiles || !CheckDeviceStatus(SelectedDevice).Equals("Connected"))
-                         //{
-                         //    return false;
-                         //} //right
-                         if (SelectedDevice.DeviceItem.IsSendingProfiles)
+                         if (SelectedDevice.DeviceItem.IsSendingProfiles || !CheckDeviceStatus(SelectedDevice).Equals("Connected"))
                          {
                              return false;
-                         } //wrong
+                         } //right
+                         //if (SelectedDevice.DeviceItem.IsSendingProfiles)
+                         //{
+                         //    return false;
+                         //} //wrong
                          return (GetCanSyncDeviceProfiles(p).Count > 0) ? true : false;
                      }
                      else
