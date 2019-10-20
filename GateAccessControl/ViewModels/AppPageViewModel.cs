@@ -93,7 +93,7 @@ namespace GateAccessControl
                  (p) =>
                  {
                      //Can Stop when sending Profiles
-                     return (!IsExportingProfiles) ? true : false;
+                     return (IsExportingProfiles) ? true : false;
                  },
                  (p) =>
                  {

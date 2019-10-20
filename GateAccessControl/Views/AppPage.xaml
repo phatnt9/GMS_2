@@ -194,7 +194,7 @@
                                                 Binding="{Binding Path=DEVICE_ID, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                 Header="ID"
                                                 IsReadOnly="True"
-                                                Visibility="Hidden" />
+                                                Visibility="Visible" />
                                             <DataGridTextColumn
                                                 Width="*"
                                                 Binding="{Binding Path=DEVICE_NAME, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"

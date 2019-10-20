@@ -66,8 +66,9 @@ namespace GateAccessControl
                 }
             }
         }
-        public void RemoveDeviceId(int deviceId)
+        public void RemoveDeviceId(int removeDeviceId)
         {
+            List<Device> listDevices = SqliteDataAccess.LoadAllDevices();
             List<int> listDeviceId = new List<int>();
             if (!String.IsNullOrEmpty(LIST_DEVICE_ID))
             {
@@ -84,7 +85,7 @@ namespace GateAccessControl
                 LIST_DEVICE_ID = "";
                 foreach (int id in listDeviceId)
                 {
-                    if(id != deviceId)
+                    if(id != removeDeviceId && CheckDeviceAlive(id, listDevices))
                     {
                         LIST_DEVICE_ID += id + ",";
                     }
@@ -92,7 +93,17 @@ namespace GateAccessControl
             }
         }
 
-
+        private bool CheckDeviceAlive(int id, List<Device> devices)
+        {
+            foreach(Device item in devices)
+            {
+                if(item.DEVICE_ID == id)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         public int PROFILE_ID
         {
