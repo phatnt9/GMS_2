@@ -6,11 +6,15 @@
     xmlns:local="clr-namespace:GateAccessControl"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:md="clr-namespace:GateAccessControl"
+    xmlns:vmd="clr-namespace:GateAccessControl.ViewModels"
     Title="AddProfileWindow"
     Width="650"
     Height="450"
     md:DialogCloser.DialogResult="{Binding DialogResult}"
     mc:Ignorable="d">
+    <Window.Resources>
+        <vmd:ProfileImageConverter x:Key="myProfileImageConverter" />
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300" />
@@ -31,7 +35,7 @@
                             <RowDefinition />
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0">
-                            <Image Width="250" Height="150" />
+                            <Image Source="{Binding AddProfile.IMAGE, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource myProfileImageConverter}}" />
                         </Grid>
                         <Grid Grid.Row="1">
                             <ScrollViewer>
@@ -242,11 +246,25 @@
                                         <ComboBoxItem>Active</ComboBoxItem>
                                         <ComboBoxItem>Suspended</ComboBoxItem>
                                     </md:CommandComboBox>
-                                    <TextBox
-                                        Height="22"
-                                        Margin="5,2"
-                                        VerticalContentAlignment="Center"
-                                        Text="{Binding AddProfile.IMAGE, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                    <Grid Height="22" Margin="5,2">
+
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="30" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid Grid.Column="0">
+                                            <TextBox
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center"
+                                                Text="{Binding AddProfile.IMAGE, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                        </Grid>
+                                        <Grid Grid.Column="1">
+                                            <Button
+                                                HorizontalAlignment="Stretch"
+                                                Command="{Binding ReplaceProfileImageCommand}"
+                                                Content="..." />
+                                        </Grid>
+                                    </Grid>
                                     <TextBox
                                         Height="22"
                                         Margin="5,2"

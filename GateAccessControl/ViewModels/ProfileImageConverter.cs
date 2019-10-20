@@ -13,34 +13,39 @@ namespace GateAccessControl.ViewModels
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            string imagePath = GlobalConstant.ImagePath +"\\"+ value.ToString();
-            string defaultImagePath = GlobalConstant.ImagePath + "\\default.png";
-            if (targetType == typeof(System.Windows.Media.ImageSource))
+            if(value != null)
             {
-                if(File.Exists(imagePath))
+                string imagePath = GlobalConstant.ImagePath + "\\" + value.ToString();
+                string defaultImagePath = GlobalConstant.ImagePath + "\\default.png";
+                if (targetType == typeof(System.Windows.Media.ImageSource))
                 {
-                    BitmapImage bitmap = new BitmapImage();
-                    bitmap.BeginInit();
-                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmap.UriSource = new Uri(imagePath);
-                    bitmap.EndInit();
-                    //Console.WriteLine("Tra hinh moi");
-                    return bitmap;
-                }
-                else
-                {
-                    if (File.Exists(defaultImagePath))
+                    if (File.Exists(imagePath))
                     {
                         BitmapImage bitmap = new BitmapImage();
                         bitmap.BeginInit();
                         bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                        bitmap.UriSource = new Uri(defaultImagePath);
+                        bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+                        bitmap.UriSource = new Uri(imagePath);
                         bitmap.EndInit();
                         return bitmap;
                     }
                     else
                     {
-                        return true;
+                        //return true;
+                        if (File.Exists(defaultImagePath))
+                        {
+                            BitmapImage bitmap = new BitmapImage();
+                            bitmap.BeginInit();
+                            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                            bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+                            bitmap.UriSource = new Uri(defaultImagePath);
+                            bitmap.EndInit();
+                            return bitmap;
+                        }
+                        else
+                        {
+                            return true;
+                        }
                     }
                 }
             }

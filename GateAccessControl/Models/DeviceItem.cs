@@ -327,7 +327,7 @@ namespace GateAccessControl
         {
             //Random r = new Random();
             //Thread.Sleep(400);
-            //return NextBool(r,90); //wrong
+            //return NextBool(r, 90); //wrong
             try
             {
                 JStringDeviceProfile JDeviceProfile = new JStringDeviceProfile();

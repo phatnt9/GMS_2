@@ -27,11 +27,6 @@ namespace GateAccessControl.Views
             DataContext = new AppPageViewModel();
         }
 
-        private void Btn_createTable_Click(object sender, RoutedEventArgs e)
-        {
-            //SqliteDataAccess.CreateDeviceProfilesTable("TESTTEST");
-        }
-
         private void Btn_openDatabase_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK");

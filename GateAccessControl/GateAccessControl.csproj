@@ -113,6 +113,7 @@
     <Compile Include="ViewModels\GlobalConstant.cs" />
     <Compile Include="ViewModels\LoadTimeCheckParametersConverter.cs" />
     <Compile Include="ViewModels\ProfileImageConverter.cs" />
+    <Compile Include="ViewModels\ProfileListDeviceConverter.cs" />
     <Compile Include="ViewModels\ProfileSelectedItemsConverter.cs" />
     <Compile Include="ViewModels\SearchProfilesParametersConverter.cs" />
     <Compile Include="ViewModels\SqliteDataAccess.cs" />

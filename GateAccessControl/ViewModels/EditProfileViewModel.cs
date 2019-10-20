@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Input;
 
 namespace GateAccessControl
@@ -45,11 +47,23 @@ namespace GateAccessControl
 
         public ICommand SaveProfileCommand { get; set; }
         public ICommand CloseEditProfileCommand { get; set; }
+        public ICommand ReplaceProfileImageCommand { get; set; }
 
         public EditProfileViewModel(Profile profile)
         {
             EditProfile = profile;
             ReloadDataCardTypes();
+
+            ReplaceProfileImageCommand = new RelayCommand<Profile>(
+                 (p) =>
+                 {
+                     return (EditProfile != null) ? true : false;
+                 },
+                 (p) =>
+                 {
+                     ReplaceProfileImage(EditProfile.IMAGE, EditProfile);
+                 });
+
             SaveProfileCommand = new RelayCommand<Profile>(
                  (p) =>
                  {
@@ -71,6 +85,42 @@ namespace GateAccessControl
                   CloseWindow();
               });
         }
+
+        private void ReplaceProfileImage(string origin, Profile p)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog
+            {
+                Title = "Browse JPEG Image",
+                Multiselect = false,
+                CheckFileExists = true,
+                CheckPathExists = true,
+
+                DefaultExt = "JPEG",
+                Filter = "All JPEG Files (*.jpg)|*.jpg",
+                FilterIndex = 1,
+                RestoreDirectory = true
+            };
+
+            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                string importFilePath = openFileDialog1.FileName;
+                string fileName = openFileDialog1.SafeFileName;
+                if (String.IsNullOrEmpty(origin))
+                {
+                    p.IMAGE = fileName;
+                }
+                else
+                {
+                    p.IMAGE = origin;
+                }
+                File.Copy(importFilePath,
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK\Image\" + p.IMAGE, true);
+                p.IMAGE = p.IMAGE;
+
+
+            }
+        }
+
         public void CloseWindow()
         {
             DialogResult = true;
@@ -96,13 +146,13 @@ namespace GateAccessControl
 
             if (SqliteDataAccess.UpdateDataProfile(p))
             {
-                MessageBox.Show("Profile saved!");
+                System.Windows.Forms.MessageBox.Show("Profile saved!");
                 UpdateProfileToAllDevice(p);
                 return true;
             }
             else
             {
-                MessageBox.Show("Field with (*) is mandatory!");
+                System.Windows.Forms.MessageBox.Show("Field with (*) is mandatory!");
                 return false;
             }
 

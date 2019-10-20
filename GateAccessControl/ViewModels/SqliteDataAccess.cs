@@ -554,7 +554,7 @@ namespace GateAccessControl
                             "\"EMAIL\" TEXT, " +
                             "\"ADDRESS\" TEXT, " +
                             "\"PHONE\" TEXT, " +
-                            "\"PROFILE_STATUS\" TEXT, " +
+                            "\"PROFILE_STATUS\" TEXT NOT NULL, " +
                             "\"IMAGE\" TEXT NOT NULL, " +
                             "\"LOCK_DATE\" DATE, " +
                             "\"DATE_TO_LOCK\" DATE, " +

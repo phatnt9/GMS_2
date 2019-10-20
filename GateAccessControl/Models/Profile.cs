@@ -38,7 +38,7 @@ namespace GateAccessControl
 
         public Profile()
         {
-
+            IMAGE = "default.png";
         }
 
         public void AddDeviceId(int deviceId)

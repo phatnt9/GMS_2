@@ -1,18 +1,30 @@
 ﻿using GateAccessControl.Views;
+using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Input;
-using WebSocketSharp;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace GateAccessControl
 {
+    public enum AppStatus
+    {
+        Ready,
+        Exporting,
+        Searching,
+        Completed,
+        Finished,
+        Cancelled,
+        Error,
+    }
     public class AppPageViewModel : ViewModelBase
     {
         public ICommand AddDeviceCommand { get; set; }
@@ -22,16 +34,15 @@ namespace GateAccessControl
         public ICommand ConnectDeviceCommand { get; set; }
         public ICommand DisconnectDeviceCommand { get; set; }
 
-
-
         public ICommand AddProfileCommand { get; set; }
         public ICommand EditProfileCommand { get; set; }
         public ICommand RemoveProfileCommand { get; set; }
         public ICommand SelectProfileCommand { get; set; }
-
-
+        public ICommand ExportProfilesCommand { get; set; }
+        public ICommand StopExportProfilesCommand { get; set; }
 
         public ICommand DeviceProfilesManageCommand { get; set; }
+        public ICommand SelectDeviceProfilesCommand { get; set; }
         
         public ICommand ImportProfilesCommand { get; set; }
         public ICommand ManageClassCommand { get; set; }
@@ -78,10 +89,22 @@ namespace GateAccessControl
             CreateCheckSuspendProfilesTimer();
             CreateRequestTimeChecksTimer();
 
-            SetTimeDeviceProfileCommnad = new RelayCommand<string>(
+            StopExportProfilesCommand = new RelayCommand<Device>(
                  (p) =>
                  {
-                     if (p != null)
+                     //Can Stop when sending Profiles
+                     return (!IsExportingProfiles) ? true : false;
+                 },
+                 (p) =>
+                 {
+                     ExportWorker.CancelAsync();
+                 });
+
+
+            ExportProfilesCommand = new RelayCommand<List<Profile>>(
+                 (p) =>
+                 {
+                     if (p != null && p.Count > 0)
                      {
                          return true;
                      }
@@ -92,7 +115,35 @@ namespace GateAccessControl
                  },
                  (p) =>
                  {
-                     //AddProfile(p);
+                     ExportProfiles(p);
+                 });
+
+            SelectDeviceProfilesCommand = new RelayCommand<DeviceProfiles>(
+                 (p) =>
+                 {
+                     return true;
+                 },
+                 (p) =>
+                 {
+                     ParseActiveTimeDeviceProfile(p);
+                 });
+
+
+            SetTimeDeviceProfileCommnad = new RelayCommand<List<DeviceProfiles>>(
+                 (p) =>
+                 {
+                     if (p != null && p.Count > 0)
+                     {
+                         return true;
+                     }
+                     else
+                     {
+                         return false;
+                     }
+                 },
+                 (p) =>
+                 {
+                     SetTimeDeviceProfile(p);
                      string classSearch = Search_profiles_class == "All" ? "" : Search_profiles_class;
                      string groupSearch = Search_profiles_group == "All" ? "" : Search_profiles_group;
                      ReloadDataProfiles(classSearch, groupSearch);
@@ -157,17 +208,11 @@ namespace GateAccessControl
             ReplaceProfileImageCommand = new RelayCommand<Profile>(
                  (p) =>
                  {
-                     //Can Stop when sending Profiles
-                     return (p != null && SelectedDevice != null) ? true : false;
+                     return (p != null) ? true : false;
                  },
                  (p) =>
                  {
-                     string origin = p.IMAGE;
-                     p.IMAGE = "default.png";
-                     ReplaceProfileImage(origin,p);
-                     p.IMAGE = origin;
-                     ReloadDataDeviceProfiles(SelectedDevice);
-
+                     ReplaceProfileImage(p.IMAGE, p);
                  });
 
             StopSyncCommand = new RelayCommand<Device>(
@@ -365,6 +410,459 @@ namespace GateAccessControl
                     ManageClass();
                     ReloadDataCardTypes();
                 });
+        }
+
+        private void ExportProfiles(List<Profile> p)
+        {
+            ExportWorker = new BackgroundWorker();
+            ExportWorker.WorkerSupportsCancellation = true;
+            ExportWorker.WorkerReportsProgress = true;
+            ExportWorker.DoWork += ExportWorker_DoWork;
+            ExportWorker.RunWorkerCompleted += ExportWorker_RunWorkerCompleted;
+            ExportWorker.ProgressChanged += ExportWorker_ProgressChanged;
+
+            SaveFileDialog saveDialog = new SaveFileDialog();
+            saveDialog.Filter = "Excel files (*.xlsx)|*.xlsx|All files (*.*)|*.*";
+            saveDialog.FilterIndex = 2;
+            if (saveDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                List<object> arguments = new List<object>();
+                arguments.Add(saveDialog);
+                arguments.Add(p);
+                ExportWorker.RunWorkerAsync(argument: arguments);
+            }
+        }
+
+        private void ExportWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            ExportProfilesProgressValue = e.ProgressPercentage;
+        }
+
+        private void ExportWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                // handle the error
+                //PgbStatus = AppStatus.Error;
+            }
+            else if (e.Cancelled)
+            {
+                // handle cancellation
+                //PgbStatus = AppStatus.Cancelled;
+            }
+            else
+            {
+                //PgbStatus = AppStatus.Completed;
+            }
+            ExportProfilesProgressValue = 0;
+            ProfilesWorkStatus = AppStatus.Finished.ToString();
+            ProfilesWorkStatus = AppStatus.Ready.ToString();
+            IsExportingProfiles = false;
+        }
+
+        private void ExportWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            IsExportingProfiles = true;
+            ProfilesWorkStatus = AppStatus.Exporting.ToString();
+            List<object> genericList = e.Argument as List<object>;
+            Excel.Application excel = new Excel.Application();
+            Excel.Workbook workbook = excel.Workbooks.Add(Type.Missing);
+            Excel.Worksheet worksheet = null;
+            try
+            {
+                List<CardType> listClasses = SqliteDataAccess.LoadAllCardType();
+
+                SaveFileDialog saveDialog = genericList[0] as SaveFileDialog;
+
+                excel.DisplayAlerts = false;
+                worksheet = workbook.ActiveSheet;
+
+                worksheet.Cells[1, 1] = "No";
+                worksheet.Cells[1, 2] = "Name";
+                worksheet.Cells[1, 3] = "Adno";
+                worksheet.Cells[1, 4] = "Gender";
+                worksheet.Cells[1, 5] = "DOB";
+                worksheet.Cells[1, 6] = "Disu";
+                worksheet.Cells[1, 7] = "Image";
+                worksheet.Cells[1, 8] = "PIN No.";
+                worksheet.Cells[1, 9] = "Class";
+                worksheet.Cells[1, 10] = "Group";//
+                worksheet.Cells[1, 11] = "Email";
+                worksheet.Cells[1, 12] = "Address";
+                worksheet.Cells[1, 13] = "Phone";
+                worksheet.Cells[1, 14] = "Status";
+                worksheet.Cells[1, 15] = "Suspended Date";
+                worksheet.Cells[1, 16] = "Expire Date";
+                worksheet.Cells[1, 17] = "Automatic Suspension";
+                worksheet.Cells[1, 18] = "License plate";//
+                worksheet.Cells[1, 19] = "Date created";//
+                worksheet.Cells[1, 20] = "Date modified";//
+
+                int cellRowIndex = 2;
+                int cellColumnIndex = 1;
+
+                List<Profile> profileList = genericList[1] as List<Profile>;
+
+                for (int i = 0; i < profileList.Count; i++)
+                {
+                    for (int j = 0; j < 20; j++)
+                    {
+                        if (j == 0)//No
+                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = i + 1;  }
+                        if (j == 1)//Name
+                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].PROFILE_NAME;  }
+                        if (j == 2)//Adno
+                        {
+                            Range cells = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[cellRowIndex, cellColumnIndex];
+                            cells.NumberFormat = "@";
+                            cells.HorizontalAlignment = XlHAlign.xlHAlignRight;
+                            cells.Value2 = profileList[i].AD_NO;
+                            //worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].ADNO;
+                        }
+                        if (j == 3)//Gender
+                        {
+                            //worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].GENDER.ToString();
+
+                            var list = new System.Collections.Generic.List<string>();
+                            list.Add("Male");
+                            list.Add("Female");
+                            var flatList = string.Join(",", list.ToArray());
+
+                            var cell = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[cellRowIndex, cellColumnIndex];
+                            cell.Validation.Delete();
+                            cell.Validation.Add(
+                               Excel.XlDVType.xlValidateList,
+                               Excel.XlDVAlertStyle.xlValidAlertInformation,
+                               Excel.XlFormatConditionOperator.xlBetween,
+                               flatList,
+                               Type.Missing);
+                            cell.Value2 = profileList[i].GENDER.ToString();
+                            cell.Locked = true;
+                            cell.Validation.IgnoreBlank = true;
+                            cell.Validation.InCellDropdown = true;
+                        }
+                        if (j == 4)//DOB
+                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].DOB;}
+                        if (j == 5)//Disu
+                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].DISU;}
+                        if (j == 6)//Image
+                        {
+                            Range cells = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[cellRowIndex, cellColumnIndex];
+                            cells.NumberFormat = "@";
+                            cells.HorizontalAlignment = XlHAlign.xlHAlignRight;
+                            cells.Value2 = profileList[i].IMAGE;
+                            //worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].IMAGE;
+                        }
+                        if (j == 7)//PIN No.
+                        {
+                            Range cells = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[cellRowIndex, cellColumnIndex];
+                            cells.NumberFormat = "@";
+                            cells.HorizontalAlignment = XlHAlign.xlHAlignRight;
+                            cells.Value2 = profileList[i].PIN_NO;
+                            //worksheet.Range[cellColumnIndex].NumberFormat = "0";
+                            //worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].PIN_NO;
+                        }
+
+                        if (j == 8)//Class
+                        {
+                            //worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].CLASS;
+
+                            var list = new List<string>();
+                            foreach (CardType classes in listClasses)
+                            {
+                                list.Add(classes.CLASS_NAME);
+                            }
+                            var flatList = string.Join(",", list.ToArray());
+
+                            var cell = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[cellRowIndex, cellColumnIndex];
+                            cell.Validation.Delete();
+                            cell.Validation.Add(
+                               Excel.XlDVType.xlValidateList,
+                               Excel.XlDVAlertStyle.xlValidAlertInformation,
+                               Excel.XlFormatConditionOperator.xlBetween,
+                               flatList,
+                               Type.Missing);
+                            cell.Value2 = profileList[i].CLASS_NAME;
+                            cell.Validation.IgnoreBlank = true;
+                            cell.Validation.InCellDropdown = true;
+                        }
+
+                        if (j == 9)//Class
+                        {
+                            //worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].CLASS;
+
+                            var list = new System.Collections.Generic.List<string>();
+                            list.Add("Group 1");
+                            list.Add("Group 2");
+                            list.Add("Group 3");
+                            list.Add("Group 4");
+                            list.Add("Group 5");
+                            list.Add("Group 6");
+                            list.Add("Group 7");
+                            list.Add("Group 8");
+                            list.Add("Group 9");
+                            list.Add("Group 10");
+                            var flatList = string.Join(",", list.ToArray());
+
+                            var cell = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[cellRowIndex, cellColumnIndex];
+                            cell.Validation.Delete();
+                            cell.Validation.Add(
+                               Excel.XlDVType.xlValidateList,
+                               Excel.XlDVAlertStyle.xlValidAlertInformation,
+                               Excel.XlFormatConditionOperator.xlBetween,
+                               flatList,
+                               Type.Missing);
+                            cell.Value2 = profileList[i].SUB_CLASS;
+                            cell.Validation.IgnoreBlank = true;
+                            cell.Validation.InCellDropdown = true;
+                        }
+
+                        if (j == 10)//Email
+                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].EMAIL; }
+                        if (j == 11)//Address
+                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].ADDRESS;}
+                        if (j == 12)//Phone
+                        {
+                            Range cells = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[cellRowIndex, cellColumnIndex];
+                            cells.NumberFormat = "@";
+                            cells.HorizontalAlignment = XlHAlign.xlHAlignRight;
+                            cells.Value2 = profileList[i].PHONE;
+                            //worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].PHONE;
+                        }
+                        if (j == 13)//Status
+                        {
+                            //worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].STATUS;
+
+                            var list = new System.Collections.Generic.List<string>();
+                            list.Add("Active");
+                            list.Add("Suspended");
+                            var flatList = string.Join(",", list.ToArray());
+
+                            var cell = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[cellRowIndex, cellColumnIndex];
+                            cell.Validation.Delete();
+                            cell.Validation.Add(
+                               Excel.XlDVType.xlValidateList,
+                               Excel.XlDVAlertStyle.xlValidAlertInformation,
+                               Excel.XlFormatConditionOperator.xlBetween,
+                               flatList,
+                               Type.Missing);
+                            cell.Value2 = profileList[i].PROFILE_STATUS;
+                            cell.Locked = true;
+                            cell.Validation.IgnoreBlank = true;
+                            cell.Validation.InCellDropdown = true;
+                        }
+                        if (j == 14)//Suspended Date
+                        {
+                            if (profileList[i].PROFILE_STATUS == "Suspended")
+                            {
+                                { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].LOCK_DATE; }
+                            }
+                            else
+                            {
+                                { worksheet.Cells[cellRowIndex, cellColumnIndex] = ""; }
+                            }
+                        }
+
+                        if (j == 15)//Expire Date
+                        {
+                            if (profileList[i].CHECK_DATE_TO_LOCK == true)
+                            {
+                                { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].DATE_TO_LOCK; }
+                            }
+                            else
+                            {
+                                { worksheet.Cells[cellRowIndex, cellColumnIndex] = ""; }
+                            }
+                        }
+                        if (j == 16)// Automatic Suspension
+                        {
+                            var list = new System.Collections.Generic.List<string>();
+                            list.Add("TRUE");
+                            list.Add("FALSE");
+                            var flatList = string.Join(",", list.ToArray());
+
+                            var cell = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[cellRowIndex, cellColumnIndex];
+                            cell.Validation.Delete();
+                            cell.Validation.Add(
+                               Excel.XlDVType.xlValidateList,
+                               Excel.XlDVAlertStyle.xlValidAlertInformation,
+                               Excel.XlFormatConditionOperator.xlBetween,
+                               flatList,
+                               Type.Missing);
+                            cell.Value2 = profileList[i].CHECK_DATE_TO_LOCK;
+                            cell.Locked = true;
+                            cell.Validation.IgnoreBlank = true;
+                            cell.Validation.InCellDropdown = true;
+                        }
+                        if (j == 17)//License plate
+                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].LICENSE_PLATE; }
+                        if (j == 18)//Date created
+                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].DATE_CREATED; }
+                        if (j == 19)//Date modified
+                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].DATE_MODIFIED; }
+
+                        cellColumnIndex++;
+                    }
+                    cellColumnIndex = 1;
+                    cellRowIndex++;
+                    if (ExportWorker.CancellationPending)
+                    {
+                        break;
+                    }
+                    (sender as BackgroundWorker).ReportProgress((i * 100) / profileList.Count);
+                }
+
+                worksheet.Columns.AutoFit();
+                workbook.SaveAs(saveDialog.FileName, Excel.XlFileFormat.xlWorkbookDefault, Type.Missing, Type.Missing, false, false, Excel.XlSaveAsAccessMode.xlNoChange, Excel.XlSaveConflictResolution.xlLocalSessionChanges, Type.Missing, Type.Missing);
+                MessageBox.Show("Export Successful");
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+            }
+            finally
+            {
+                excel.Quit();
+                workbook = null;
+                excel = null;
+            }
+        }
+
+        private void SetTimeDeviceProfile(List<DeviceProfiles> p)
+        {
+            string myActiveTime = GetActiveTimeFromTextBoxes();
+            if(!String.IsNullOrEmpty(myActiveTime))
+            {
+                foreach (DeviceProfiles item in p)
+                {
+                    item.ACTIVE_TIME = myActiveTime;
+                    if(item.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString() && 
+                        item.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString())
+                    {
+                        item.SERVER_STATUS = GlobalConstant.ServerStatus.Update.ToString();
+                    }
+                    if(SqliteDataAccess.UpdateDataDeviceProfiles(SelectedDevice.DEVICE_ID, item))
+                    {
+                        ApplyActiveTimeStatus = "Success!";
+                    }
+                    else
+                    {
+
+                        ApplyActiveTimeStatus = "Unsuccess!";
+                    }
+                }
+            }
+           
+        }
+
+        private string GetActiveTimeFromTextBoxes()
+        {
+            string returnStr = "";
+            int count = 0;
+            if(ActiveTimeSchedule_1)
+            {
+                if (ValidateTime(Active_from_1))
+                {
+                    returnStr += Active_from_1;
+                    count++;
+                }
+                returnStr += ",";
+                if (ValidateTime(Active_to_1))
+                {
+                    returnStr += Active_to_1;
+                    count++;
+                }
+                returnStr += ";";
+                if (ValidateTime(Active_from_2))
+                {
+                    returnStr += Active_from_2;
+                    count++;
+                }
+                returnStr += ",";
+                if (ValidateTime(Active_to_2))
+                {
+                    returnStr += Active_to_2;
+                    count++;
+                }
+                if (count == 4)
+                {
+                    return returnStr;
+                }
+                else
+                {
+                    ApplyActiveTimeStatus = "Wrong time format! (HH:mm)";
+                    return null;
+                }
+            }
+            if (ActiveTimeSchedule_2)
+            {
+                returnStr = "00:00,23:59;00:00,23:59";
+                return returnStr;
+            }
+            ApplyActiveTimeStatus = "Please selected a Schedule!";
+            return null;
+        }
+
+        private void ParseActiveTimeDeviceProfile(DeviceProfiles p)
+        {
+            if (!String.IsNullOrEmpty(p.ACTIVE_TIME))
+            {
+                string[] listVar = p.ACTIVE_TIME.Split(';');
+                for (int i=0 ; i<2 ; i++)
+                {
+                    if (i == 0)
+                    {
+                        string[] listTime = listVar[i].Split(',');
+                        for (int y = 0; y < 2; y++)
+                        {
+                            if (y == 0)
+                            {
+                                if (ValidateTime(listTime[y]))
+                                {
+                                    Active_from_1 = listTime[y];
+                                }
+                            }
+                            if (y == 1)
+                            {
+                                if (ValidateTime(listTime[y]))
+                                {
+                                    Active_to_1 = listTime[y];
+                                }
+                            }
+                        }
+                    }
+                    if (i == 1)
+                    {
+                        string[] listTime = listVar[i].Split(',');
+                        for (int y = 0; y < 2; y++)
+                        {
+                            if (y == 0)
+                            {
+                                if (ValidateTime(listTime[y]))
+                                {
+                                    Active_from_2 = listTime[y];
+                                }
+                            }
+                            if (y == 1)
+                            {
+                                if (ValidateTime(listTime[y]))
+                                {
+                                    Active_to_2 = listTime[y];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public bool ValidateTime(string time)
+        {
+            DateTime ignored;
+            return DateTime.TryParseExact(time, "HH:mm",
+                                          CultureInfo.InvariantCulture,
+                                          DateTimeStyles.None,
+                                          out ignored);
         }
 
         private void CreateRequestTimeChecksTimer()
@@ -565,9 +1063,6 @@ namespace GateAccessControl
 
             if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                //img_profile.Source = null;
-                //string oldFilePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK\Image\" + tb_image.Text;
-                //File.Delete(oldFilePath);
                 string importFilePath = openFileDialog1.FileName;
                 File.Copy(importFilePath,
                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK\Image\" + origin, true);
@@ -581,7 +1076,7 @@ namespace GateAccessControl
         
         public void SaveProfileUpdateImage(Profile p)
         {
-
+            
         }
 
         private void ManageDeviceProfiles(Device p)
@@ -871,6 +1366,21 @@ namespace GateAccessControl
         private string _search_deviceProfiles_group;
         private string _search_deviceProfiles_others;
 
+        private string _active_from_1;
+        private string _active_to_1;
+        private string _active_from_2;
+        private string _active_to_2;
+        private bool _activeTimeSchedule_1;
+        private bool _activeTimeSchedule_2;
+        private string _applyActiveTimeStatus;
+        private int _exportProfilesProgressValue;
+        public BackgroundWorker ExportWorker;
+        private string _profilesWorkStatus;
+        private bool _isExportingProfiles;
+
+
+
+
         private Device _selectedDevice;
         private int _syncProgressValue;
 
@@ -891,6 +1401,46 @@ namespace GateAccessControl
         public ObservableCollection<CardType> Classes => _classes;
 
         
+        public bool IsExportingProfiles
+        {
+            get => _isExportingProfiles;
+            set
+            {
+                _isExportingProfiles = value;
+                RaisePropertyChanged("IsExportingProfiles");
+            }
+        }
+
+        public String ProfilesWorkStatus
+        {
+            get => _profilesWorkStatus;
+            set
+            {
+                _profilesWorkStatus = value;
+                RaisePropertyChanged("ProfilesWorkStatus");
+            }
+        }
+
+        public int ExportProfilesProgressValue
+        {
+            get => _exportProfilesProgressValue;
+            set
+            {
+                _exportProfilesProgressValue = value;
+                RaisePropertyChanged("ExportProfilesProgressValue");
+            }
+        }
+        
+        public String ApplyActiveTimeStatus
+        {
+            get => _applyActiveTimeStatus;
+            set
+            {
+                _applyActiveTimeStatus = value;
+                RaisePropertyChanged("ApplyActiveTimeStatus");
+            }
+        }
+
         public int SyncProgressValue
         {
             get => _syncProgressValue;
@@ -908,6 +1458,96 @@ namespace GateAccessControl
             {
                 _selectedDevice = value;
                 RaisePropertyChanged("SelectedDevice");
+            }
+        }
+
+        
+
+        public List<DeviceProfiles> GetCanSyncDeviceProfiles(List<DeviceProfiles> p)
+        {
+            List<DeviceProfiles> CanSyncDeviceProfiles = p.FindAll((u) =>
+            {
+                switch(u.CLIENT_STATUS)
+                {
+                    case "Unknow":
+                    {
+                        if (
+                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString())) ||
+
+                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Update.ToString())) ||
+
+                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString())) ||
+
+                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString()))
+                           )
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    case "Delete":
+                    {
+                        if (
+                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString())) ||
+
+                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString())) ||
+
+                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Update.ToString())) ||
+
+                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString())) ||
+
+                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString()))
+                           )
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    case "Deleted":
+                    {
+                        return false;
+                    }
+                    default:
+                    {
+                        return false;
+                    }
+                }
+            });
+            return CanSyncDeviceProfiles;
+        }
+
+        public Boolean ActiveTimeSchedule_1
+        {
+            get => _activeTimeSchedule_1;
+            set
+            {
+                _activeTimeSchedule_1 = value;
+                RaisePropertyChanged("ActiveTimeSchedule_1");
+            }
+        }
+
+        public Boolean ActiveTimeSchedule_2
+        {
+            get => _activeTimeSchedule_2;
+            set
+            {
+                _activeTimeSchedule_2 = value;
+                RaisePropertyChanged("ActiveTimeSchedule_2");
             }
         }
 
@@ -971,54 +1611,120 @@ namespace GateAccessControl
             }
         }
 
-        public List<DeviceProfiles> GetCanSyncDeviceProfiles(List<DeviceProfiles> p)
+        public String Active_from_1
         {
-            List<DeviceProfiles> CanSyncDeviceProfiles = p.FindAll((u) =>
+            get => _active_from_1;
+            set
             {
-                switch(u.CLIENT_STATUS)
-                {
-                    case "Unknow":
-                    {
-                        goto case "Delete";
-                    }
-                    case "Delete":
-                    {
-                        if (
-                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString())) ||
-
-                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString())) ||
-
-                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Update.ToString())) ||
-
-                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString())) ||
-
-                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
-                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString()))
-                           )
-                        {
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
-                    case "Deleted":
-                    {
-                        return false;
-                    }
-                    default:
-                    {
-                        return false;
-                    }
-                }
-            });
-            return CanSyncDeviceProfiles;
+                _active_from_1 = value;
+                RaisePropertyChanged("Active_from_1");
+            }
         }
 
+        public String Active_to_1
+        {
+            get => _active_to_1;
+            set
+            {
+                _active_to_1 = value;
+                RaisePropertyChanged("Active_to_1");
+            }
+        }
+
+        public String Active_from_2
+        {
+            get => _active_from_2;
+            set
+            {
+                _active_from_2 = value;
+                RaisePropertyChanged("Active_from_2");
+            }
+        }
+
+        public String Active_to_2
+        {
+            get => _active_to_2;
+            set
+            {
+                _active_to_2 = value;
+                RaisePropertyChanged("Active_to_2");
+            }
+        }
     }
+
+    public class ActiveTimeFrom1Converter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (!String.IsNullOrEmpty(value.ToString()))
+            {
+                string[] parts = value.ToString().Split(';', ',');
+                return parts[0];
+            }
+            return "";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    
+
+    public class ActiveTimeTo1Converter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (!String.IsNullOrEmpty(value.ToString()))
+            {
+                string[] parts = value.ToString().Split(';', ',');
+                return parts[1];
+            }
+            return "";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    
+
+    public class ActiveTimeFrom2Converter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (!String.IsNullOrEmpty(value.ToString()))
+            {
+                string[] parts = value.ToString().Split(';', ',');
+                return parts[2];
+            }
+            return "";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    
+
+    public class ActiveTimeTo2Converter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (!String.IsNullOrEmpty(value.ToString()))
+            {
+                string[] parts = value.ToString().Split(';', ',');
+                return parts[3];
+            }
+            return "";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 }
