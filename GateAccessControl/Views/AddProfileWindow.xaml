@@ -9,7 +9,7 @@
     xmlns:vmd="clr-namespace:GateAccessControl.ViewModels"
     Title="AddProfileWindow"
     Width="650"
-    Height="450"
+    Height="420"
     md:DialogCloser.DialogResult="{Binding DialogResult}"
     mc:Ignorable="d">
     <Window.Resources>
@@ -22,7 +22,7 @@
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="25" />
+                <RowDefinition Height="0" />
                 <RowDefinition />
                 <RowDefinition Height="25" />
             </Grid.RowDefinitions>
@@ -107,7 +107,7 @@
         </Grid>
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="25" />
+                <RowDefinition Height="0" />
                 <RowDefinition />
                 <RowDefinition Height="25" />
             </Grid.RowDefinitions>
@@ -278,17 +278,14 @@
                 </GroupBox>
             </Grid>
             <Grid Grid.Row="2">
-                <StackPanel
-                    HorizontalAlignment="Right"
-                    Background="Coral"
-                    Orientation="Horizontal">
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                     <Button
-                        Margin="3,2"
+                        Margin="3"
                         Padding="5,0"
                         Command="{Binding InsertProfileCommand}"
                         Content="Save" />
                     <Button
-                        Margin="3,2"
+                        Margin="3"
                         Padding="5,0"
                         Command="{Binding CloseAddProfileCommand}"
                         Content="Cancel" />

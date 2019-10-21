@@ -16,7 +16,6 @@ namespace GateAccessControl.ViewModels
             string time1_to = (string)values[1];
             string time2_from = (string)values[2];
             string time2_to = (string)values[3];
-            bool text = true;
             foreach(var item in values)
             {
                 if (!ValidateTime(item.ToString()))

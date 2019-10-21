@@ -33,6 +33,7 @@ namespace GateAccessControl
         public ICommand SelectDeviceCommand { get; set; }
         public ICommand ConnectDeviceCommand { get; set; }
         public ICommand DisconnectDeviceCommand { get; set; }
+        public ICommand RequesTimeRecordCommand { get; set; }
 
         public ICommand AddProfileCommand { get; set; }
         public ICommand EditProfileCommand { get; set; }
@@ -88,6 +89,30 @@ namespace GateAccessControl
             SyncProgressValue = 0;
             CreateCheckSuspendProfilesTimer();
             CreateRequestTimeChecksTimer();
+
+            RequesTimeRecordCommand = new RelayCommand<Device>(
+                 (p) =>
+                 {
+                     if(p!= null && p.DeviceItem.WebSocketStatus == "Connected" && p.DeviceItem.IsSendingProfiles == false)
+                     {
+                         return true;
+                     }
+                     else
+                     {
+                         return false;
+                     }
+                 },
+                 (p) =>
+                 {
+                     try
+                     {
+                         p.DeviceItem.RequestPersonListImmediately();
+                     }
+                     catch (Exception ex)
+                     {
+                         logFile.Error(ex.Message);
+                     }
+                 });
 
             StopExportProfilesCommand = new RelayCommand<Device>(
                  (p) =>
@@ -185,7 +210,7 @@ namespace GateAccessControl
                  (p) =>
                  {
                      //Cannot when any device is syncing
-                     return (p != null && CheckNoDeviceIsSyncing() == 0) ? true : false;
+                     return (p != null && CheckNoDeviceIsSyncing() == 0 && String.IsNullOrEmpty(p.LIST_DEVICE_ID)) ? true : false;
                  },
                  (p) =>
                  {

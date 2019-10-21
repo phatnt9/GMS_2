@@ -102,17 +102,31 @@
             <RowDefinition Height="50" />
             <RowDefinition />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" Background="PowderBlue">
-            <WrapPanel>
+        <Grid Grid.Row="0" Background="#f1f1f1">
+            <StackPanel Orientation="Horizontal">
+                <Image
+                    Height="50"
+                    Margin="20,0,0,0"
+                    Source="pack://siteoforigin:,,,/Resources/favicon.ico" />
+                <DockPanel Margin="20,0,0,0" HorizontalAlignment="Left">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontSize="30"
+                        Text="Access Control System" />
+                </DockPanel>
+            </StackPanel>
+
+            <WrapPanel HorizontalAlignment="Right">
                 <Button
                     x:Name="btn_classManagement"
-                    Margin="2"
+                    Margin="3"
                     Padding="2"
                     Command="{Binding ManageClassCommand}"
                     Content="Class Management" />
                 <Button
                     x:Name="btn_openDatabase"
-                    Margin="2"
+                    Margin="3"
                     Padding="2"
                     Click="Btn_openDatabase_Click"
                     Content="Open Database" />
@@ -135,7 +149,7 @@
                             <RowDefinition Height="5" />
                             <RowDefinition />
                         </Grid.RowDefinitions>
-                        <Grid Grid.Row="0" Background="Beige">
+                        <Grid Grid.Row="0" Background="#f1f1f1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
                                 <ColumnDefinition />
@@ -146,20 +160,31 @@
                                     <RowDefinition />
                                     <RowDefinition Height="25" />
                                 </Grid.RowDefinitions>
-                                <Grid
-                                    Grid.Row="0"
-                                    HorizontalAlignment="Right"
-                                    Background="BlueViolet">
-                                    <StackPanel Background="Aqua" Orientation="Horizontal">
+                                <Grid Grid.Row="0" Background="#f1f1f1">
+                                    <StackPanel
+                                        Margin="5,0"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        Orientation="Horizontal">
+                                        <TextBlock
+                                            DataContext="{Binding ElementName=dg_devices, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged}"
+                                            FontWeight="Medium"
+                                            Foreground="Green"
+                                            Text="{Binding DeviceItem.StatusProfile}" />
+                                    </StackPanel>
+                                    <StackPanel
+                                        HorizontalAlignment="Right"
+                                        Background="#f1f1f1"
+                                        Orientation="Horizontal">
                                         <Button
                                             x:Name="btn_device_add"
-                                            Margin="3,2"
+                                            Margin="3"
                                             Padding="5,0"
                                             Command="{Binding AddDeviceCommand}"
                                             Content="Add" />
                                         <Button
                                             x:Name="btn_device_edit"
-                                            Margin="3,2"
+                                            Margin="3"
                                             Padding="5,0"
                                             VerticalContentAlignment="Center"
                                             Command="{Binding EditDeviceCommand}"
@@ -167,7 +192,7 @@
                                             Content="Edit" />
                                         <Button
                                             x:Name="btn_device_remove"
-                                            Margin="3,2"
+                                            Margin="3"
                                             Padding="5,0"
                                             Command="{Binding RemoveDeviceCommand}"
                                             CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
@@ -252,75 +277,33 @@
                                                     </Style>
                                                 </DataGridTextColumn.CellStyle>
                                             </DataGridTextColumn>
-                                            <!--<DataGridTextColumn
-                                                Width="*"
-                                                Binding="{Binding Path=DeviceItem.webSocket, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, Converter={StaticResource myDeviceItemWebSocketStatusConverter}}"
-                                                Header="STATUS"
-                                                IsReadOnly="True"
-                                                Visibility="Visible">
-                                                <DataGridTextColumn.CellStyle>
-                                                    <Style TargetType="{x:Type DataGridCell}">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Path=DeviceItem.webSocket, Converter={StaticResource myDeviceItemWebSocketStatusConverter}}" Value="Pending">
-                                                                <Setter Property="Foreground" Value="Blue" />
-                                                                <Setter Property="FontWeight" Value="DemiBold" />
-                                                                <Setter Property="Background" Value="#F7D23D" />
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Path=DeviceItem.webSocket, Converter={StaticResource myDeviceItemWebSocketStatusConverter}}" Value="Connecting">
-                                                                <Setter Property="Foreground" Value="White" />
-                                                                <Setter Property="FontWeight" Value="DemiBold" />
-                                                                <Setter Property="Background" Value="#4D9DE0" />
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Path=DeviceItem.webSocket, Converter={StaticResource myDeviceItemWebSocketStatusConverter}}" Value="Connected">
-                                                                <Setter Property="Foreground" Value="White" />
-                                                                <Setter Property="FontWeight" Value="DemiBold" />
-                                                                <Setter Property="Background" Value="#69B578" />
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Path=DeviceItem.webSocket, Converter={StaticResource myDeviceItemWebSocketStatusConverter}}" Value="Disconnected">
-                                                                <Setter Property="Foreground" Value="White" />
-                                                                <Setter Property="FontWeight" Value="DemiBold" />
-                                                                <Setter Property="Background" Value="#E15554" />
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </DataGridTextColumn.CellStyle>
-                                            </DataGridTextColumn>-->
-                                            <!--<DataGridTemplateColumn Header="STATUS TEST" IsReadOnly="True">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <TextBlock Background="LimeGreen" Foreground="White">
-                                                            <TextBlock.Style>
-                                                                <Style TargetType="{x:Type TextBlock}">
-                                                                    <Setter Property="Text" Value="{Binding Path=DEVICE_STATUS}" />
-                                                                    <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding Path=DEVICE_STATUS}" Value="Pending">
-                                                                            <Setter Property="Background" Value="Red" />
-                                                                        </DataTrigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
-                                                            </TextBlock.Style>
-                                                        </TextBlock>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>-->
                                         </DataGrid.Columns>
                                     </md:CommandDataGrid>
                                 </Grid>
-                                <Grid Grid.Row="2" Background="MediumAquamarine">
+                                <Grid Grid.Row="2" Background="#f1f1f1">
+                                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                                        <Button
+                                            x:Name="btn_device_requestTimeCheck"
+                                            Margin="3"
+                                            Padding="5,0"
+                                            Command="{Binding RequesTimeRecordCommand}"
+                                            CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged}"
+                                            Content="Request check-in records" />
+                                    </StackPanel>
                                     <StackPanel
                                         HorizontalAlignment="Right"
-                                        Background="Coral"
+                                        Background="#f1f1f1"
                                         Orientation="Horizontal">
                                         <Button
                                             x:Name="btn_device_connect"
-                                            Margin="3,2"
+                                            Margin="3"
                                             Padding="5,0"
                                             Command="{Binding ConnectDeviceCommand}"
                                             CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                             Content="Connect" />
                                         <Button
                                             x:Name="btn_device_disconnect"
-                                            Margin="3,2"
+                                            Margin="3"
                                             Padding="5,0"
                                             Command="{Binding DisconnectDeviceCommand}"
                                             CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
@@ -391,7 +374,7 @@
                         <GridSplitter
                             Grid.Row="1"
                             HorizontalAlignment="Stretch"
-                            Background="LightGray" />
+                            Background="#f1f1f1" />
                         <Grid Grid.Row="2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -404,15 +387,15 @@
                                     <RowDefinition Height="10" />
                                     <RowDefinition Height="25" />
                                 </Grid.RowDefinitions>
-                                <Grid Grid.Row="0" Background="Cornsilk">
+                                <Grid Grid.Row="0" Background="#f1f1f1">
                                     <StackPanel
                                         HorizontalAlignment="Left"
-                                        Background="DarkSlateBlue"
+                                        Background="#f1f1f1"
                                         Orientation="Horizontal">
                                         <md:CommandComboBox
                                             x:Name="cb_device_class"
                                             Width="65"
-                                            Margin="3,2"
+                                            Margin="3"
                                             Padding="5,0"
                                             VerticalContentAlignment="Center"
                                             Command="{Binding SearchClassDeviceProfilesCommand}"
@@ -424,7 +407,7 @@
                                         <md:CommandComboBox
                                             x:Name="cb_device_group"
                                             Width="65"
-                                            Margin="3,2"
+                                            Margin="3"
                                             Padding="5,0"
                                             VerticalContentAlignment="Center"
                                             Command="{Binding SearchGroupDeviceProfilesCommand}"
@@ -446,7 +429,7 @@
                                         <md:CommandTextBox
                                             x:Name="tb_device_search"
                                             Width="120"
-                                            Margin="3,2"
+                                            Margin="3"
                                             Padding="5,0"
                                             Command="{Binding SearchOthersDeviceProfilesCommand}"
                                             CommandParameter="{Binding ElementName=dg_device_profiles, UpdateSourceTrigger=PropertyChanged, Path=Items}"
@@ -456,18 +439,18 @@
                                     </StackPanel>
                                     <StackPanel
                                         HorizontalAlignment="Right"
-                                        Background="DarkGreen"
+                                        Background="#f1f1f1"
                                         Orientation="Horizontal">
                                         <Button
                                             x:Name="btn_deviceProfiles_manage"
-                                            Margin="3,2"
+                                            Margin="3,3"
                                             Padding="5,0"
                                             Command="{Binding DeviceProfilesManageCommand}"
                                             CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem}"
                                             Content="Manage" />
                                         <Button
                                             x:Name="btn_device_export"
-                                            Margin="3,2"
+                                            Margin="3"
                                             Padding="5,0"
                                             Content="Export"
                                             Visibility="Collapsed">
@@ -648,17 +631,17 @@
                                         FontWeight="Normal"
                                         Text="{Binding ElementName=pbStatus, Path=Value, StringFormat={}{0:0} %}" />
                                 </Grid>
-                                <Grid Grid.Row="3" Background="CadetBlue">
+                                <Grid Grid.Row="3" Background="#f1f1f1">
                                     <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                                         <TextBlock
                                             Width="100"
                                             VerticalAlignment="Center"
-                                            Background="Coral"
+                                            Background="#f1f1f1"
                                             Text="{Binding ElementName=dg_device_profiles, Path=Items.Count}"
                                             TextAlignment="Center" />
                                         <Button
                                             x:Name="btn_device_sync_each"
-                                            Margin="3,2"
+                                            Margin="3,3"
                                             Padding="5,0"
                                             Command="{Binding SyncCommand}"
                                             Content="Sync">
@@ -671,7 +654,7 @@
                                         </Button>
                                         <Button
                                             x:Name="btn_device_stopSync"
-                                            Margin="3,2"
+                                            Margin="3,3"
                                             Padding="5,0"
                                             Command="{Binding StopSyncCommand}"
                                             CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged}"
@@ -795,21 +778,21 @@
                                 <RowDefinition Height="10" />
                                 <RowDefinition Height="25" />
                             </Grid.RowDefinitions>
-                            <Grid Grid.Row="0" Background="Cornsilk">
+                            <Grid Grid.Row="0" Background="#f1f1f1">
                                 <StackPanel
                                     HorizontalAlignment="Right"
-                                    Background="Aqua"
+                                    Background="#f1f1f1"
                                     Orientation="Horizontal">
                                     <Button
                                         x:Name="btn_profile_add"
-                                        Margin="3,2"
+                                        Margin="3"
                                         Padding="5,0"
                                         Command="{Binding AddProfileCommand}"
                                         CommandParameter="{Binding ElementName=dg_main_profiles, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                         Content="Add" />
                                     <Button
                                         x:Name="btn_profile_edit"
-                                        Margin="3,2"
+                                        Margin="3"
                                         Padding="5,0"
                                         VerticalContentAlignment="Center"
                                         Command="{Binding EditProfileCommand}"
@@ -817,7 +800,7 @@
                                         Content="Edit" />
                                     <Button
                                         x:Name="btn_profile_remove"
-                                        Margin="3,2"
+                                        Margin="3"
                                         Padding="5,0"
                                         Command="{Binding RemoveProfileCommand}"
                                         CommandParameter="{Binding ElementName=dg_main_profiles, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
@@ -825,11 +808,11 @@
                                 </StackPanel>
                             </Grid>
                             <Grid Grid.Row="1">
-                                <DockPanel HorizontalAlignment="Stretch" Background="DarkSlateBlue">
+                                <DockPanel HorizontalAlignment="Stretch" Background="#f1f1f1">
                                     <md:CommandComboBox
                                         x:Name="cb_profile_class"
                                         Width="65"
-                                        Margin="3,2"
+                                        Margin="3"
                                         Padding="5,0"
                                         VerticalContentAlignment="Center"
                                         Command="{Binding SearchClassProfilesCommand}"
@@ -841,7 +824,7 @@
                                     <md:CommandComboBox
                                         x:Name="cb_profile_group"
                                         Width="65"
-                                        Margin="3,2"
+                                        Margin="3"
                                         Padding="5,0"
                                         VerticalContentAlignment="Center"
                                         Command="{Binding SearchGroupProfilesCommand}"
@@ -862,7 +845,7 @@
                                     </md:CommandComboBox>
                                     <md:CommandTextBox
                                         x:Name="tb_profile_search"
-                                        Margin="3,2"
+                                        Margin="3"
                                         Padding="5,0"
                                         Command="{Binding SearchOthersProfilesCommand}"
                                         CommandParameter="{Binding ElementName=dg_main_profiles, UpdateSourceTrigger=PropertyChanged, Path=Items}"
@@ -980,23 +963,23 @@
                                     FontWeight="Normal"
                                     Text="{Binding ElementName=pb_Export_Status, Path=Value, StringFormat={}{0:0} %}" />
                             </Grid>
-                            <Grid Grid.Row="4" Background="CadetBlue">
+                            <Grid Grid.Row="4" Background="#f1f1f1">
                                 <StackPanel
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Center"
-                                    Background="Coral">
+                                    Background="#f1f1f1">
                                     <TextBlock Margin="5,0" Text="{Binding ProfilesWorkStatus, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
                                 </StackPanel>
                                 <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                                     <Button
                                         x:Name="btn_profile_import"
-                                        Margin="3,2"
+                                        Margin="3"
                                         Padding="5,0"
                                         Command="{Binding ImportProfilesCommand}"
                                         Content="Import" />
                                     <Button
                                         x:Name="btn_profile_export"
-                                        Margin="3,2"
+                                        Margin="3"
                                         Padding="5,0"
                                         Command="{Binding ExportProfilesCommand}"
                                         Content="Export">
@@ -1009,7 +992,7 @@
                                     </Button>
                                     <Button
                                         x:Name="btn_profile_stopExport"
-                                        Margin="3,2"
+                                        Margin="3"
                                         Padding="5,0"
                                         Command="{Binding StopExportProfilesCommand}"
                                         Content="Stop" />
@@ -1032,163 +1015,156 @@
                                     <RowDefinition Height="25" />
                                 </Grid.RowDefinitions>
                                 <Grid Grid.Row="0">
-                                    <TabControl TabStripPlacement="Top">
-                                        <TabItem Header="Infomation">
-                                            <GroupBox BorderBrush="Black" Header="Profile">
-                                                <ScrollViewer>
+                                    <GroupBox BorderBrush="Black" Header="Profile">
+                                        <ScrollViewer>
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="170" />
+                                                    <RowDefinition />
+                                                </Grid.RowDefinitions>
+                                                <Border
+                                                    Grid.Row="0"
+                                                    BorderBrush="LightGray"
+                                                    BorderThickness="1">
                                                     <Grid>
-                                                        <Grid.RowDefinitions>
-                                                            <RowDefinition Height="170" />
-                                                            <RowDefinition />
-                                                        </Grid.RowDefinitions>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="170" />
+                                                            <ColumnDefinition />
+                                                        </Grid.ColumnDefinitions>
                                                         <Border
-                                                            Grid.Row="0"
+                                                            Grid.Column="0"
+                                                            Margin="2,2,2,1"
                                                             BorderBrush="LightGray"
                                                             BorderThickness="1">
                                                             <Grid>
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition />
+                                                                    <RowDefinition Height="25" />
+                                                                </Grid.RowDefinitions>
+                                                                <Grid Grid.Row="0" Grid.RowSpan="2">
+                                                                    <Image Source="{Binding ElementName=dg_main_profiles, Path=SelectedItem.IMAGE, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource myProfileImageConverter}}" />
+                                                                </Grid>
+                                                                <Grid Grid.Row="1">
+                                                                    <StackPanel
+                                                                        HorizontalAlignment="Right"
+                                                                        Background="#f1f1f1"
+                                                                        Orientation="Horizontal">
+                                                                        <Button
+                                                                            x:Name="btn_profile_replace_picture"
+                                                                            Margin="3"
+                                                                            Padding="5,0"
+                                                                            VerticalContentAlignment="Center"
+                                                                            Command="{Binding ReplaceProfileImageCommand}"
+                                                                            CommandParameter="{Binding ElementName=dg_main_profiles, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged}"
+                                                                            Content="Change Image" />
+                                                                    </StackPanel>
+                                                                </Grid>
+                                                            </Grid>
+                                                        </Border>
+                                                        <Grid Grid.Column="1" Margin="0,2,2,1">
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition />
+                                                                <RowDefinition />
+                                                                <RowDefinition />
+                                                                <RowDefinition />
+                                                                <RowDefinition />
+                                                            </Grid.RowDefinitions>
+                                                            <Border
+                                                                Grid.Row="0"
+                                                                Margin="0,0,0,2"
+                                                                BorderBrush="LightGray"
+                                                                BorderThickness="1">
+                                                                <TextBox
+                                                                    HorizontalContentAlignment="Center"
+                                                                    VerticalContentAlignment="Center"
+                                                                    BorderThickness="0"
+                                                                    FontSize="16"
+                                                                    Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.PROFILE_STATUS}"
+                                                                    TextWrapping="WrapWithOverflow" />
+                                                            </Border>
+                                                            <Border
+                                                                Grid.Row="1"
+                                                                Margin="0,0,0,2"
+                                                                BorderBrush="LightGray"
+                                                                BorderThickness="1">
+                                                                <TextBox
+                                                                    HorizontalContentAlignment="Center"
+                                                                    VerticalContentAlignment="Center"
+                                                                    BorderThickness="0"
+                                                                    FontSize="16"
+                                                                    Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.PROFILE_NAME}"
+                                                                    TextWrapping="WrapWithOverflow" />
+                                                            </Border>
+                                                            <Grid Grid.Row="2">
                                                                 <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition Width="170" />
+                                                                    <ColumnDefinition />
                                                                     <ColumnDefinition />
                                                                 </Grid.ColumnDefinitions>
                                                                 <Border
                                                                     Grid.Column="0"
-                                                                    Margin="2,2,2,1"
+                                                                    Margin="0,0,1,0"
                                                                     BorderBrush="LightGray"
                                                                     BorderThickness="1">
-                                                                    <Grid>
-                                                                        <Grid.RowDefinitions>
-                                                                            <RowDefinition />
-                                                                            <RowDefinition Height="25" />
-                                                                        </Grid.RowDefinitions>
-                                                                        <Grid Grid.Row="0" Grid.RowSpan="2">
-                                                                            <Image Source="{Binding ElementName=dg_main_profiles, Path=SelectedItem.IMAGE, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource myProfileImageConverter}}" />
-                                                                        </Grid>
-                                                                        <Grid Grid.Row="1">
-                                                                            <StackPanel
-                                                                                HorizontalAlignment="Right"
-                                                                                Background="Aqua"
-                                                                                Orientation="Horizontal">
-                                                                                <Button
-                                                                                    x:Name="btn_profile_replace_picture"
-                                                                                    Margin="3,2"
-                                                                                    Padding="5,0"
-                                                                                    VerticalContentAlignment="Center"
-                                                                                    Command="{Binding ReplaceProfileImageCommand}"
-                                                                                    CommandParameter="{Binding ElementName=dg_main_profiles, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged}"
-                                                                                    Content="Change Image" />
-                                                                            </StackPanel>
-                                                                        </Grid>
-                                                                    </Grid>
+                                                                    <TextBox
+                                                                        HorizontalContentAlignment="Center"
+                                                                        VerticalContentAlignment="Center"
+                                                                        BorderThickness="0"
+                                                                        FontSize="16"
+                                                                        Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.PIN_NO}"
+                                                                        TextWrapping="WrapWithOverflow" />
                                                                 </Border>
-                                                                <Grid Grid.Column="1" Margin="0,2,2,1">
-                                                                    <Grid.RowDefinitions>
-                                                                        <RowDefinition />
-                                                                        <RowDefinition />
-                                                                        <RowDefinition />
-                                                                        <RowDefinition />
-                                                                        <RowDefinition />
-                                                                    </Grid.RowDefinitions>
-                                                                    <Border
-                                                                        Grid.Row="0"
-                                                                        Margin="0,0,0,2"
-                                                                        BorderBrush="LightGray"
-                                                                        BorderThickness="1">
-                                                                        <TextBox
-                                                                            HorizontalContentAlignment="Center"
-                                                                            VerticalContentAlignment="Center"
-                                                                            BorderThickness="0"
-                                                                            FontSize="16"
-                                                                            Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.PROFILE_STATUS}"
-                                                                            TextWrapping="WrapWithOverflow" />
-                                                                    </Border>
-                                                                    <Border
-                                                                        Grid.Row="1"
-                                                                        Margin="0,0,0,2"
-                                                                        BorderBrush="LightGray"
-                                                                        BorderThickness="1">
-                                                                        <TextBox
-                                                                            HorizontalContentAlignment="Center"
-                                                                            VerticalContentAlignment="Center"
-                                                                            BorderThickness="0"
-                                                                            FontSize="16"
-                                                                            Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.PROFILE_NAME}"
-                                                                            TextWrapping="WrapWithOverflow" />
-                                                                    </Border>
-                                                                    <Grid Grid.Row="2">
-                                                                        <Grid.ColumnDefinitions>
-                                                                            <ColumnDefinition />
-                                                                            <ColumnDefinition />
-                                                                        </Grid.ColumnDefinitions>
-                                                                        <Border
-                                                                            Grid.Column="0"
-                                                                            Margin="0,0,1,0"
-                                                                            BorderBrush="LightGray"
-                                                                            BorderThickness="1">
-                                                                            <TextBox
-                                                                                HorizontalContentAlignment="Center"
-                                                                                VerticalContentAlignment="Center"
-                                                                                BorderThickness="0"
-                                                                                FontSize="16"
-                                                                                Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.PIN_NO}"
-                                                                                TextWrapping="WrapWithOverflow" />
-                                                                        </Border>
-                                                                        <Border
-                                                                            Grid.Column="1"
-                                                                            Margin="1,0,0,0"
-                                                                            BorderBrush="LightGray"
-                                                                            BorderThickness="1">
-                                                                            <TextBox
-                                                                                HorizontalContentAlignment="Center"
-                                                                                VerticalContentAlignment="Center"
-                                                                                BorderThickness="0"
-                                                                                FontSize="16"
-                                                                                Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.AD_NO}"
-                                                                                TextWrapping="WrapWithOverflow" />
-                                                                        </Border>
-                                                                    </Grid>
-
-                                                                    <Border
-                                                                        Grid.Row="3"
-                                                                        Margin="0,2,0,0"
-                                                                        BorderBrush="LightGray"
-                                                                        BorderThickness="1">
-                                                                        <TextBox
-                                                                            HorizontalContentAlignment="Center"
-                                                                            VerticalContentAlignment="Center"
-                                                                            BorderThickness="0"
-                                                                            FontSize="16"
-                                                                            Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.DOB, StringFormat=\{0:dd-MM-yyyy\}}"
-                                                                            TextWrapping="WrapWithOverflow" />
-                                                                    </Border>
-                                                                    <Border
-                                                                        Grid.Row="4"
-                                                                        Margin="0,2,0,0"
-                                                                        BorderBrush="LightGray"
-                                                                        BorderThickness="1">
-                                                                        <TextBox
-                                                                            HorizontalContentAlignment="Center"
-                                                                            VerticalContentAlignment="Center"
-                                                                            BorderThickness="0"
-                                                                            FontSize="16"
-                                                                            Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.DISU, StringFormat=\{0:dd-MM-yyyy\}}"
-                                                                            TextWrapping="WrapWithOverflow" />
-                                                                    </Border>
-                                                                </Grid>
+                                                                <Border
+                                                                    Grid.Column="1"
+                                                                    Margin="1,0,0,0"
+                                                                    BorderBrush="LightGray"
+                                                                    BorderThickness="1">
+                                                                    <TextBox
+                                                                        HorizontalContentAlignment="Center"
+                                                                        VerticalContentAlignment="Center"
+                                                                        BorderThickness="0"
+                                                                        FontSize="16"
+                                                                        Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.AD_NO}"
+                                                                        TextWrapping="WrapWithOverflow" />
+                                                                </Border>
                                                             </Grid>
-                                                        </Border>
-                                                        <Grid Grid.Row="1">
-                                                            <ListBox ItemsSource="{Binding ElementName=dg_main_profiles, Path=SelectedItem.LIST_DEVICE_ID, Converter={StaticResource myProfileListDeviceConverter}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+
+                                                            <Border
+                                                                Grid.Row="3"
+                                                                Margin="0,2,0,0"
+                                                                BorderBrush="LightGray"
+                                                                BorderThickness="1">
+                                                                <TextBox
+                                                                    HorizontalContentAlignment="Center"
+                                                                    VerticalContentAlignment="Center"
+                                                                    BorderThickness="0"
+                                                                    FontSize="16"
+                                                                    Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.DOB, StringFormat=\{0:dd-MM-yyyy\}}"
+                                                                    TextWrapping="WrapWithOverflow" />
+                                                            </Border>
+                                                            <Border
+                                                                Grid.Row="4"
+                                                                Margin="0,2,0,0"
+                                                                BorderBrush="LightGray"
+                                                                BorderThickness="1">
+                                                                <TextBox
+                                                                    HorizontalContentAlignment="Center"
+                                                                    VerticalContentAlignment="Center"
+                                                                    BorderThickness="0"
+                                                                    FontSize="16"
+                                                                    Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.DISU, StringFormat=\{0:dd-MM-yyyy\}}"
+                                                                    TextWrapping="WrapWithOverflow" />
+                                                            </Border>
                                                         </Grid>
                                                     </Grid>
-                                                </ScrollViewer>
-                                            </GroupBox>
-                                        </TabItem>
-                                        <TabItem Header="Devices">
-                                            <ListView />
-                                        </TabItem>
-                                    </TabControl>
+                                                </Border>
+                                                <Grid Grid.Row="1">
+                                                    <ListBox ItemsSource="{Binding ElementName=dg_main_profiles, Path=SelectedItem.LIST_DEVICE_ID, Converter={StaticResource myProfileListDeviceConverter}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                                                </Grid>
+                                            </Grid>
+                                        </ScrollViewer>
+                                    </GroupBox>
                                 </Grid>
-                                <Grid Grid.Row="1" Background="MediumAquamarine" />
+                                <Grid Grid.Row="1" Background="#f1f1f1" />
                             </Grid>
                             <Grid Grid.Row="1">
                                 <Grid.RowDefinitions>
@@ -1196,24 +1172,24 @@
                                     <RowDefinition />
                                     <RowDefinition Height="25" />
                                 </Grid.RowDefinitions>
-                                <Grid Grid.Row="0" Background="ForestGreen">
+                                <Grid Grid.Row="0" Background="#f1f1f1">
                                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                                         <Button
                                             x:Name="btn_previousDate"
-                                            Margin="3,2"
+                                            Margin="3"
                                             Padding="5,0"
                                             Content="Previous" />
                                         <DatePicker x:Name="dtp_timecheck_date" Padding="5,2" />
                                         <Button
                                             x:Name="btn_nextDate"
-                                            Margin="3,2"
+                                            Margin="3"
                                             Padding="5,0"
                                             Content="Next" />
                                     </StackPanel>
                                     <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                                         <Button
                                             x:Name="btn_timecheck_export"
-                                            Margin="3,2"
+                                            Margin="3"
                                             Padding="5,0"
                                             Content="Export" />
                                     </StackPanel>
@@ -1226,7 +1202,7 @@
                                         CanUserDeleteRows="False"
                                         ItemsSource="{Binding TimeChecks, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
-                                <Grid Grid.Row="2" Background="ForestGreen" />
+                                <Grid Grid.Row="2" Background="#f1f1f1" />
                             </Grid>
                         </Grid>
                     </Grid>

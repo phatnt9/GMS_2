@@ -282,12 +282,12 @@
                     Background="Coral"
                     Orientation="Horizontal">
                     <Button
-                        Margin="3,2"
+                        Margin="3"
                         Padding="5,0"
                         Command="{Binding SaveProfileCommand}"
                         Content="Save" />
                     <Button
-                        Margin="3,2"
+                        Margin="3"
                         Padding="5,0"
                         Command="{Binding CloseEditProfileCommand}"
                         Content="Cancel" />

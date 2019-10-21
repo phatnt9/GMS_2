@@ -25,6 +25,7 @@ namespace GateAccessControl
             Failed,
             Error,
             Pending,
+            Requesting,
         }
 
         public enum CLIENTCMD
@@ -89,9 +90,21 @@ namespace GateAccessControl
         //public event Action<String> MessageCallBack;
         public FLAGSTATUSCLIENT OnFlagStatusClient;
 
-        public STATUSPROFILE statusProfile = STATUSPROFILE.Pending;
+        private string _statusProfile = STATUSPROFILE.Pending.ToString();
+        public String StatusProfile
+        {
+            get
+            {
+                return _statusProfile;
+            }
+            set
+            {
+                _statusProfile = value;
+                OnPropertyChanged("StatusProfile");
+            }
+        }
 
-        
+
         public DeviceItem()
         {
             WebSocketStatus = "Disconnected";
@@ -210,6 +223,7 @@ namespace GateAccessControl
                         List<CheckinData> personList = new List<CheckinData>();
                         try
                         {
+                            StatusProfile = "Received check-in records";
                             JObject dataClient = JObject.Parse(standard.data);
                             if (dataClient["data"].Count() > 0)
                             {
@@ -364,13 +378,13 @@ namespace GateAccessControl
                     OnFlagStatusClient.OnConfirmProfileSuccess == CLIENTCMD.CONFIRM_UPDATE_PROFILE_SUCCESS)
                 {
                     OnFlagStatusClient.OnConfirmProfileSuccess = CLIENTCMD.CLIENT_READY;
-                    statusProfile = STATUSPROFILE.Updated;
+                    //StatusProfile = STATUSPROFILE.Updated;
                     return true;
                 }
                 else
                 {
                     OnFlagStatusClient.OnConfirmProfileSuccess = CLIENTCMD.CLIENT_READY;
-                    statusProfile = STATUSPROFILE.Failed;
+                    //StatusProfile = STATUSPROFILE.Failed;
                     return false;
                 }
                 //===================================
@@ -386,6 +400,7 @@ namespace GateAccessControl
         {
             try
             {
+                StatusProfile = "Requesting check-in records";
                 dynamic product = new JObject();
                 product.status = SERVERRESPONSE.RESP_REQ_PERSONLIST_IMMEDIATELY;
                 StandardString msg = new StandardString();
@@ -394,6 +409,7 @@ namespace GateAccessControl
             }
             catch (Exception ex)
             {
+                StatusProfile = "Requesting check-in records failed";
                 logFile.Error(ex.Message);
             }
         }
@@ -413,15 +429,18 @@ namespace GateAccessControl
                         SqliteDataAccess.InsertDataTimeCheck(timeCheck);
                     }
                 }
+                StatusProfile = "Check-in records saved";
                 return true;
             }
             catch (Exception ex)
             {
+                StatusProfile = "Save check-in records failed";
                 logFile.Error(ex.Message);
                 return false;
             }
             finally
             {
+                StatusProfile = "Ready";
             }
         }
         public Byte[] ImageToByte(Image img)

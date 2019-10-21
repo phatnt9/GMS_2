@@ -160,7 +160,6 @@ namespace GateAccessControl.Views
                     {
                         Profile profile = new Profile();
                         DateTime ngayThang = DateTime.MinValue;
-                        double dateD;
 
                         if (xlRange.Cells[i, 8] != null && xlRange.Cells[i, 8].Value2 != null)
                         {

@@ -24,7 +24,6 @@
                 Padding="5,2"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                Background="Coral"
                 Text="{Binding AddDeviceStatus}" />
         </Grid>
         <Grid Grid.Row="1">
@@ -45,7 +44,6 @@
                             Padding="5,2"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
-                            Background="Aquamarine"
                             Text="Gate Name: " />
                     </Grid>
                     <Grid Grid.Row="1">
@@ -54,7 +52,6 @@
                             Padding="5,2"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
-                            Background="Aquamarine"
                             Text="Gate IP: " />
                     </Grid>
                     <Grid Grid.Row="2">
@@ -63,7 +60,6 @@
                             Padding="5,2"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
-                            Background="Aquamarine"
                             Text="Note: " />
                     </Grid>
                 </Grid>
@@ -77,7 +73,6 @@
                         <TextBox
                             x:Name="tb_gateName"
                             Margin="5,2"
-                            Background="FloralWhite"
                             Text="{Binding Path=AddDevice.DEVICE_NAME, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                             TextAlignment="Center" />
                     </Grid>
@@ -85,7 +80,6 @@
                         <TextBox
                             x:Name="tb_gateIp"
                             Margin="5,2"
-                            Background="FloralWhite"
                             Text="{Binding Path=AddDevice.DEVICE_IP, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                             TextAlignment="Center" />
                     </Grid>
@@ -93,26 +87,22 @@
                         <TextBox
                             x:Name="tb_gateNote"
                             Margin="5,2"
-                            Background="FloralWhite"
                             Text="{Binding Path=AddDevice.DEVICE_NOTE, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                             TextAlignment="Center" />
                     </Grid>
                 </Grid>
             </Grid>
         </Grid>
-        <Grid
-            Grid.Row="2"
-            HorizontalAlignment="Right"
-            Background="LightCoral">
+        <Grid Grid.Row="2" HorizontalAlignment="Right">
             <StackPanel Orientation="Horizontal">
                 <Button
                     x:Name="btn_class_save"
-                    Margin="3,2"
+                    Margin="3"
                     Padding="5,0"
                     Command="{Binding AddDeviceCommand}"
                     Content="Add" />
                 <Button
-                    Margin="3,2"
+                    Margin="3"
                     Padding="5,0"
                     Command="{Binding CloseAddDeviceCommand}"
                     Content="Close" />

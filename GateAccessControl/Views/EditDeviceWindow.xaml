@@ -106,12 +106,12 @@
             Background="LightCoral">
             <StackPanel Orientation="Horizontal">
                 <Button
-                    Margin="3,2"
+                    Margin="3"
                     Padding="5,0"
                     Command="{Binding EditDeviceCommand}"
                     Content="Save" />
                 <Button
-                    Margin="3,2"
+                    Margin="3"
                     Padding="5,0"
                     Command="{Binding CloseEditDeviceCommand}"
                     Content="Close" />

@@ -29,7 +29,7 @@
                 <StackPanel Background="Aqua" Orientation="Horizontal">
                     <Button
                         x:Name="btn_class_remove"
-                        Margin="3,2"
+                        Margin="3"
                         Padding="5,0"
                         Command="{Binding RemoveClassesCommand}"
                         Content="Remove">
@@ -66,13 +66,13 @@
                 <StackPanel Orientation="Horizontal">
                     <Button
                         x:Name="btn_class_save"
-                        Margin="3,2"
+                        Margin="3"
                         Padding="5,0"
                         Command="{Binding SaveClassesCommand}"
                         CommandParameter="{Binding ElementName=dg_classes, Path=ItemsSource}"
                         Content="Save" />
                     <Button
-                        Margin="3,2"
+                        Margin="3"
                         Padding="5,0"
                         VerticalContentAlignment="Center"
                         Command="{Binding CloseClassManagementCommand}"
