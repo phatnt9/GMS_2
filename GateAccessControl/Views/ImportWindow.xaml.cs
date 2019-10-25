@@ -20,7 +20,7 @@ namespace GateAccessControl.Views
         private string importFileFolder = "";
         private bool isAddProfile = true; //add-true, update-false
         private List<CardType> classes;
-        private BackgroundWorker worker;
+        private BackgroundWorker ImortWorker;
         public ImportWindow(List<CardType> classes)
         {
             InitializeComponent();
@@ -31,9 +31,9 @@ namespace GateAccessControl.Views
 
         private void ImportWindow_Closed(object sender, EventArgs e)
         {
-            if (worker.IsBusy)
+            if (ImortWorker.IsBusy)
             {
-                worker.CancelAsync();
+                ImortWorker.CancelAsync();
             }
         }
 
@@ -81,13 +81,13 @@ namespace GateAccessControl.Views
                 }
                 btn_import.IsEnabled = false;
                 isAddProfile = (bool)rb_add.IsChecked ? true : false;
-                worker = new BackgroundWorker();
-                worker.WorkerSupportsCancellation = true;
-                worker.WorkerReportsProgress = true;
-                worker.DoWork += Worker_DoWork;
-                worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
-                worker.ProgressChanged += Worker_ProgressChanged;
-                worker.RunWorkerAsync();
+                ImortWorker = new BackgroundWorker();
+                ImortWorker.WorkerSupportsCancellation = true;
+                ImortWorker.WorkerReportsProgress = true;
+                ImortWorker.DoWork += Worker_DoWork;
+                ImortWorker.RunWorkerCompleted += Worker_RunWorkerCompleted;
+                ImortWorker.ProgressChanged += Worker_ProgressChanged;
+                ImortWorker.RunWorkerAsync();
             }
             catch (Exception ex)
             {
@@ -190,19 +190,10 @@ namespace GateAccessControl.Views
                         profile.PROFILE_STATUS = xlRange.Cells[i, 14].Value2.ToString();
 
                         profile.IMAGE = xlRange.Cells[i, 7].Value2.ToString();
-
-                        if (profile.PROFILE_STATUS == "Suspended")
+                        
+                        if (xlRange.Cells[i, 16].Value2 != null)
                         {
-                            profile.LOCK_DATE = ParseDateTimeFormCell(xlRange.Cells[i, 15].Value2.ToString());
-                        }
-                        else
-                        {
-                            profile.LOCK_DATE = DateTime.MinValue;
-                        }
-
-                        if (xlRange.Cells[i, 17].Value2 != null)
-                        {
-                            profile.CHECK_DATE_TO_LOCK = Boolean.Parse(xlRange.Cells[i, 17].Value2.ToString());
+                            profile.CHECK_DATE_TO_LOCK = Boolean.Parse(xlRange.Cells[i, 16].Value2.ToString());
                         }
                         else
                         {
@@ -211,9 +202,9 @@ namespace GateAccessControl.Views
 
                         if (profile.CHECK_DATE_TO_LOCK == true)
                         {
-                            if (xlRange.Cells[i, 16].Value2 != null)
+                            if (xlRange.Cells[i, 15].Value2 != null)
                             {
-                                profile.DATE_TO_LOCK = ParseDateTimeFormCell(xlRange.Cells[i, 16].Value2.ToString());
+                                profile.DATE_TO_LOCK = ParseDateTimeFormCell(xlRange.Cells[i, 15].Value2.ToString());
                             }
                             else
                             {
@@ -225,7 +216,7 @@ namespace GateAccessControl.Views
                             profile.DATE_TO_LOCK = DateTime.MinValue;
                         }
 
-                        profile.LICENSE_PLATE = (xlRange.Cells[i, 18].Value2 == null) ? "" : xlRange.Cells[i, 18].Value2.ToString();
+                        profile.LICENSE_PLATE = (xlRange.Cells[i, 17].Value2 == null) ? "" : xlRange.Cells[i, 17].Value2.ToString();
 
                         if (isAddProfile)
                         {
@@ -236,7 +227,7 @@ namespace GateAccessControl.Views
                         else
                         {
                             //Update
-                            profile.DATE_CREATED = (xlRange.Cells[i, 19].Value2 == null) ? DateTime.Now : ParseDateTimeFormCell(xlRange.Cells[i, 19].Value2.ToString());
+                            profile.DATE_CREATED = (xlRange.Cells[i, 18].Value2 == null) ? DateTime.Now : ParseDateTimeFormCell(xlRange.Cells[i, 18].Value2.ToString());
                             profile.DATE_MODIFIED = DateTime.Now;
                         }
 
@@ -294,7 +285,7 @@ namespace GateAccessControl.Views
                             logFile.Error(ex.Message);
                         }
                     }
-                    if (worker.CancellationPending)
+                    if (ImortWorker.CancellationPending)
                     {
                         this.Dispatcher.Invoke(() =>
                         {
@@ -350,7 +341,7 @@ namespace GateAccessControl.Views
 
         private void Stop_Click(object sender, RoutedEventArgs e)
         {
-            worker.CancelAsync();
+            ImortWorker.CancelAsync();
         }
 
         public void ImportProfileImage(string importFolderPath, string imageName)

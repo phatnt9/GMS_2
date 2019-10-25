@@ -17,7 +17,7 @@
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30" />
+            <RowDefinition Height="0" />
             <RowDefinition />
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
@@ -108,14 +108,10 @@
                     </DataGrid>
                 </Grid>
                 <Grid Grid.Row="2">
-                    <StackPanel
-                        HorizontalAlignment="Right"
-                        Background="Aqua"
-                        Orientation="Horizontal">
+                    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                         <TextBlock
                             Width="100"
                             VerticalAlignment="Center"
-                            Background="Coral"
                             Text="{Binding ElementName=dg_profiles, Path=SelectedItems.Count}"
                             TextAlignment="Center" />
                         <Button
@@ -123,6 +119,7 @@
                             Margin="3"
                             Padding="5,0"
                             VerticalContentAlignment="Center"
+                            BorderThickness="0"
                             Command="{Binding SelectProfilesCommand}"
                             Content="Select">
                             <Button.CommandParameter>
@@ -131,6 +128,20 @@
                                     <Binding ElementName="dg_profiles" Path="SelectedItems" />
                                 </MultiBinding>
                             </Button.CommandParameter>
+                            <Button.Style>
+                                <Style TargetType="{x:Type Button}">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsEnabled" Value="True">
+                                            <Setter Property="Foreground" Value="White" />
+                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                            <Setter Property="Background" Value="#222E50" />
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
                         </Button>
                     </StackPanel>
                 </Grid>
@@ -142,15 +153,13 @@
                     <RowDefinition Height="25" />
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
-                    <StackPanel
-                        HorizontalAlignment="Right"
-                        Background="Aqua"
-                        Orientation="Horizontal">
+                    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                         <Button
                             x:Name="btn_deviceProfiles_Active"
                             Margin="3"
                             Padding="5,0"
                             VerticalContentAlignment="Center"
+                            BorderThickness="0"
                             Command="{Binding ActiveDeviceProfilesCommand}"
                             Content="Active">
                             <Button.CommandParameter>
@@ -159,11 +168,26 @@
                                     <Binding ElementName="dg_deviceProfiles" Path="SelectedItems" />
                                 </MultiBinding>
                             </Button.CommandParameter>
+                            <Button.Style>
+                                <Style TargetType="{x:Type Button}">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsEnabled" Value="True">
+                                            <Setter Property="Foreground" Value="White" />
+                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                            <Setter Property="Background" Value="#29BF12" />
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
                         </Button>
                         <Button
                             x:Name="btn_deviceProfiles_Deactive"
                             Margin="3"
                             Padding="5,0"
+                            BorderThickness="0"
                             Command="{Binding DeactiveDeviceProfilesCommand}"
                             Content="Deactive">
                             <Button.CommandParameter>
@@ -172,6 +196,20 @@
                                     <Binding ElementName="dg_deviceProfiles" Path="SelectedItems" />
                                 </MultiBinding>
                             </Button.CommandParameter>
+                            <Button.Style>
+                                <Style TargetType="{x:Type Button}">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsEnabled" Value="True">
+                                            <Setter Property="Foreground" Value="White" />
+                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                            <Setter Property="Background" Value="#D83636" />
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
                         </Button>
                     </StackPanel>
                 </Grid>
@@ -187,147 +225,128 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn
                                 Width="Auto"
-                                Binding="{Binding Path=PROFILE_ID}"
+                                Binding="{Binding Path=PROFILE_ID, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                 Header="Id"
                                 Visibility="Hidden" />
                             <DataGridTextColumn
                                 Width="Auto"
-                                Binding="{Binding Path=PIN_NO}"
+                                Binding="{Binding Path=PIN_NO, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                 Header="PinNo"
                                 Visibility="Visible" />
                             <DataGridTextColumn
                                 Width="Auto"
-                                Binding="{Binding Path=AD_NO}"
+                                Binding="{Binding Path=AD_NO, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                 Header="AdNo"
                                 Visibility="Visible" />
                             <DataGridTextColumn
                                 Width="Auto"
-                                Binding="{Binding Path=PROFILE_NAME}"
+                                Binding="{Binding Path=PROFILE_NAME, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                 Header="Name"
                                 Visibility="Visible" />
                             <DataGridTextColumn
                                 Width="Auto"
-                                Binding="{Binding Path=CLASS_NAME}"
+                                Binding="{Binding Path=CLASS_NAME, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                 Header="Type"
                                 Visibility="Visible" />
                             <DataGridTextColumn
                                 Width="Auto"
-                                Binding="{Binding Path=SUB_CLASS}"
+                                Binding="{Binding Path=SUB_CLASS, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                 Header="Group"
                                 Visibility="Visible" />
                             <DataGridTextColumn
                                 Width="Auto"
-                                Binding="{Binding Path=GENDER}"
+                                Binding="{Binding Path=GENDER, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                 Header="Gender"
                                 Visibility="Visible" />
                             <DataGridTextColumn
-                                                Width="Auto"
-                                                Binding="{Binding Path=PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                                Header="Status"
-                                                Visibility="Visible">
+                                Width="Auto"
+                                Binding="{Binding Path=PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                Header="Status"
+                                Visibility="Visible">
                                 <DataGridTextColumn.CellStyle>
                                     <Style TargetType="{x:Type DataGridCell}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Path=PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Active">
                                                 <Setter Property="Foreground" Value="White" />
                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                <Setter Property="Background" Value="#69B578" />
+                                                <Setter Property="Background" Value="#29BF12" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Path=PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Suspended">
                                                 <Setter Property="Foreground" Value="White" />
                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                <Setter Property="Background" Value="#E15554" />
+                                                <Setter Property="Background" Value="#F21B3F" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </DataGridTextColumn.CellStyle>
                             </DataGridTextColumn>
                             <DataGridTextColumn
-                                                Width="Auto"
-                                                Binding="{Binding Path=SERVER_STATUS, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                                Header="Request"
-                                                Visibility="Visible">
+                                Width="Auto"
+                                Binding="{Binding Path=SERVER_STATUS, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                Header="Request"
+                                Visibility="Visible">
                                 <DataGridTextColumn.CellStyle>
                                     <Style TargetType="{x:Type DataGridCell}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Path=SERVER_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="None">
-                                                <Setter Property="Foreground" Value="Blue" />
+                                                <Setter Property="Foreground" Value="Black" />
                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                <Setter Property="Background" Value="#F7D23D" />
+                                                <Setter Property="Background" Value="#ACB4B9" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Path=SERVER_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Update">
-                                                <Setter Property="Foreground" Value="White" />
+                                                <Setter Property="Foreground" Value="#222E50" />
                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                <Setter Property="Background" Value="#4D9DE0" />
+                                                <Setter Property="Background" Value="#F9DC5C" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Path=SERVER_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Add">
                                                 <Setter Property="Foreground" Value="White" />
                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                <Setter Property="Background" Value="#69B578" />
+                                                <Setter Property="Background" Value="#5998C5" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Path=SERVER_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Remove">
                                                 <Setter Property="Foreground" Value="White" />
                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                <Setter Property="Background" Value="#E15554" />
+                                                <Setter Property="Background" Value="#D83636" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </DataGridTextColumn.CellStyle>
                             </DataGridTextColumn>
                             <DataGridTextColumn
-                                                Width="Auto"
-                                                Binding="{Binding Path=CLIENT_STATUS, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                                                Header="Client"
-                                                Visibility="Visible">
+                                Width="Auto"
+                                Binding="{Binding Path=CLIENT_STATUS, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                Header="Client"
+                                Visibility="Visible">
                                 <DataGridTextColumn.CellStyle>
                                     <Style TargetType="{x:Type DataGridCell}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Path=CLIENT_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Unknow">
-                                                <Setter Property="Foreground" Value="Blue" />
+                                                <Setter Property="Foreground" Value="Black" />
                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                <Setter Property="Background" Value="#F7D23D" />
+                                                <Setter Property="Background" Value="#ACB4B9" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Path=CLIENT_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Delete">
                                                 <Setter Property="Foreground" Value="White" />
                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                <Setter Property="Background" Value="#4D9DE0" />
+                                                <Setter Property="Background" Value="#BE2328" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Path=CLIENT_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Deleted">
                                                 <Setter Property="Foreground" Value="White" />
                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                <Setter Property="Background" Value="#E15554" />
+                                                <Setter Property="Background" Value="#202626" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </DataGridTextColumn.CellStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding Path=CHECK_DATE_TO_LOCK}"
-                                Header="Auto Suspension"
-                                Visibility="Visible" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding Path=DATE_CREATED}"
-                                Header="Date Created"
-                                Visibility="Visible" />
-                            <DataGridTextColumn
-                                Width="Auto"
-                                Binding="{Binding Path=DATE_MODIFIED}"
-                                Header="Date Modified"
-                                Visibility="Visible" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
                 <Grid Grid.Row="2">
-                    <StackPanel
-                        HorizontalAlignment="Right"
-                        Background="Aqua"
-                        Orientation="Horizontal">
+                    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                         <TextBlock
                             Width="100"
                             VerticalAlignment="Center"
-                            Background="Coral"
                             Text="{Binding ElementName=dg_deviceProfiles, Path=SelectedItems.Count}"
                             TextAlignment="Center" />
                         <Button
@@ -335,6 +354,7 @@
                             Margin="3"
                             Padding="5,0"
                             VerticalContentAlignment="Center"
+                            BorderThickness="0"
                             Command="{Binding DeleteDeviceProfilesCommand}"
                             Content="Remove">
                             <Button.CommandParameter>
@@ -343,6 +363,20 @@
                                     <Binding ElementName="dg_deviceProfiles" Path="SelectedItems" />
                                 </MultiBinding>
                             </Button.CommandParameter>
+                            <Button.Style>
+                                <Style TargetType="{x:Type Button}">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsEnabled" Value="True">
+                                            <Setter Property="Foreground" Value="White" />
+                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                            <Setter Property="Background" Value="#D83636" />
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
                         </Button>
                     </StackPanel>
                 </Grid>

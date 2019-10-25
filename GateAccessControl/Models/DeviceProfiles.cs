@@ -30,7 +30,6 @@ namespace GateAccessControl
             PHONE = p.PHONE;
             PROFILE_STATUS = p.PROFILE_STATUS;
             IMAGE = p.IMAGE;
-            LOCK_DATE = p.LOCK_DATE;
             DATE_TO_LOCK = p.DATE_TO_LOCK;
             CHECK_DATE_TO_LOCK = p.CHECK_DATE_TO_LOCK;
             LICENSE_PLATE = p.LICENSE_PLATE;
@@ -38,7 +37,7 @@ namespace GateAccessControl
             DATE_MODIFIED = p.DATE_MODIFIED;
             SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
             CLIENT_STATUS = GlobalConstant.ClientStatus.Unknow.ToString();
-            ACTIVE_TIME = "00:00,23:59;00:00,23:59";
+            ACTIVE_TIME = "00:00-23:59-00:00-23:59";
         }
 
         public void CloneDataFromProfile(Profile p)
@@ -56,7 +55,6 @@ namespace GateAccessControl
             PHONE = p.PHONE;
             //PROFILE_STATUS = p.PROFILE_STATUS;
             IMAGE = p.IMAGE;
-            LOCK_DATE = p.LOCK_DATE;
             DATE_TO_LOCK = p.DATE_TO_LOCK;
             CHECK_DATE_TO_LOCK = p.CHECK_DATE_TO_LOCK;
             LICENSE_PLATE = p.LICENSE_PLATE;
@@ -232,18 +230,6 @@ namespace GateAccessControl
                 OnPropertyChanged("IMAGE");
             }
         }
-        public DateTime LOCK_DATE
-        {
-            get
-            {
-                return _lockDate;
-            }
-            set
-            {
-                _lockDate = value;
-                OnPropertyChanged("LOCK_DATE");
-            }
-        }
         public DateTime DATE_TO_LOCK
         {
             get
@@ -356,9 +342,7 @@ namespace GateAccessControl
         private string _phone;
         private string _profileStatus;
         private string _image;
-
-
-        private DateTime _lockDate;
+        
         private DateTime _dateToLock;
 
         private bool _checkDateToLock;

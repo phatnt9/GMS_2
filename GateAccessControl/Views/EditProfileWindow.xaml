@@ -21,7 +21,7 @@
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="25" />
+                <RowDefinition Height="5" />
                 <RowDefinition />
                 <RowDefinition Height="25" />
             </Grid.RowDefinitions>
@@ -56,10 +56,6 @@
                                             <Label
                                                 Height="26"
                                                 HorizontalAlignment="Right"
-                                                Content="Suspended Date:" />
-                                            <Label
-                                                Height="26"
-                                                HorizontalAlignment="Right"
                                                 Content="Auto Suspend:" />
                                             <Label
                                                 Height="26"
@@ -79,11 +75,6 @@
                                                 Margin="5,2"
                                                 VerticalContentAlignment="Center"
                                                 SelectedDate="{Binding EditProfile.DISU, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-                                            <DatePicker
-                                                Height="22"
-                                                Margin="5,2"
-                                                VerticalContentAlignment="Center"
-                                                SelectedDate="{Binding EditProfile.LOCK_DATE, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                             <CheckBox
                                                 Height="22"
                                                 Margin="5,2"
@@ -106,7 +97,7 @@
         </Grid>
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="25" />
+                <RowDefinition Height="5" />
                 <RowDefinition />
                 <RowDefinition Height="25" />
             </Grid.RowDefinitions>
@@ -277,20 +268,49 @@
                 </GroupBox>
             </Grid>
             <Grid Grid.Row="2">
-                <StackPanel
-                    HorizontalAlignment="Right"
-                    Background="Coral"
-                    Orientation="Horizontal">
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                     <Button
                         Margin="3"
                         Padding="5,0"
+                        BorderThickness="0"
                         Command="{Binding SaveProfileCommand}"
-                        Content="Save" />
+                        Content="Save">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Style.Triggers>
+                                    <Trigger Property="IsEnabled" Value="True">
+                                        <Setter Property="Foreground" Value="White" />
+                                        <Setter Property="FontWeight" Value="DemiBold" />
+                                        <Setter Property="Background" Value="#29BF12" />
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                     <Button
                         Margin="3"
                         Padding="5,0"
+                        BorderThickness="0"
                         Command="{Binding CloseEditProfileCommand}"
-                        Content="Cancel" />
+                        Content="Close">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Style.Triggers>
+                                    <Trigger Property="IsEnabled" Value="True">
+                                        <Setter Property="Foreground" Value="White" />
+                                        <Setter Property="FontWeight" Value="DemiBold" />
+                                        <Setter Property="Background" Value="#D83636" />
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                 </StackPanel>
             </Grid>
         </Grid>

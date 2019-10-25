@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:GateAccessControl"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vmd="clr-namespace:GateAccessControl.ViewModels"
     Title="Classes Management"
     Width="400"
     Height="250"
@@ -13,7 +14,7 @@
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <Window.Resources>
-        <local:DgvSelectedItemsConverter x:Key="myDgvSelectedItemsConverter" />
+        <vmd:DgvSelectedItemsConverter x:Key="myDgvSelectedItemsConverter" />
     </Window.Resources>
     <Grid>
         <Grid Grid.Column="1">
@@ -25,12 +26,13 @@
             <Grid
                 Grid.Row="0"
                 HorizontalAlignment="Right"
-                Background="BlueViolet">
-                <StackPanel Background="Aqua" Orientation="Horizontal">
+                Background="Transparent">
+                <StackPanel Background="Transparent" Orientation="Horizontal">
                     <Button
                         x:Name="btn_class_remove"
                         Margin="3"
                         Padding="5,0"
+                        BorderThickness="0"
                         Command="{Binding RemoveClassesCommand}"
                         Content="Remove">
                         <Button.CommandParameter>
@@ -39,6 +41,20 @@
                                 <Binding ElementName="dg_classes" Path="SelectedItems" />
                             </MultiBinding>
                         </Button.CommandParameter>
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Style.Triggers>
+                                    <Trigger Property="IsEnabled" Value="True">
+                                        <Setter Property="Foreground" Value="White" />
+                                        <Setter Property="FontWeight" Value="DemiBold" />
+                                        <Setter Property="Background" Value="#D83636" />
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
                     </Button>
                 </StackPanel>
             </Grid>
@@ -59,24 +75,53 @@
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
-            <Grid
-                Grid.Row="2"
-                HorizontalAlignment="Right"
-                Background="LightCoral">
+            <Grid Grid.Row="2" HorizontalAlignment="Right">
                 <StackPanel Orientation="Horizontal">
                     <Button
                         x:Name="btn_class_save"
                         Margin="3"
                         Padding="5,0"
+                        BorderThickness="0"
                         Command="{Binding SaveClassesCommand}"
                         CommandParameter="{Binding ElementName=dg_classes, Path=ItemsSource}"
-                        Content="Save" />
+                        Content="Save">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Style.Triggers>
+                                    <Trigger Property="IsEnabled" Value="True">
+                                        <Setter Property="Foreground" Value="White" />
+                                        <Setter Property="FontWeight" Value="DemiBold" />
+                                        <Setter Property="Background" Value="#222E50" />
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                     <Button
                         Margin="3"
                         Padding="5,0"
                         VerticalContentAlignment="Center"
+                        BorderThickness="0"
                         Command="{Binding CloseClassManagementCommand}"
-                        Content="Close" />
+                        Content="Close">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Style.Triggers>
+                                    <Trigger Property="IsEnabled" Value="True">
+                                        <Setter Property="Foreground" Value="White" />
+                                        <Setter Property="FontWeight" Value="DemiBold" />
+                                        <Setter Property="Background" Value="#D83636" />
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                 </StackPanel>
             </Grid>
         </Grid>

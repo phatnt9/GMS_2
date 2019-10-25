@@ -205,10 +205,10 @@ namespace GateAccessControl
                 {
                     cnn.Execute("INSERT INTO DT_PROFILE " +
                         "(PIN_NO,AD_NO,PROFILE_NAME,CLASS_NAME,SUB_CLASS,GENDER,DOB,DISU,EMAIL,ADDRESS," +
-                        "PHONE,PROFILE_STATUS,IMAGE,LOCK_DATE,DATE_TO_LOCK,CHECK_DATE_TO_LOCK," +
+                        "PHONE,PROFILE_STATUS,IMAGE,DATE_TO_LOCK,CHECK_DATE_TO_LOCK," +
                         "LICENSE_PLATE,LIST_DEVICE_ID,DATE_CREATED,DATE_MODIFIED) " +
                         "VALUES (@PIN_NO,@AD_NO,@PROFILE_NAME,@CLASS_NAME,@SUB_CLASS,@GENDER,@DOB,@DISU,@EMAIL,@ADDRESS," +
-                        "@PHONE,@PROFILE_STATUS,@IMAGE,@LOCK_DATE,@DATE_TO_LOCK,@CHECK_DATE_TO_LOCK," +
+                        "@PHONE,@PROFILE_STATUS,@IMAGE,@DATE_TO_LOCK,@CHECK_DATE_TO_LOCK," +
                         "@LICENSE_PLATE,@LIST_DEVICE_ID,@DATE_CREATED,@DATE_MODIFIED)", profile);
                 }
                 return true;
@@ -243,10 +243,10 @@ namespace GateAccessControl
                 {
                     cnn.Execute("INSERT INTO DT_DEVICE_PROFILES_" + deviceId +
                         " (PIN_NO,AD_NO,PROFILE_NAME,CLASS_NAME,SUB_CLASS,GENDER,DOB,DISU,EMAIL,ADDRESS," +
-                        "PHONE,PROFILE_STATUS,IMAGE,LOCK_DATE,DATE_TO_LOCK,CHECK_DATE_TO_LOCK," +
+                        "PHONE,PROFILE_STATUS,IMAGE,DATE_TO_LOCK,CHECK_DATE_TO_LOCK," +
                         "LICENSE_PLATE,DATE_CREATED,DATE_MODIFIED,SERVER_STATUS,CLIENT_STATUS,ACTIVE_TIME) " +
                         "VALUES (@PIN_NO,@AD_NO,@PROFILE_NAME,@CLASS_NAME,@SUB_CLASS,@GENDER,@DOB,@DISU,@EMAIL,@ADDRESS," +
-                        "@PHONE,@PROFILE_STATUS,@IMAGE,@LOCK_DATE,@DATE_TO_LOCK,@CHECK_DATE_TO_LOCK," +
+                        "@PHONE,@PROFILE_STATUS,@IMAGE,@DATE_TO_LOCK,@CHECK_DATE_TO_LOCK," +
                         "@LICENSE_PLATE,@DATE_CREATED,@DATE_MODIFIED,@SERVER_STATUS,@CLIENT_STATUS,@ACTIVE_TIME)", _profile);
                 }
                 return true;
@@ -315,7 +315,6 @@ namespace GateAccessControl
                         "PHONE = @PHONE, " +
                         "PROFILE_STATUS = @PROFILE_STATUS, " +
                         "IMAGE = @IMAGE, " +
-                        "LOCK_DATE = @LOCK_DATE, " +
                         "DATE_TO_LOCK = @DATE_TO_LOCK, " +
                         "CHECK_DATE_TO_LOCK = @CHECK_DATE_TO_LOCK, " +
                         "LICENSE_PLATE = @LICENSE_PLATE, " +
@@ -353,7 +352,6 @@ namespace GateAccessControl
                         "PHONE = @PHONE, " +
                         "PROFILE_STATUS = @PROFILE_STATUS, " +
                         "IMAGE = @IMAGE, " +
-                        "LOCK_DATE = @LOCK_DATE, " +
                         "DATE_TO_LOCK = @DATE_TO_LOCK, " +
                         "CHECK_DATE_TO_LOCK = @CHECK_DATE_TO_LOCK, " +
                         "LICENSE_PLATE = @LICENSE_PLATE, " +
@@ -505,7 +503,6 @@ namespace GateAccessControl
                                "\"PHONE\" TEXT, " +
                                "\"PROFILE_STATUS\" TEXT, " +
                                "\"IMAGE\" TEXT NOT NULL, " +
-                               "\"LOCK_DATE\" DATE, " +
                                "\"DATE_TO_LOCK\" DATE, " +
                                "\"CHECK_DATE_TO_LOCK\" INTEGER NOT NULL DEFAULT 0, " +
                                "\"LICENSE_PLATE\" TEXT, " +
@@ -556,7 +553,6 @@ namespace GateAccessControl
                             "\"PHONE\" TEXT, " +
                             "\"PROFILE_STATUS\" TEXT NOT NULL, " +
                             "\"IMAGE\" TEXT NOT NULL, " +
-                            "\"LOCK_DATE\" DATE, " +
                             "\"DATE_TO_LOCK\" DATE, " +
                             "\"CHECK_DATE_TO_LOCK\" INTEGER NOT NULL DEFAULT 0, " +
                             "\"LICENSE_PLATE\" TEXT, " +
@@ -601,7 +597,7 @@ namespace GateAccessControl
                 using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
                 {
                     string txtQuery = "INSERT INTO " + _tableName + "(  PIN_NO, NAME, CLASS, GENDER, DOB, EMAIL, ADDRESS, PHONE, ADNO, " +
-                    "IMAGE, DISU, LOCK_DATE, DATE_TO_LOCK, CHECK_DATE_TO_LOCK,  LICENSE_PLATE, STATUS, SYNC_STATUS, " +
+                    "IMAGE, DISU, DATE_TO_LOCK, CHECK_DATE_TO_LOCK,  LICENSE_PLATE, STATUS, SYNC_STATUS, " +
                     "ACTIVE_TIME,  DATE_CREATED, DATE_MODIFIED) VALUES ("
                     // + _profile.ID + ","
                     + "'" + _profile.PIN_NO + "'" + ","
@@ -616,8 +612,7 @@ namespace GateAccessControl
 
                     + "'" + _profile.IMAGE + "'" + ","
                     + "'" + _profile.DISU + "'" + ","
-
-                    + "'" + _profile.LOCK_DATE + "'" + ","
+                    
                     + "'" + _profile.DATE_TO_LOCK + "'" + ","
                     + "'" + _profile.CHECK_DATE_TO_LOCK + "'" + ","
                     + "'" + _profile.LICENSE_PLATE + "'" + ","

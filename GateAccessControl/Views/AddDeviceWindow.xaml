@@ -99,13 +99,45 @@
                     x:Name="btn_class_save"
                     Margin="3"
                     Padding="5,0"
+                    BorderThickness="0"
                     Command="{Binding AddDeviceCommand}"
-                    Content="Add" />
+                    Content="Add">
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}">
+                            <Style.Triggers>
+                                <Trigger Property="IsEnabled" Value="True">
+                                    <Setter Property="Foreground" Value="White" />
+                                    <Setter Property="FontWeight" Value="DemiBold" />
+                                    <Setter Property="Background" Value="#222E50" />
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
                 <Button
                     Margin="3"
                     Padding="5,0"
+                    BorderThickness="0"
                     Command="{Binding CloseAddDeviceCommand}"
-                    Content="Close" />
+                    Content="Close">
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}">
+                            <Style.Triggers>
+                                <Trigger Property="IsEnabled" Value="True">
+                                    <Setter Property="Foreground" Value="White" />
+                                    <Setter Property="FontWeight" Value="DemiBold" />
+                                    <Setter Property="Background" Value="#D83636" />
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
             </StackPanel>
         </Grid>
     </Grid>

@@ -70,9 +70,26 @@
                             IsEnabled="False" />
                         <Button
                             Width="50"
+                            Height="20"
                             Margin="10,0,0,0"
+                            BorderThickness="0"
                             Click="btnSelectFile_Click"
-                            Content="..." />
+                            Content="...">
+                            <Button.Style>
+                                <Style TargetType="{x:Type Button}">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsEnabled" Value="True">
+                                            <Setter Property="Foreground" Value="White" />
+                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                            <Setter Property="Background" Value="#222E50" />
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
                     </StackPanel>
                     <StackPanel
                         Margin="0,10,0,0"
@@ -85,23 +102,71 @@
                             Height="20"
                             Margin="10,0"
                             Padding="5,0"
+                            BorderThickness="0"
                             Click="Import_Click"
-                            Content="Import" />
+                            Content="Import">
+                            <Button.Style>
+                                <Style TargetType="{x:Type Button}">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsEnabled" Value="True">
+                                            <Setter Property="Foreground" Value="White" />
+                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                            <Setter Property="Background" Value="#222E50" />
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
                         <Button
                             Name="btn_stop"
                             Width="70"
                             Height="20"
                             Margin="10,0"
                             Padding="5,0"
+                            BorderThickness="0"
                             Click="Stop_Click"
-                            Content="Stop" />
+                            Content="Stop">
+                            <Button.Style>
+                                <Style TargetType="{x:Type Button}">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsEnabled" Value="True">
+                                            <Setter Property="Foreground" Value="White" />
+                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                            <Setter Property="Background" Value="#D83636" />
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
                         <Button
                             Width="70"
                             Height="20"
                             Margin="10,0"
                             Padding="5,0"
+                            BorderThickness="0"
                             Click="Close_Click"
-                            Content="Close" />
+                            Content="Close">
+                            <Button.Style>
+                                <Style TargetType="{x:Type Button}">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsEnabled" Value="True">
+                                            <Setter Property="Foreground" Value="White" />
+                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                            <Setter Property="Background" Value="#D83636" />
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
                     </StackPanel>
                 </StackPanel>
             </Grid>

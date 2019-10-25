@@ -12,7 +12,7 @@
     d:DesignWidth="900"
     mc:Ignorable="d">
     <Page.Resources>
-        <md:DeviceItemWebSocketStatusConverter x:Key="myDeviceItemWebSocketStatusConverter" />
+        <vmd:DeviceItemWebSocketStatusConverter x:Key="myDeviceItemWebSocketStatusConverter" />
         <vmd:LoadTimeCheckParametersConverter x:Key="myLoadTimeCheckParametersConverter" />
         <vmd:ProfileSelectedItemsConverter x:Key="myProfileSelectedItemsConverter" />
         <vmd:DeviceProfilesActiveTimeConverter x:Key="myDeviceProfilesActiveTimeConverter" />
@@ -106,13 +106,14 @@
             <StackPanel Orientation="Horizontal">
                 <Image
                     Height="50"
-                    Margin="20,0,0,0"
+                    Margin="15,0,0,0"
                     Source="pack://siteoforigin:,,,/Resources/favicon.ico" />
-                <DockPanel Margin="20,0,0,0" HorizontalAlignment="Left">
+                <DockPanel Margin="15,0,0,0" HorizontalAlignment="Left">
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         FontSize="30"
+                        FontWeight="DemiBold"
                         Text="Access Control System" />
                 </DockPanel>
             </StackPanel>
@@ -122,14 +123,24 @@
                     x:Name="btn_classManagement"
                     Margin="3"
                     Padding="2"
+                    Background="#222E50"
+                    BorderThickness="0"
                     Command="{Binding ManageClassCommand}"
-                    Content="Class Management" />
+                    Content="Class Management"
+                    FontSize="13"
+                    FontWeight="Medium"
+                    Foreground="White" />
                 <Button
                     x:Name="btn_openDatabase"
                     Margin="3"
                     Padding="2"
+                    Background="#222E50"
+                    BorderThickness="0"
                     Click="Btn_openDatabase_Click"
-                    Content="Open Database" />
+                    Content="Open Database"
+                    FontSize="13"
+                    FontWeight="Medium"
+                    Foreground="White" />
             </WrapPanel>
         </Grid>
         <Grid Grid.Row="1">
@@ -180,23 +191,76 @@
                                             x:Name="btn_device_add"
                                             Margin="3"
                                             Padding="5,0"
+                                            BorderThickness="0"
                                             Command="{Binding AddDeviceCommand}"
-                                            Content="Add" />
+                                            Content="Add">
+                                            <Button.Style>
+                                                <Style TargetType="{x:Type Button}">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsEnabled" Value="True">
+                                                            <Setter Property="Foreground" Value="White" />
+                                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                                            <Setter Property="Background" Value="#222E50" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </Trigger>
+                                                        <!--<DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Button}}, Path=IsEnabled}" Value="true">
+                                                            <Setter Property="Foreground" Value="White" />
+                                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                                            <Setter Property="Background" Value="#69B578" />
+                                                        </DataTrigger>-->
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
                                         <Button
                                             x:Name="btn_device_edit"
                                             Margin="3"
                                             Padding="5,0"
                                             VerticalContentAlignment="Center"
+                                            BorderThickness="0"
                                             Command="{Binding EditDeviceCommand}"
                                             CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                            Content="Edit" />
+                                            Content="Edit">
+                                            <Button.Style>
+                                                <Style TargetType="{x:Type Button}">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsEnabled" Value="True">
+                                                            <Setter Property="Foreground" Value="White" />
+                                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                                            <Setter Property="Background" Value="#222E50" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
                                         <Button
                                             x:Name="btn_device_remove"
                                             Margin="3"
                                             Padding="5,0"
+                                            BorderThickness="0"
                                             Command="{Binding RemoveDeviceCommand}"
                                             CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                            Content="Remove" />
+                                            Content="Remove">
+                                            <Button.Style>
+                                                <Style TargetType="{x:Type Button}">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsEnabled" Value="True">
+                                                            <Setter Property="Foreground" Value="White" />
+                                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                                            <Setter Property="Background" Value="#D83636" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
                                     </StackPanel>
                                 </Grid>
                                 <Grid Grid.Row="1">
@@ -254,24 +318,24 @@
                                                     <Style TargetType="{x:Type DataGridCell}">
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding Path=DeviceItem.WebSocketStatus, UpdateSourceTrigger=PropertyChanged}" Value="Pending">
-                                                                <Setter Property="Foreground" Value="Blue" />
+                                                                <Setter Property="Foreground" Value="White" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                                <Setter Property="Background" Value="#F7D23D" />
+                                                                <Setter Property="Background" Value="#9ACA3E" />
                                                             </DataTrigger>
                                                             <DataTrigger Binding="{Binding Path=DeviceItem.WebSocketStatus, UpdateSourceTrigger=PropertyChanged}" Value="Connecting">
                                                                 <Setter Property="Foreground" Value="White" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                                <Setter Property="Background" Value="#4D9DE0" />
+                                                                <Setter Property="Background" Value="#FFF200" />
                                                             </DataTrigger>
                                                             <DataTrigger Binding="{Binding Path=DeviceItem.WebSocketStatus, UpdateSourceTrigger=PropertyChanged}" Value="Connected">
                                                                 <Setter Property="Foreground" Value="White" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                                <Setter Property="Background" Value="#69B578" />
+                                                                <Setter Property="Background" Value="#39B54A" />
                                                             </DataTrigger>
                                                             <DataTrigger Binding="{Binding Path=DeviceItem.WebSocketStatus, UpdateSourceTrigger=PropertyChanged}" Value="Disconnected">
                                                                 <Setter Property="Foreground" Value="White" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                                <Setter Property="Background" Value="#E15554" />
+                                                                <Setter Property="Background" Value="#BE2328" />
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
@@ -286,6 +350,7 @@
                                             x:Name="btn_device_requestTimeCheck"
                                             Margin="3"
                                             Padding="5,0"
+                                            BorderThickness="0"
                                             Command="{Binding RequesTimeRecordCommand}"
                                             CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged}"
                                             Content="Request check-in records" />
@@ -298,16 +363,48 @@
                                             x:Name="btn_device_connect"
                                             Margin="3"
                                             Padding="5,0"
+                                            BorderThickness="0"
                                             Command="{Binding ConnectDeviceCommand}"
                                             CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                            Content="Connect" />
+                                            Content="Connect">
+                                            <Button.Style>
+                                                <Style TargetType="{x:Type Button}">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsEnabled" Value="True">
+                                                            <Setter Property="Foreground" Value="White" />
+                                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                                            <Setter Property="Background" Value="#29BF12" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
                                         <Button
                                             x:Name="btn_device_disconnect"
                                             Margin="3"
                                             Padding="5,0"
+                                            BorderThickness="0"
                                             Command="{Binding DisconnectDeviceCommand}"
                                             CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                            Content="Disconnect" />
+                                            Content="Disconnect">
+                                            <Button.Style>
+                                                <Style TargetType="{x:Type Button}">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsEnabled" Value="True">
+                                                            <Setter Property="Foreground" Value="White" />
+                                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                                            <Setter Property="Background" Value="#D83636" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
                                     </StackPanel>
                                 </Grid>
                             </Grid>
@@ -445,9 +542,25 @@
                                             x:Name="btn_deviceProfiles_manage"
                                             Margin="3,3"
                                             Padding="5,0"
+                                            BorderThickness="0"
                                             Command="{Binding DeviceProfilesManageCommand}"
                                             CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem}"
-                                            Content="Manage" />
+                                            Content="Manage">
+                                            <Button.Style>
+                                                <Style TargetType="{x:Type Button}">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsEnabled" Value="True">
+                                                            <Setter Property="Foreground" Value="White" />
+                                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                                            <Setter Property="Background" Value="#222E50" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
                                         <Button
                                             x:Name="btn_device_export"
                                             Margin="3"
@@ -520,12 +633,12 @@
                                                             <DataTrigger Binding="{Binding Path=PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Active">
                                                                 <Setter Property="Foreground" Value="White" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                                <Setter Property="Background" Value="#69B578" />
+                                                                <Setter Property="Background" Value="#29BF12" />
                                                             </DataTrigger>
                                                             <DataTrigger Binding="{Binding Path=PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Suspended">
                                                                 <Setter Property="Foreground" Value="White" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                                <Setter Property="Background" Value="#E15554" />
+                                                                <Setter Property="Background" Value="#F21B3F" />
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
@@ -540,24 +653,24 @@
                                                     <Style TargetType="{x:Type DataGridCell}">
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding Path=SERVER_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="None">
-                                                                <Setter Property="Foreground" Value="Blue" />
+                                                                <Setter Property="Foreground" Value="Black" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                                <Setter Property="Background" Value="#F7D23D" />
+                                                                <Setter Property="Background" Value="#ACB4B9" />
                                                             </DataTrigger>
                                                             <DataTrigger Binding="{Binding Path=SERVER_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Update">
-                                                                <Setter Property="Foreground" Value="White" />
+                                                                <Setter Property="Foreground" Value="#222E50" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                                <Setter Property="Background" Value="#4D9DE0" />
+                                                                <Setter Property="Background" Value="#F9DC5C" />
                                                             </DataTrigger>
                                                             <DataTrigger Binding="{Binding Path=SERVER_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Add">
                                                                 <Setter Property="Foreground" Value="White" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                                <Setter Property="Background" Value="#69B578" />
+                                                                <Setter Property="Background" Value="#5998C5" />
                                                             </DataTrigger>
                                                             <DataTrigger Binding="{Binding Path=SERVER_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Remove">
                                                                 <Setter Property="Foreground" Value="White" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                                <Setter Property="Background" Value="#E15554" />
+                                                                <Setter Property="Background" Value="#D83636" />
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
@@ -572,19 +685,19 @@
                                                     <Style TargetType="{x:Type DataGridCell}">
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding Path=CLIENT_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Unknow">
-                                                                <Setter Property="Foreground" Value="Blue" />
+                                                                <Setter Property="Foreground" Value="Black" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                                <Setter Property="Background" Value="#F7D23D" />
+                                                                <Setter Property="Background" Value="#ACB4B9" />
                                                             </DataTrigger>
                                                             <DataTrigger Binding="{Binding Path=CLIENT_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Delete">
                                                                 <Setter Property="Foreground" Value="White" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                                <Setter Property="Background" Value="#4D9DE0" />
+                                                                <Setter Property="Background" Value="#BE2328" />
                                                             </DataTrigger>
                                                             <DataTrigger Binding="{Binding Path=CLIENT_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Deleted">
                                                                 <Setter Property="Foreground" Value="White" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                                <Setter Property="Background" Value="#E15554" />
+                                                                <Setter Property="Background" Value="#202626" />
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
@@ -643,6 +756,7 @@
                                             x:Name="btn_device_sync_each"
                                             Margin="3,3"
                                             Padding="5,0"
+                                            BorderThickness="0"
                                             Command="{Binding SyncCommand}"
                                             Content="Sync">
                                             <Button.CommandParameter>
@@ -651,14 +765,44 @@
                                                     <Binding ElementName="dg_device_profiles" Path="Items" />
                                                 </MultiBinding>
                                             </Button.CommandParameter>
+                                            <Button.Style>
+                                                <Style TargetType="{x:Type Button}">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsEnabled" Value="True">
+                                                            <Setter Property="Foreground" Value="White" />
+                                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                                            <Setter Property="Background" Value="#39B54A" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
                                         </Button>
                                         <Button
                                             x:Name="btn_device_stopSync"
                                             Margin="3,3"
                                             Padding="5,0"
+                                            BorderThickness="0"
                                             Command="{Binding StopSyncCommand}"
                                             CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged}"
-                                            Content="Stop" />
+                                            Content="Stop">
+                                            <Button.Style>
+                                                <Style TargetType="{x:Type Button}">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsEnabled" Value="True">
+                                                            <Setter Property="Foreground" Value="White" />
+                                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                                            <Setter Property="Background" Value="#D83636" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
                                     </StackPanel>
                                 </Grid>
                             </Grid>
@@ -735,6 +879,7 @@
                                                         x:Name="btn_apply_activeTime"
                                                         Width="60"
                                                         Height="20"
+                                                        BorderThickness="0"
                                                         Command="{Binding SetTimeDeviceProfileCommnad}"
                                                         Content="Apply">
                                                         <Button.CommandParameter>
@@ -743,6 +888,20 @@
                                                                 <Binding ElementName="dg_device_profiles" Path="SelectedItems" />
                                                             </MultiBinding>
                                                         </Button.CommandParameter>
+                                                        <Button.Style>
+                                                            <Style TargetType="{x:Type Button}">
+                                                                <Style.Triggers>
+                                                                    <Trigger Property="IsEnabled" Value="True">
+                                                                        <Setter Property="Foreground" Value="White" />
+                                                                        <Setter Property="FontWeight" Value="DemiBold" />
+                                                                        <Setter Property="Background" Value="#222E50" />
+                                                                    </Trigger>
+                                                                    <Trigger Property="IsEnabled" Value="False">
+                                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                                    </Trigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Button.Style>
                                                     </Button>
                                                 </StackPanel>
                                             </DockPanel>
@@ -781,30 +940,78 @@
                             <Grid Grid.Row="0" Background="#f1f1f1">
                                 <StackPanel
                                     HorizontalAlignment="Right"
-                                    Background="#f1f1f1"
+                                    Background="Transparent"
                                     Orientation="Horizontal">
                                     <Button
                                         x:Name="btn_profile_add"
                                         Margin="3"
                                         Padding="5,0"
+                                        BorderThickness="0"
                                         Command="{Binding AddProfileCommand}"
                                         CommandParameter="{Binding ElementName=dg_main_profiles, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                        Content="Add" />
+                                        Content="Add">
+                                        <Button.Style>
+                                            <Style TargetType="{x:Type Button}">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsEnabled" Value="True">
+                                                        <Setter Property="Foreground" Value="White" />
+                                                        <Setter Property="FontWeight" Value="DemiBold" />
+                                                        <Setter Property="Background" Value="#222E50" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
                                     <Button
                                         x:Name="btn_profile_edit"
                                         Margin="3"
                                         Padding="5,0"
                                         VerticalContentAlignment="Center"
+                                        BorderThickness="0"
                                         Command="{Binding EditProfileCommand}"
                                         CommandParameter="{Binding ElementName=dg_main_profiles, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                        Content="Edit" />
+                                        Content="Edit">
+                                        <Button.Style>
+                                            <Style TargetType="{x:Type Button}">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsEnabled" Value="True">
+                                                        <Setter Property="Foreground" Value="White" />
+                                                        <Setter Property="FontWeight" Value="DemiBold" />
+                                                        <Setter Property="Background" Value="#222E50" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
                                     <Button
                                         x:Name="btn_profile_remove"
                                         Margin="3"
                                         Padding="5,0"
+                                        BorderThickness="0"
                                         Command="{Binding RemoveProfileCommand}"
                                         CommandParameter="{Binding ElementName=dg_main_profiles, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                        Content="Remove" />
+                                        Content="Remove">
+                                        <Button.Style>
+                                            <Style TargetType="{x:Type Button}">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsEnabled" Value="True">
+                                                        <Setter Property="Foreground" Value="White" />
+                                                        <Setter Property="FontWeight" Value="DemiBold" />
+                                                        <Setter Property="Background" Value="#D83636" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
                                 </StackPanel>
                             </Grid>
                             <Grid Grid.Row="1">
@@ -916,12 +1123,12 @@
                                                         <DataTrigger Binding="{Binding Path=PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Active">
                                                             <Setter Property="Foreground" Value="White" />
                                                             <Setter Property="FontWeight" Value="DemiBold" />
-                                                            <Setter Property="Background" Value="#69B578" />
+                                                            <Setter Property="Background" Value="#29BF12" />
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding Path=PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Suspended">
                                                             <Setter Property="Foreground" Value="White" />
                                                             <Setter Property="FontWeight" Value="DemiBold" />
-                                                            <Setter Property="Background" Value="#E15554" />
+                                                            <Setter Property="Background" Value="#F21B3F" />
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -975,12 +1182,29 @@
                                         x:Name="btn_profile_import"
                                         Margin="3"
                                         Padding="5,0"
+                                        BorderThickness="0"
                                         Command="{Binding ImportProfilesCommand}"
-                                        Content="Import" />
+                                        Content="Import">
+                                        <Button.Style>
+                                            <Style TargetType="{x:Type Button}">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsEnabled" Value="True">
+                                                        <Setter Property="Foreground" Value="White" />
+                                                        <Setter Property="FontWeight" Value="DemiBold" />
+                                                        <Setter Property="Background" Value="#222E50" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
                                     <Button
                                         x:Name="btn_profile_export"
                                         Margin="3"
                                         Padding="5,0"
+                                        BorderThickness="0"
                                         Command="{Binding ExportProfilesCommand}"
                                         Content="Export">
                                         <Button.CommandParameter>
@@ -989,13 +1213,43 @@
                                                 <Binding ElementName="dg_main_profiles" Path="SelectedItems" />
                                             </MultiBinding>
                                         </Button.CommandParameter>
+                                        <Button.Style>
+                                            <Style TargetType="{x:Type Button}">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsEnabled" Value="True">
+                                                        <Setter Property="Foreground" Value="White" />
+                                                        <Setter Property="FontWeight" Value="DemiBold" />
+                                                        <Setter Property="Background" Value="#222E50" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
                                     </Button>
                                     <Button
                                         x:Name="btn_profile_stopExport"
                                         Margin="3"
                                         Padding="5,0"
+                                        BorderThickness="0"
                                         Command="{Binding StopExportProfilesCommand}"
-                                        Content="Stop" />
+                                        Content="Stop">
+                                        <Button.Style>
+                                            <Style TargetType="{x:Type Button}">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsEnabled" Value="True">
+                                                        <Setter Property="Foreground" Value="White" />
+                                                        <Setter Property="FontWeight" Value="DemiBold" />
+                                                        <Setter Property="Background" Value="#D83636" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
                                 </StackPanel>
                             </Grid>
                         </Grid>
@@ -1012,7 +1266,7 @@
                             <Grid Grid.Row="0" Background="White">
                                 <Grid.RowDefinitions>
                                     <RowDefinition />
-                                    <RowDefinition Height="25" />
+                                    <RowDefinition Height="10" />
                                 </Grid.RowDefinitions>
                                 <Grid Grid.Row="0">
                                     <GroupBox BorderBrush="Black" Header="Profile">
@@ -1054,9 +1308,25 @@
                                                                             Margin="3"
                                                                             Padding="5,0"
                                                                             VerticalContentAlignment="Center"
+                                                                            BorderThickness="0"
                                                                             Command="{Binding ReplaceProfileImageCommand}"
                                                                             CommandParameter="{Binding ElementName=dg_main_profiles, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged}"
-                                                                            Content="Change Image" />
+                                                                            Content="Change Image">
+                                                                            <Button.Style>
+                                                                                <Style TargetType="{x:Type Button}">
+                                                                                    <Style.Triggers>
+                                                                                        <Trigger Property="IsEnabled" Value="True">
+                                                                                            <Setter Property="Foreground" Value="White" />
+                                                                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                                                                            <Setter Property="Background" Value="#222E50" />
+                                                                                        </Trigger>
+                                                                                        <Trigger Property="IsEnabled" Value="False">
+                                                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                                                        </Trigger>
+                                                                                    </Style.Triggers>
+                                                                                </Style>
+                                                                            </Button.Style>
+                                                                        </Button>
                                                                     </StackPanel>
                                                                 </Grid>
                                                             </Grid>
@@ -1176,27 +1446,72 @@
                                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                                         <Button
                                             x:Name="btn_previousDate"
+                                            Width="70"
                                             Margin="3"
                                             Padding="5,0"
-                                            Content="Previous" />
-                                        <DatePicker x:Name="dtp_timecheck_date" Padding="5,2" />
+                                            BorderThickness="0"
+                                            Command="{Binding SelectPreviousDateCommand}"
+                                            CommandParameter="{Binding ElementName=dg_main_profiles, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged}"
+                                            Content="Previous">
+                                            <Button.Style>
+                                                <Style TargetType="{x:Type Button}">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsEnabled" Value="True">
+                                                            <Setter Property="Foreground" Value="White" />
+                                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                                            <Setter Property="Background" Value="#222E50" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+                                        <md:CommandDatePicker
+                                            x:Name="dtp_timecheck_date"
+                                            Margin="5,0"
+                                            Padding="5,2"
+                                            Command="{Binding SelectedDateChangeCommand}"
+                                            CommandParameter="{Binding ElementName=dg_main_profiles, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged}"
+                                            SelectedDate="{Binding SelectedTimeCheckDate, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                         <Button
                                             x:Name="btn_nextDate"
+                                            Width="70"
                                             Margin="3"
                                             Padding="5,0"
-                                            Content="Next" />
+                                            BorderThickness="0"
+                                            Command="{Binding SelectNextDateCommand}"
+                                            CommandParameter="{Binding ElementName=dg_main_profiles, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged}"
+                                            Content="Next">
+                                            <Button.Style>
+                                                <Style TargetType="{x:Type Button}">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsEnabled" Value="True">
+                                                            <Setter Property="Foreground" Value="White" />
+                                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                                            <Setter Property="Background" Value="#222E50" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
                                     </StackPanel>
                                     <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                                        <Button
+                                        <!--<Button
                                             x:Name="btn_timecheck_export"
                                             Margin="3"
                                             Padding="5,0"
-                                            Content="Export" />
+                                            Content="Export"/>-->
                                     </StackPanel>
                                 </Grid>
-                                <Grid Grid.Row="1">
+                                <Grid Grid.Row="1" Background="#f1f1f1">
                                     <DataGrid
                                         x:Name="dg_timeChecks"
+                                        Margin="0,5,0,0"
                                         AutoGenerateColumns="True"
                                         CanUserAddRows="False"
                                         CanUserDeleteRows="False"

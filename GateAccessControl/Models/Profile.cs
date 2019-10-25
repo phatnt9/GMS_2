@@ -24,9 +24,7 @@ namespace GateAccessControl
         private string _phone;
         private string _profileStatus;
         private string _image;
-
-
-        private DateTime _lockDate;
+        
         private DateTime _dateToLock;
 
         private bool _checkDateToLock;
@@ -271,18 +269,6 @@ namespace GateAccessControl
             {
                 _image = value;
                 OnPropertyChanged("IMAGE");
-            }
-        }
-        public DateTime LOCK_DATE
-        {
-            get
-            {
-                return _lockDate;
-            }
-            set
-            {
-                _lockDate = value;
-                OnPropertyChanged("LOCK_DATE");
             }
         }
         public DateTime DATE_TO_LOCK

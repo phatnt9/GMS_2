@@ -92,6 +92,7 @@
     <Compile Include="Models\CheckinData.cs" />
     <Compile Include="Models\CommandComboBox.cs" />
     <Compile Include="Models\CommandDataGrid.cs" />
+    <Compile Include="Models\CommandDatePicker.cs" />
     <Compile Include="Models\CommandListBox.cs" />
     <Compile Include="Models\CommandTextBox.cs" />
     <Compile Include="Models\Device.cs" />
@@ -100,25 +101,26 @@
     <Compile Include="Models\DeviceProfiles.cs" />
     <Compile Include="Models\Profile.cs" />
     <Compile Include="Models\TimeRecord.cs" />
-    <Compile Include="ViewModels\AddDeviceDataConverter.cs" />
+    <Compile Include="Converter\AddDeviceDataConverter.cs" />
     <Compile Include="ViewModels\AddDeviceViewModels.cs" />
     <Compile Include="ViewModels\AddProfileViewModel.cs" />
     <Compile Include="ViewModels\AppPageViewModel.cs" />
     <Compile Include="ViewModels\ClassManagementViewModel.cs" />
-    <Compile Include="ViewModels\DeviceItemWebSocketStatusConverter.cs" />
-    <Compile Include="ViewModels\DeviceProfilesActiveTimeConverter.cs" />
+    <Compile Include="Converter\DeviceItemWebSocketStatusConverter.cs" />
+    <Compile Include="Converter\DeviceProfilesActiveTimeConverter.cs" />
     <Compile Include="ViewModels\DeviceProfilesManageViewModel.cs" />
-    <Compile Include="ViewModels\DeviceProfilesSelectedItemsConverter.cs" />
-    <Compile Include="ViewModels\DgvSelectedItemsConverter.cs" />
+    <Compile Include="Converter\DeviceProfilesSelectedItemsConverter.cs" />
+    <Compile Include="Converter\DgvSelectedItemsConverter.cs" />
     <Compile Include="ViewModels\DialogCloser.cs" />
     <Compile Include="ViewModels\EditDeviceViewModels.cs" />
     <Compile Include="ViewModels\EditProfileViewModel.cs" />
     <Compile Include="ViewModels\GlobalConstant.cs" />
-    <Compile Include="ViewModels\LoadTimeCheckParametersConverter.cs" />
-    <Compile Include="ViewModels\ProfileImageConverter.cs" />
-    <Compile Include="ViewModels\ProfileListDeviceConverter.cs" />
-    <Compile Include="ViewModels\ProfileSelectedItemsConverter.cs" />
-    <Compile Include="ViewModels\SearchProfilesParametersConverter.cs" />
+    <Compile Include="Converter\LoadTimeCheckParametersConverter.cs" />
+    <Compile Include="Converter\ProfileImageConverter.cs" />
+    <Compile Include="Converter\ProfileListDeviceConverter.cs" />
+    <Compile Include="Converter\ProfileSelectedItemsConverter.cs" />
+    <Compile Include="Converter\SearchProfilesParametersConverter.cs" />
+    <Compile Include="ViewModels\LoginPageViewModel.cs" />
     <Compile Include="ViewModels\SqliteDataAccess.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\AddDeviceWindow.xaml.cs">
@@ -258,6 +260,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="favicon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\loginBackground.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets')" />

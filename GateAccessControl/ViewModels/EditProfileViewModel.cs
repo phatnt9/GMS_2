@@ -134,7 +134,6 @@ namespace GateAccessControl
                     //Today is later then date to lock
                     p.CHECK_DATE_TO_LOCK = false;
                     p.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
-                    p.LOCK_DATE = DateTime.Now;
                     p.DATE_MODIFIED = DateTime.Now;
                 }
             }

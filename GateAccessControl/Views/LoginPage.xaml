@@ -10,7 +10,13 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
 
-    <Grid Background="BlueViolet">
+    <Grid>
+        <Grid.Background>
+            <ImageBrush
+                ImageSource="pack://siteoforigin:,,,/Resources/loginBackground.jpg"
+                Opacity="0.4"
+                Stretch="UniformToFill" />
+        </Grid.Background>
         <StackPanel
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
@@ -18,17 +24,40 @@
             <TextBox
                 x:Name="tb_userName"
                 Width="200"
-                Margin="3" />
-            <TextBox
+                Margin="3"
+                HorizontalContentAlignment="Center"
+                PreviewKeyDown="Tb_userName_PreviewKeyDown"
+                Text="{Binding LoginName}" />
+            <PasswordBox
                 x:Name="tb_password"
                 Width="200"
-                Margin="3" />
+                Margin="3"
+                HorizontalContentAlignment="Center"
+                PreviewKeyDown="Tb_password_PreviewKeyDown" />
             <Button
                 x:Name="btn_login"
                 Width="200"
                 Height="20"
+                BorderThickness="0"
                 Click="Btn_login_Click"
-                Content="Login" />
+                Command="{Binding LoginCommand}"
+                CommandParameter="{Binding ElementName=tb_password, Path=Password, UpdateSourceTrigger=PropertyChanged}"
+                Content="Login">
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}">
+                        <Style.Triggers>
+                            <Trigger Property="IsEnabled" Value="True">
+                                <Setter Property="Foreground" Value="White" />
+                                <Setter Property="FontWeight" Value="DemiBold" />
+                                <Setter Property="Background" Value="#5998C5" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
         </StackPanel>
     </Grid>
 </Page>

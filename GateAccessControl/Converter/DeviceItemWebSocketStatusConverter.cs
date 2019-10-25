@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Data;
 using WebSocketSharp;
 
-namespace GateAccessControl
+namespace GateAccessControl.ViewModels
 {
     class DeviceItemWebSocketStatusConverter : IValueConverter
     {
