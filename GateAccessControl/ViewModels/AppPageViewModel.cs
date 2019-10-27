@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Input;
+using static GateAccessControl.DeviceItem;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace GateAccessControl
@@ -30,6 +31,7 @@ namespace GateAccessControl
         public ICommand AddDeviceCommand { get; set; }
         public ICommand EditDeviceCommand { get; set; }
         public ICommand RemoveDeviceCommand { get; set; }
+        public ICommand RefreshDeviceCommand { get; set; }
         public ICommand SelectDeviceCommand { get; set; }
         public ICommand ConnectDeviceCommand { get; set; }
         public ICommand DisconnectDeviceCommand { get; set; }
@@ -44,6 +46,7 @@ namespace GateAccessControl
 
         public ICommand DeviceProfilesManageCommand { get; set; }
         public ICommand SelectDeviceProfilesCommand { get; set; }
+        public ICommand RefreshDeviceProfilesCommand { get; set; }
         
         public ICommand ImportProfilesCommand { get; set; }
         public ICommand ManageClassCommand { get; set; }
@@ -71,11 +74,31 @@ namespace GateAccessControl
         {
             SelectedTimeCheckDate = DateTime.Now;
             ReloadDataDevices();
-            ReloadDataProfiles();
+            ReloadProfiles();
             ReloadDataCardTypes();
             SyncProgressValue = 0;
             CreateCheckSuspendProfilesTimer();
             CreateRequestTimeChecksTimer();
+
+            RefreshDeviceCommand = new RelayCommand<Device>(
+                 (p) =>
+                 {
+                     return (CheckNoDeviceIsSyncing() == 0)? true: false;
+                 },
+                 (p) =>
+                 {
+                     ReloadDataDevices();
+                 });
+
+            RefreshDeviceProfilesCommand = new RelayCommand<Device>(
+                 (p) =>
+                 {
+                     return (p != null)? true : false;
+                 },
+                 (p) =>
+                 {
+                     ReloadDeviceProfiles(p);
+                 });
 
             SelectNextDateCommand = new RelayCommand<Profile>(
                  (p) =>
@@ -119,7 +142,7 @@ namespace GateAccessControl
             RequesTimeRecordCommand = new RelayCommand<Device>(
                  (p) =>
                  {
-                     if(p!= null && p.DeviceItem.WebSocketStatus == "Connected" && p.DeviceItem.IsSendingProfiles == false)
+                     if(p!= null && p.DeviceItem.WebSocketStatus.Equals(RosStatus.Connected.ToString()) && p.DeviceItem.IsSendingProfiles == false)
                      {
                          return true;
                      }
@@ -183,7 +206,7 @@ namespace GateAccessControl
             SetTimeDeviceProfileCommnad = new RelayCommand<List<DeviceProfiles>>(
                  (p) =>
                  {
-                     if (p != null && p.Count > 0)
+                     if (p != null && p.Count > 0 && SelectedDevice != null)
                      {
                          return (CheckNoDeviceIsSyncing() == 0) ? true : false;
                      }
@@ -195,9 +218,7 @@ namespace GateAccessControl
                  (p) =>
                  {
                      SetTimeDeviceProfile(p);
-                     string classSearch = Search_profiles_class == "All" ? "" : Search_profiles_class;
-                     string groupSearch = Search_profiles_group == "All" ? "" : Search_profiles_group;
-                     ReloadDataProfiles(classSearch, groupSearch);
+                     ReloadProfiles();
                  });
 
             AddProfileCommand = new RelayCommand<Profile>(
@@ -208,9 +229,7 @@ namespace GateAccessControl
                  (p) =>
                  {
                      AddProfile(p);
-                     string classSearch = Search_profiles_class == "All" ? "" : Search_profiles_class;
-                     string groupSearch = Search_profiles_group == "All" ? "" : Search_profiles_group;
-                     ReloadDataProfiles(classSearch, groupSearch);
+                     ReloadProfiles();
                  });
 
             EditProfileCommand = new RelayCommand<Profile>(
@@ -223,13 +242,12 @@ namespace GateAccessControl
                  (p) =>
                  {
                      EditProfile(p);
-                     string classSearch = Search_profiles_class == "All" ? "" : Search_profiles_class;
-                     string groupSearch = Search_profiles_group == "All" ? "" : Search_profiles_group;
-                     ReloadDataProfiles(classSearch, groupSearch);
-                     if(SelectedDevice != null)
+                     ReloadProfiles();
+                     if (SelectedDevice != null)
                      {
-                         ReloadDataDeviceProfiles(SelectedDevice);
+                         ReloadDeviceProfiles(SelectedDevice);
                      }
+
                  });
 
             RemoveProfileCommand = new RelayCommand<Profile>(
@@ -240,10 +258,17 @@ namespace GateAccessControl
                  },
                  (p) =>
                  {
-                     RemoveProfile(p);
-                     string classSearch = Search_profiles_class == "All" ? "" : Search_profiles_class;
-                     string groupSearch = Search_profiles_group == "All" ? "" : Search_profiles_group;
-                     ReloadDataProfiles(classSearch, groupSearch);
+                     if (System.Windows.Forms.MessageBox.Show
+                       (
+                       String.Format(GlobalConstant.messageDeleteConfirm, "Profile"),
+                       GlobalConstant.messageTitileWarning, MessageBoxButtons.YesNo,
+                       MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes
+                       )
+                     {
+                         RemoveProfile(p);
+                         ReloadProfiles();
+                     }
+                       
                  });
 
             SelectProfileCommand = new RelayCommand<List<TimeRecord>>(
@@ -264,7 +289,7 @@ namespace GateAccessControl
                  (p) =>
                  {
                      ReplaceProfileImage(p.IMAGE, p);
-                     ReloadDataDeviceProfiles(SelectedDevice, (Search_deviceProfiles_class == "All" ? "" : Search_deviceProfiles_class), (Search_deviceProfiles_group == "All" ? "" : Search_deviceProfiles_group));
+                     ReloadDeviceProfiles(SelectedDevice);
                  });
 
             StopSyncCommand = new RelayCommand<Device>(
@@ -336,9 +361,17 @@ namespace GateAccessControl
                 },
                 (p) =>
                 {
-                    if (RemoveDevice(p))
+                    if (System.Windows.Forms.MessageBox.Show
+                        (
+                        String.Format(GlobalConstant.messageDeleteConfirm, "Device"),
+                        GlobalConstant.messageTitileWarning, MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes
+                        )
                     {
-                        ReloadDataDevices(p);
+                        if (RemoveDevice(p))
+                        {
+                            ReloadDataDevices(p);
+                        }
                     }
                 });
 
@@ -350,7 +383,7 @@ namespace GateAccessControl
                 (p) =>
                 {
                     SqliteDataAccess.CreateDeviceProfilesTable("DT_DEVICE_PROFILES_" + p.DEVICE_ID);
-                    ReloadDataDeviceProfiles(p);
+                    ReloadDeviceProfiles(p);
                 });
 
             DeviceProfilesManageCommand = new RelayCommand<Device>(
@@ -361,10 +394,8 @@ namespace GateAccessControl
                 (p) =>
                 {
                     ManageDeviceProfiles(p);
-                    ReloadDataDeviceProfiles(p);
-                    string classSearch = Search_profiles_class == "All" ? "" : Search_profiles_class;
-                    string groupSearch = Search_profiles_group == "All" ? "" : Search_profiles_group;
-                    ReloadDataProfiles(classSearch, groupSearch);
+                    ReloadProfiles();
+                    ReloadDeviceProfiles(p);
                 });
 
             ConnectDeviceCommand = new RelayCommand<Device>(
@@ -412,34 +443,28 @@ namespace GateAccessControl
                 (p) => true,
                 (p) =>
                 {
-                    string classSearch = Search_profiles_class == "All" ? "" : Search_profiles_class;
-                    string groupSearch = Search_profiles_group == "All" ? "" : Search_profiles_group;
-                    ReloadDataProfiles(classSearch, groupSearch);
+                    ReloadProfiles();
                 });
 
             SearchGroupProfilesCommand = new RelayCommand<ItemCollection>(
                  (p) => true,
                  (p) =>
                  {
-                     string classSearch = Search_profiles_class == "All" ? "" : Search_profiles_class;
-                     string groupSearch = Search_profiles_group == "All" ? "" : Search_profiles_group;
-                     ReloadDataProfiles(classSearch, groupSearch);
+                     ReloadProfiles();
                  });
 
             SearchClassDeviceProfilesCommand = new RelayCommand<ItemCollection>(
                 (p) => true,
                 (p) =>
                 {
-                    ReloadDataDeviceProfiles(SelectedDevice, (Search_deviceProfiles_class == "All" ? "" : Search_deviceProfiles_class), (Search_deviceProfiles_group == "All" ? "" : Search_deviceProfiles_group));
+                    ReloadDeviceProfiles(SelectedDevice);
                 });
-
-            
 
             SearchGroupDeviceProfilesCommand = new RelayCommand<ItemCollection>(
                 (p) => true,
                 (p) =>
                 {
-                    ReloadDataDeviceProfiles(SelectedDevice, (Search_deviceProfiles_class == "All" ? "" : Search_deviceProfiles_class), (Search_deviceProfiles_group == "All" ? "" : Search_deviceProfiles_group));
+                    ReloadDeviceProfiles(SelectedDevice);
                 });
 
             ImportProfilesCommand = new RelayCommand<Profile>(
@@ -450,9 +475,7 @@ namespace GateAccessControl
                     IEnumerable<CardType> obsCollection = (IEnumerable<CardType>)Classes;
                     List<CardType> list = new List<CardType>(obsCollection);
                     ImportProfiles(list);
-                    string classSearch = Search_profiles_class == "All" ? "" : Search_profiles_class;
-                    string groupSearch = Search_profiles_group == "All" ? "" : Search_profiles_group;
-                    ReloadDataProfiles(classSearch, groupSearch);
+                    ReloadProfiles();
                     ReloadDataCardTypes();
                 });
 
@@ -1042,17 +1065,19 @@ namespace GateAccessControl
             }
             finally
             {
-                string classSearch = Search_profiles_class == "All" ? "" : Search_profiles_class;
-                string groupSearch = Search_profiles_group == "All" ? "" : Search_profiles_group;
-                ReloadDataProfiles(classSearch, groupSearch);
+                ReloadProfiles();
             }
         }
         
-        private void RemoveProfile(Profile p)
+        private bool RemoveProfile(Profile p)
         {
             if (String.IsNullOrEmpty(p.LIST_DEVICE_ID))
             {
-                SqliteDataAccess.DeleteDataProfile(p);
+                return SqliteDataAccess.DeleteDataProfile(p);
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -1220,17 +1245,24 @@ namespace GateAccessControl
 
         private bool RemoveDevice(Device p)
         {
-            //Remove Device in database
-            if (SqliteDataAccess.DeleteDataDevice(p))
+            if (CanEditOrRemoveDevice(p))
             {
-                //Succeed
-                Console.WriteLine("Succeed");
-                return true;
+                //Remove Device in database
+                if (SqliteDataAccess.DeleteDataDevice(p))
+                {
+                    //Succeed
+                    Console.WriteLine("Succeed");
+                    return true;
+                }
+                else
+                {
+                    //Unsucceed
+                    Console.WriteLine("Unsucceed");
+                    return false;
+                }
             }
             else
             {
-                //Unsucceed
-                Console.WriteLine("Unsucceed");
                 return false;
             }
         }
@@ -1399,7 +1431,7 @@ namespace GateAccessControl
                 logFile.Error(ex.Message);
             }
         }
-
+        
         public void ReloadDataDeviceProfiles(Device device, string className = "", string subClass = "")
         {
             try
@@ -1452,7 +1484,7 @@ namespace GateAccessControl
         {
             if (p != null && p.DeviceItem.WebSocketStatus != null)
             {
-                if (p.DeviceItem.WebSocketStatus.Equals("Disconnected") && !p.DeviceItem.IsSendingProfiles)
+                if (p.DeviceItem.WebSocketStatus.Equals(RosStatus.Disconnected.ToString()) && !p.DeviceItem.IsSendingProfiles)
                 {
                     return true;
                 }
@@ -1506,6 +1538,36 @@ namespace GateAccessControl
                 }
             }
             return _noDeviceSyncing;
+        }
+
+        public void ReloadProfiles()
+        {
+            if (Search_profiles_class == null)
+            {
+                Search_profiles_class = "";
+            }
+            if (Search_profiles_group == null)
+            {
+                Search_profiles_group = "";
+            }
+            string classSearch = Search_profiles_class == "All" ? "" : Search_profiles_class;
+            string groupSearch = Search_profiles_group == "All" ? "" : Search_profiles_group;
+            ReloadDataProfiles(classSearch, groupSearch);
+        }
+
+        public void ReloadDeviceProfiles(Device p)
+        {
+            if (Search_deviceProfiles_class == null)
+            {
+                Search_deviceProfiles_class = "";
+            }
+            if (Search_deviceProfiles_group == null)
+            {
+                Search_deviceProfiles_group = "";
+            }
+            string classSearch = Search_deviceProfiles_class == "All" ? "" : Search_deviceProfiles_class;
+            string groupSearch = Search_deviceProfiles_group == "All" ? "" : Search_deviceProfiles_group;
+            ReloadDataDeviceProfiles(p, classSearch, groupSearch);
         }
 
 

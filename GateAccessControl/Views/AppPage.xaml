@@ -8,7 +8,7 @@
     xmlns:md="clr-namespace:GateAccessControl"
     xmlns:vmd="clr-namespace:GateAccessControl.ViewModels"
     Title="AppPage"
-    d:DesignHeight="450"
+    d:DesignHeight="470"
     d:DesignWidth="900"
     mc:Ignorable="d">
     <Page.Resources>
@@ -261,6 +261,28 @@
                                                 </Style>
                                             </Button.Style>
                                         </Button>
+                                        <Button
+                                            x:Name="btn_device_refresh"
+                                            Margin="3"
+                                            Padding="5,0"
+                                            BorderThickness="0"
+                                            Command="{Binding RefreshDeviceCommand}"
+                                            Content="Refresh">
+                                            <Button.Style>
+                                                <Style TargetType="{x:Type Button}">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsEnabled" Value="True">
+                                                            <Setter Property="Foreground" Value="White" />
+                                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                                            <Setter Property="Background" Value="#222E50" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
                                     </StackPanel>
                                 </Grid>
                                 <Grid Grid.Row="1">
@@ -318,14 +340,14 @@
                                                     <Style TargetType="{x:Type DataGridCell}">
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding Path=DeviceItem.WebSocketStatus, UpdateSourceTrigger=PropertyChanged}" Value="Pending">
-                                                                <Setter Property="Foreground" Value="White" />
+                                                                <Setter Property="Foreground" Value="Black" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                                <Setter Property="Background" Value="#9ACA3E" />
+                                                                <Setter Property="Background" Value="#E6E8E6" />
                                                             </DataTrigger>
                                                             <DataTrigger Binding="{Binding Path=DeviceItem.WebSocketStatus, UpdateSourceTrigger=PropertyChanged}" Value="Connecting">
                                                                 <Setter Property="Foreground" Value="White" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
-                                                                <Setter Property="Background" Value="#FFF200" />
+                                                                <Setter Property="Background" Value="#2D7DD2" />
                                                             </DataTrigger>
                                                             <DataTrigger Binding="{Binding Path=DeviceItem.WebSocketStatus, UpdateSourceTrigger=PropertyChanged}" Value="Connected">
                                                                 <Setter Property="Foreground" Value="White" />
@@ -353,7 +375,22 @@
                                             BorderThickness="0"
                                             Command="{Binding RequesTimeRecordCommand}"
                                             CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged}"
-                                            Content="Request check-in records" />
+                                            Content="Request check-in records">
+                                            <Button.Style>
+                                                <Style TargetType="{x:Type Button}">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsEnabled" Value="True">
+                                                            <Setter Property="Foreground" Value="White" />
+                                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                                            <Setter Property="Background" Value="#222E50" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
                                     </StackPanel>
                                     <StackPanel
                                         HorizontalAlignment="Right"
@@ -440,7 +477,10 @@
                                                             Margin="0,0,0,2"
                                                             BorderBrush="LightGray"
                                                             BorderThickness="1">
-                                                            <TextBox BorderThickness="0" Text="{Binding ElementName=dg_devices, Path=SelectedItem.DEVICE_NAME, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                                                            <TextBox
+                                                                BorderThickness="0"
+                                                                IsReadOnly="True"
+                                                                Text="{Binding ElementName=dg_devices, Path=SelectedItem.DEVICE_NAME, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
                                                         </Border>
                                                         <Grid Grid.Row="1">
                                                             <Border
@@ -448,7 +488,10 @@
                                                                 Margin="0,0,1,0"
                                                                 BorderBrush="LightGray"
                                                                 BorderThickness="1">
-                                                                <TextBox BorderThickness="0" Text="{Binding ElementName=dg_devices, Path=SelectedItem.DEVICE_IP, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                                                                <TextBox
+                                                                    BorderThickness="0"
+                                                                    IsReadOnly="True"
+                                                                    Text="{Binding ElementName=dg_devices, Path=SelectedItem.DEVICE_IP, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
                                                             </Border>
                                                         </Grid>
                                                         <Grid Grid.Row="2">
@@ -457,7 +500,10 @@
                                                                 Margin="0,0,1,0"
                                                                 BorderBrush="LightGray"
                                                                 BorderThickness="1">
-                                                                <TextBox BorderThickness="0" Text="{Binding ElementName=dg_devices, Path=SelectedItem.DEVICE_NOTE, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                                                                <TextBox
+                                                                    BorderThickness="0"
+                                                                    IsReadOnly="True"
+                                                                    Text="{Binding ElementName=dg_devices, Path=SelectedItem.DEVICE_NOTE, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
                                                             </Border>
                                                         </Grid>
                                                     </Grid>
@@ -562,17 +608,27 @@
                                             </Button.Style>
                                         </Button>
                                         <Button
-                                            x:Name="btn_device_export"
+                                            x:Name="btn_deviceprofiles_refresh"
                                             Margin="3"
                                             Padding="5,0"
-                                            Content="Export"
-                                            Visibility="Collapsed">
-                                            <Button.CommandParameter>
-                                                <MultiBinding Converter="{StaticResource myDeviceProfilesSelectedItemsConverter}" UpdateSourceTrigger="PropertyChanged">
-                                                    <Binding ElementName="dg_device_profiles" Path="SelectedItems.Count" />
-                                                    <Binding ElementName="dg_device_profiles" Path="SelectedItems" />
-                                                </MultiBinding>
-                                            </Button.CommandParameter>
+                                            Command="{Binding RefreshDeviceProfilesCommand}"
+                                            CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                            Content="Refresh"
+                                            Visibility="Visible">
+                                            <Button.Style>
+                                                <Style TargetType="{x:Type Button}">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsEnabled" Value="True">
+                                                            <Setter Property="Foreground" Value="White" />
+                                                            <Setter Property="FontWeight" Value="DemiBold" />
+                                                            <Setter Property="Background" Value="#222E50" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
                                         </Button>
                                     </StackPanel>
                                 </Grid>
@@ -1512,10 +1568,28 @@
                                     <DataGrid
                                         x:Name="dg_timeChecks"
                                         Margin="0,5,0,0"
-                                        AutoGenerateColumns="True"
+                                        AutoGenerateColumns="False"
                                         CanUserAddRows="False"
                                         CanUserDeleteRows="False"
-                                        ItemsSource="{Binding TimeChecks, UpdateSourceTrigger=PropertyChanged}" />
+                                        ItemsSource="{Binding TimeChecks, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn
+                                                Width="Auto"
+                                                Binding="{Binding Path=PIN_NO, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Header="PinNo"
+                                                Visibility="Visible" />
+                                            <DataGridTextColumn
+                                                Width="Auto"
+                                                Binding="{Binding Path=DEVICE_IP, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Header="IP"
+                                                Visibility="Visible" />
+                                            <DataGridTextColumn
+                                                Width="Auto"
+                                                Binding="{Binding Path=TIMECHECK_TIME, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Header="Time"
+                                                Visibility="Visible" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
                                 </Grid>
                                 <Grid Grid.Row="2" Background="#f1f1f1" />
                             </Grid>

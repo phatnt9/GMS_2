@@ -107,7 +107,7 @@ namespace GateAccessControl
 
         public DeviceItem()
         {
-            WebSocketStatus = "Disconnected";
+            WebSocketStatus = RosStatus.Disconnected.ToString();
             checkAlive = new System.Timers.Timer();
             checkAlive.Interval = 1000;
             checkAlive.Elapsed += CheckConnection;
@@ -131,27 +131,26 @@ namespace GateAccessControl
         {
             try
             {
-                WebSocket vl = webSocket;
-                if (vl != null)
+                if (webSocket != null)
                 {
-                    if (vl.IsAlive)
+                    if (webSocket.IsAlive)
                     {
-                        WebSocketStatus = "Connected";
+                        WebSocketStatus = RosStatus.Connected.ToString();
                     }
                     else
                     {
-                        WebSocketStatus = "Connecting";
+                        WebSocketStatus = RosStatus.Connecting.ToString();
                     }
                 }
                 else
                 {
-                    WebSocketStatus = "Disconnected";
+                    WebSocketStatus = RosStatus.Disconnected.ToString();
                     checkAlive.Stop();
                 }
             }
             catch
             {
-                WebSocketStatus = "Pending";
+                WebSocketStatus = RosStatus.Pending.ToString();
             }
         }
         public void createRosTerms()
@@ -400,12 +399,15 @@ namespace GateAccessControl
         {
             try
             {
-                StatusProfile = "Requesting check-in records";
-                dynamic product = new JObject();
-                product.status = SERVERRESPONSE.RESP_REQ_PERSONLIST_IMMEDIATELY;
-                StandardString msg = new StandardString();
-                msg.data = product.ToString();
-                Publish(publishdata, msg);
+                if(!String.IsNullOrEmpty(WebSocketStatus) && WebSocketStatus.Equals(RosStatus.Connected.ToString()))
+                {
+                    StatusProfile = "Requesting check-in records";
+                    dynamic product = new JObject();
+                    product.status = SERVERRESPONSE.RESP_REQ_PERSONLIST_IMMEDIATELY;
+                    StandardString msg = new StandardString();
+                    msg.data = product.ToString();
+                    Publish(publishdata, msg);
+                }
             }
             catch (Exception ex)
             {
@@ -454,6 +456,14 @@ namespace GateAccessControl
                 byteArray = stream.ToArray();
             }
             return byteArray;
+        }
+
+        public enum RosStatus
+        {
+            Pending = 0,
+            Connecting = 1,
+            Connected = 2,
+            Disconnected = 3
         }
 
 

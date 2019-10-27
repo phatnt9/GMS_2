@@ -5,15 +5,54 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:GateAccessControl"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:md="clr-namespace:GateAccessControl"
     xmlns:vmd="clr-namespace:GateAccessControl.ViewModels"
     Title="DeviceProfilesManagement"
     Width="800"
     Height="450"
-    local:DialogCloser.DialogResult="{Binding DialogResult}"
+    md:DialogCloser.DialogResult="{Binding DialogResult}"
     mc:Ignorable="d">
     <Window.Resources>
         <vmd:ProfileSelectedItemsConverter x:Key="myProfileSelectedItemsConverter" />
         <vmd:DeviceProfilesSelectedItemsConverter x:Key="myDeviceProfilesSelectedItemsConverter" />
+
+        <Style
+            x:Key="placeHolder"
+            BasedOn="{StaticResource {x:Type TextBox}}"
+            TargetType="{x:Type TextBox}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBox}">
+                        <Grid>
+                            <TextBox
+                                x:Name="textSource"
+                                VerticalContentAlignment="Center"
+                                Panel.ZIndex="2"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Text="{Binding Path=Text, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox
+                                VerticalContentAlignment="Center"
+                                Panel.ZIndex="1"
+                                Background="{TemplateBinding Background}"
+                                Text="{TemplateBinding Tag}">
+                                <TextBox.Style>
+                                    <Style TargetType="{x:Type TextBox}">
+                                        <Setter Property="Foreground" Value="Transparent" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=Text, Source={x:Reference textSource}}" Value="">
+                                                <Setter Property="Foreground" Value="LightGray" />
+                                                <Setter Property="VerticalContentAlignment" Value="Center" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -34,10 +73,51 @@
                     <RowDefinition Height="25" />
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
-                    <StackPanel
-                        HorizontalAlignment="Right"
-                        Background="Aqua"
-                        Orientation="Horizontal" />
+                    <DockPanel HorizontalAlignment="Stretch" Background="#f1f1f1">
+                        <md:CommandComboBox
+                            x:Name="cb_profile_class"
+                            Width="65"
+                            Margin="3"
+                            Padding="5,0"
+                            VerticalContentAlignment="Center"
+                            Command="{Binding SearchClassProfilesCommand}"
+                            CommandParameter="{Binding ElementName=dg_profiles, UpdateSourceTrigger=PropertyChanged, Path=Items}"
+                            DisplayMemberPath="CLASS_NAME"
+                            ItemsSource="{Binding Classes, UpdateSourceTrigger=PropertyChanged}"
+                            SelectedIndex="0"
+                            Text="{Binding Search_profiles_class, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}" />
+                        <md:CommandComboBox
+                            x:Name="cb_profile_group"
+                            Width="65"
+                            Margin="3"
+                            Padding="5,0"
+                            VerticalContentAlignment="Center"
+                            Command="{Binding SearchGroupProfilesCommand}"
+                            CommandParameter="{Binding ElementName=dg_profiles, UpdateSourceTrigger=PropertyChanged, Path=Items}"
+                            SelectedIndex="0"
+                            Text="{Binding Search_profiles_group, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}">
+                            <ComboBoxItem>All</ComboBoxItem>
+                            <ComboBoxItem>Group 1</ComboBoxItem>
+                            <ComboBoxItem>Group 2</ComboBoxItem>
+                            <ComboBoxItem>Group 3</ComboBoxItem>
+                            <ComboBoxItem>Group 4</ComboBoxItem>
+                            <ComboBoxItem>Group 5</ComboBoxItem>
+                            <ComboBoxItem>Group 6</ComboBoxItem>
+                            <ComboBoxItem>Group 7</ComboBoxItem>
+                            <ComboBoxItem>Group 8</ComboBoxItem>
+                            <ComboBoxItem>Group 9</ComboBoxItem>
+                            <ComboBoxItem>Group 10</ComboBoxItem>
+                        </md:CommandComboBox>
+                        <md:CommandTextBox
+                            x:Name="tb_profile_search"
+                            Margin="3"
+                            Padding="5,0"
+                            Command="{Binding SearchOthersProfilesCommand}"
+                            CommandParameter="{Binding ElementName=dg_profiles, UpdateSourceTrigger=PropertyChanged, Path=Items}"
+                            Style="{StaticResource placeHolder}"
+                            Tag="Type to search"
+                            Text="{Binding Search_profiles_others, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}" />
+                    </DockPanel>
                 </Grid>
                 <Grid Grid.Row="1">
                     <DataGrid
@@ -149,10 +229,62 @@
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="25" />
+                    <RowDefinition Height="25" />
                     <RowDefinition />
                     <RowDefinition Height="25" />
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
+                    <StackPanel
+                        HorizontalAlignment="Left"
+                        Background="#f1f1f1"
+                        Orientation="Horizontal">
+                        <md:CommandComboBox
+                            x:Name="cb_device_class"
+                            Width="65"
+                            Margin="3"
+                            Padding="5,0"
+                            VerticalContentAlignment="Center"
+                            Command="{Binding SearchClassDeviceProfilesCommand}"
+                            CommandParameter="{Binding ElementName=dg_deviceProfiles, UpdateSourceTrigger=PropertyChanged, Path=Items}"
+                            DisplayMemberPath="CLASS_NAME"
+                            ItemsSource="{Binding Classes, UpdateSourceTrigger=PropertyChanged}"
+                            SelectedIndex="0"
+                            Text="{Binding Search_deviceProfiles_class, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}" />
+                        <md:CommandComboBox
+                            x:Name="cb_device_group"
+                            Width="65"
+                            Margin="3"
+                            Padding="5,0"
+                            VerticalContentAlignment="Center"
+                            Command="{Binding SearchGroupDeviceProfilesCommand}"
+                            CommandParameter="{Binding ElementName=dg_deviceProfiles, UpdateSourceTrigger=PropertyChanged, Path=Items}"
+                            SelectedIndex="0"
+                            Text="{Binding Search_deviceProfiles_group, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}">
+                            <ComboBoxItem>All</ComboBoxItem>
+                            <ComboBoxItem>Group 1</ComboBoxItem>
+                            <ComboBoxItem>Group 2</ComboBoxItem>
+                            <ComboBoxItem>Group 3</ComboBoxItem>
+                            <ComboBoxItem>Group 4</ComboBoxItem>
+                            <ComboBoxItem>Group 5</ComboBoxItem>
+                            <ComboBoxItem>Group 6</ComboBoxItem>
+                            <ComboBoxItem>Group 7</ComboBoxItem>
+                            <ComboBoxItem>Group 8</ComboBoxItem>
+                            <ComboBoxItem>Group 9</ComboBoxItem>
+                            <ComboBoxItem>Group 10</ComboBoxItem>
+                        </md:CommandComboBox>
+                        <md:CommandTextBox
+                            x:Name="tb_device_search"
+                            Width="120"
+                            Margin="3"
+                            Padding="5,0"
+                            Command="{Binding SearchOthersDeviceProfilesCommand}"
+                            CommandParameter="{Binding ElementName=dg_deviceProfiles, UpdateSourceTrigger=PropertyChanged, Path=Items}"
+                            Style="{StaticResource placeHolder}"
+                            Tag="Type to search"
+                            Text="{Binding Search_deviceProfiles_others, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}" />
+                    </StackPanel>
+                </Grid>
+                <Grid Grid.Row="1">
                     <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                         <Button
                             x:Name="btn_deviceProfiles_Active"
@@ -213,7 +345,7 @@
                         </Button>
                     </StackPanel>
                 </Grid>
-                <Grid Grid.Row="1">
+                <Grid Grid.Row="2">
                     <DataGrid
                         Name="dg_deviceProfiles"
                         AutoGenerateColumns="False"
@@ -342,7 +474,7 @@
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
-                <Grid Grid.Row="2">
+                <Grid Grid.Row="3">
                     <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                         <TextBlock
                             Width="100"

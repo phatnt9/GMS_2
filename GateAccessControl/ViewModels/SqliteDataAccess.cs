@@ -40,7 +40,7 @@ namespace GateAccessControl
             catch (Exception ex)
             {
                 logFile.Error(ex.Message);
-                return null;
+                return new List<CardType>();
             }
         }
         public static List<Device> LoadAllDevices()
@@ -56,7 +56,7 @@ namespace GateAccessControl
             catch (Exception ex)
             {
                 logFile.Error(ex.Message);
-                return null;
+                return new List<Device>();
             }
         }
         public static List<DeviceProfiles> LoadAllDeviceProfiles(int deviceId, string className = "", string subClass = "", string pinNo = "")
@@ -65,6 +65,8 @@ namespace GateAccessControl
             {
                 using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
                 {
+                    className = (className == null) ? "" : className;
+                    subClass = (subClass == null) ? "" : subClass;
                     var p = new DynamicParameters();
                     p.Add("@CLASS_NAME", "%" + className + "%");
                     p.Add("@SUB_CLASS", "%" + subClass + "%");
@@ -76,7 +78,7 @@ namespace GateAccessControl
             catch (Exception ex)
             {
                 logFile.Error(ex.Message);
-                return null;
+                return new List<DeviceProfiles>();
             }
         }
         public static List<Profile> LoadAllProfiles(string className = "", string subClass = "")
@@ -85,6 +87,8 @@ namespace GateAccessControl
             {
                 using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
                 {
+                    className = (className == null) ? "" : className;
+                    subClass = (subClass == null) ? "" : subClass;
                     var p = new DynamicParameters();
                     p.Add("@CLASS_NAME", "%" + className + "%");
                     p.Add("@SUB_CLASS", "%" + subClass + "%");
@@ -96,7 +100,7 @@ namespace GateAccessControl
             catch (Exception ex)
             {
                 logFile.Error(ex.Message);
-                return null;
+                return new List<Profile>();
             }
         }
         public static List<TimeRecord> LoadAllTimeCheck(string PIN_NO, DateTime time, string ip = null)
@@ -117,6 +121,9 @@ namespace GateAccessControl
                             var output = cnn.Query<TimeRecord>("SELECT * FROM DT_TIMECHECK INNER JOIN DT_PROFILE,DT_DEVICE ON " +
                                 "(DT_PROFILE.PIN_NO = DT_TIMECHECK.PIN_NO AND DT_DEVICE.DEVICE_IP = DT_TIMECHECK.DEVICE_IP)" +
                                 " WHERE (TIMECHECK_TIME >= @FROM AND TIMECHECK_TIME < @TO) AND (DT_PROFILE.PIN_NO = @PIN_NO)", p);
+
+                            //var output = cnn.Query<TimeRecord>("SELECT * FROM DT_TIMECHECK" +
+                            //    " WHERE (DT_TIMECHECK.PIN_NO = @PIN_NO)", p);
                             return output.ToList();
                         }
                     }
@@ -130,6 +137,10 @@ namespace GateAccessControl
                             var output = cnn.Query<TimeRecord>("SELECT * FROM DT_TIMECHECK INNER JOIN DT_PROFILE,DT_DEVICE ON " +
                                 "(DT_PROFILE.PIN_NO = DT_TIMECHECK.PIN_NO AND DT_DEVICE.DEVICE_IP = DT_TIMECHECK.DEVICE_IP)" +
                                 " WHERE (DT_PROFILE.PIN_NO = @PIN_NO)", p);
+
+                            //var output = cnn.Query<TimeRecord>("SELECT * FROM DT_TIMECHECK" +
+                            //    " WHERE (DT_TIMECHECK.PIN_NO = @PIN_NO)", p);
+
                             return output.ToList();
                         }
                     }
@@ -170,7 +181,7 @@ namespace GateAccessControl
             catch (Exception ex)
             {
                 logFile.Error(ex.Message);
-                return null;
+                return new List<TimeRecord>();
             }
         }
         public static bool InsertDataDevice(Device device)
@@ -416,7 +427,7 @@ namespace GateAccessControl
             {
                 using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
                 {
-                    cnn.Execute("DELETE FROM DT_PROFILE WHERE PROFILE_ID = @PROFILE_ID", profile);
+                    cnn.Execute("DELETE FROM DT_PROFILE WHERE PIN_NO = @PIN_NO", profile);
                 }
                 return true;
             }

@@ -67,7 +67,8 @@
                         <DataGridTextColumn
                             Width="*"
                             Binding="{Binding Path=CLASS_ID}"
-                            Header="Class Id" />
+                            Header="Class Id"
+                            IsReadOnly="True" />
                         <DataGridTextColumn
                             Width="*"
                             Binding="{Binding Path=CLASS_NAME}"

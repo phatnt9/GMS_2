@@ -187,13 +187,13 @@
                                         DisplayMemberPath="CLASS_NAME"
                                         ItemsSource="{Binding Classes, UpdateSourceTrigger=PropertyChanged}"
                                         SelectedIndex="0"
-                                        Text="{Binding AddProfile.CLASS_NAME, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}" />
+                                        Text="{Binding AddProfile.CLASS_NAME, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                     <md:CommandComboBox
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
                                         SelectedIndex="0"
-                                        Text="{Binding AddProfile.SUB_CLASS, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}">
+                                        Text="{Binding AddProfile.SUB_CLASS, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                                         <ComboBoxItem>Group 1</ComboBoxItem>
                                         <ComboBoxItem>Group 2</ComboBoxItem>
                                         <ComboBoxItem>Group 3</ComboBoxItem>
@@ -210,7 +210,7 @@
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
                                         SelectedIndex="0"
-                                        Text="{Binding AddProfile.GENDER, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}">
+                                        Text="{Binding AddProfile.GENDER, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                                         <ComboBoxItem>Male</ComboBoxItem>
                                         <ComboBoxItem>Female</ComboBoxItem>
                                     </md:CommandComboBox>

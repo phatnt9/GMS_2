@@ -182,7 +182,6 @@ namespace GateAccessControl
                     foreach (DeviceProfiles DP in getCloneDeviceProfile)
                     {
                         DP.CloneDataFromProfile(p);
-
                         if (p.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Suspended.ToString()))
                         {
                             if (!DP.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Deleted.ToString()))

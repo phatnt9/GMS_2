@@ -31,7 +31,7 @@ namespace GateAccessControl.Views
 
         private void ImportWindow_Closed(object sender, EventArgs e)
         {
-            if (ImortWorker.IsBusy)
+            if (ImortWorker != null && ImortWorker.IsBusy)
             {
                 ImortWorker.CancelAsync();
             }
