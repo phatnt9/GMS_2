@@ -43,14 +43,24 @@ namespace GateAccessControl
                 return new List<CardType>();
             }
         }
-        public static List<Device> LoadAllDevices()
+        public static List<Device> LoadAllDevices(int deviceId = 0)
         {
             try
             {
                 using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
                 {
-                    var output = cnn.Query<Device>("SELECT * FROM DT_DEVICE", new DynamicParameters());
-                    return output.ToList();
+                    var p = new DynamicParameters();
+                    p.Add("@DEVICE_ID", deviceId);
+                    if (deviceId == 0)
+                    {
+                        var output = cnn.Query<Device>("SELECT * FROM DT_DEVICE", p);
+                        return output.ToList();
+                    }
+                    else
+                    {
+                        var output = cnn.Query<Device>("SELECT * FROM DT_DEVICE WHERE DT_DEVICE.DEVICE_ID = @DEVICE_ID", p);
+                        return output.ToList();
+                    }
                 }
             }
             catch (Exception ex)
@@ -59,7 +69,7 @@ namespace GateAccessControl
                 return new List<Device>();
             }
         }
-        public static List<DeviceProfiles> LoadAllDeviceProfiles(int deviceId, string className = "", string subClass = "", string pinNo = "")
+        public static List<DeviceProfile> LoadAllDeviceProfiles(int deviceId, string className = "", string subClass = "", string pinNo = "")
         {
             try
             {
@@ -71,14 +81,14 @@ namespace GateAccessControl
                     p.Add("@CLASS_NAME", "%" + className + "%");
                     p.Add("@SUB_CLASS", "%" + subClass + "%");
                     p.Add("@PIN_NO", "%" + pinNo + "%");
-                    var output = cnn.Query<DeviceProfiles>("SELECT * FROM DT_DEVICE_PROFILES_" + deviceId + " WHERE ((CLASS_NAME LIKE (@CLASS_NAME)) AND (SUB_CLASS LIKE (@SUB_CLASS)) AND (PIN_NO LIKE (@PIN_NO)))", p);
+                    var output = cnn.Query<DeviceProfile>("SELECT * FROM DT_DEVICE_PROFILES_" + deviceId + " WHERE ((CLASS_NAME LIKE (@CLASS_NAME)) AND (SUB_CLASS LIKE (@SUB_CLASS)) AND (PIN_NO LIKE (@PIN_NO)))", p);
                     return output.ToList();
                 }
             }
             catch (Exception ex)
             {
                 logFile.Error(ex.Message);
-                return new List<DeviceProfiles>();
+                return new List<DeviceProfile>();
             }
         }
         public static List<Profile> LoadAllProfiles(string className = "", string subClass = "")
@@ -246,7 +256,7 @@ namespace GateAccessControl
                 return false;
             }
         }
-        public static bool InsertDataDeviceProfiles(int deviceId, DeviceProfiles _profile)
+        public static bool InsertDataDeviceProfiles(int deviceId, DeviceProfile _profile)
         {
             try
             {
@@ -343,7 +353,7 @@ namespace GateAccessControl
             }
         }
 
-        public static bool UpdateDataDeviceProfiles(int deviceId, DeviceProfiles _profile)
+        public static bool UpdateDataDeviceProfiles(int deviceId, DeviceProfile _profile)
         {
             try
             {
@@ -470,7 +480,7 @@ namespace GateAccessControl
             }
         }
 
-        public static bool DeleteDataDeviceProfiles(int deviceId, DeviceProfiles _profile)
+        public static bool DeleteDataDeviceProfiles(int deviceId, DeviceProfile _profile)
         {
             try
             {
@@ -601,7 +611,7 @@ namespace GateAccessControl
                 return false;
             }
         }
-        public static bool InsertDataDeviceProfiles_DUY(string _tableName, DeviceProfiles _profile)
+        public static bool InsertDataDeviceProfiles_DUY(string _tableName, DeviceProfile _profile)
         {
             try
             {

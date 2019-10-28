@@ -41,12 +41,12 @@ namespace GateAccessControl
         }
 
         private ObservableCollection<Profile> _profiles = new ObservableCollection<Profile>();
-        private ObservableCollection<DeviceProfiles> _deviceProfiles = new ObservableCollection<DeviceProfiles>();
+        private ObservableCollection<DeviceProfile> _deviceProfiles = new ObservableCollection<DeviceProfile>();
         private ObservableCollection<CardType> _classes = new ObservableCollection<CardType>();
 
         public ObservableCollection<CardType> Classes => _classes;
         public ObservableCollection<Profile> Profiles => _profiles;
-        public ObservableCollection<DeviceProfiles> DeviceProfiles => _deviceProfiles;
+        public ObservableCollection<DeviceProfile> DeviceProfiles => _deviceProfiles;
 
         public ICommand CloseDeviceProfilesManagementCommand { get; set; }
         public ICommand SelectProfilesCommand { get; set; }
@@ -110,12 +110,12 @@ namespace GateAccessControl
                     ReloadDeviceProfiles(Device);
                 });
 
-            DeactiveDeviceProfilesCommand = new RelayCommand<List<DeviceProfiles>>(
+            DeactiveDeviceProfilesCommand = new RelayCommand<List<DeviceProfile>>(
                 (p) =>
                 {
                     if (p != null)
                     {
-                        List<DeviceProfiles> CanDeactiveDeviceProfiles = p.FindAll((u) =>
+                        List<DeviceProfile> CanDeactiveDeviceProfiles = p.FindAll((u) =>
                         {
                             if (
                             ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
@@ -156,12 +156,12 @@ namespace GateAccessControl
                     //ReloadDataDeviceProfiles(Device);
                 });
 
-            ActiveDeviceProfilesCommand = new RelayCommand<List<DeviceProfiles>>(
+            ActiveDeviceProfilesCommand = new RelayCommand<List<DeviceProfile>>(
                 (p) =>
                 {
                     if(p != null)
                     {
-                        List<DeviceProfiles> CanActiveDeviceProfiles = p.FindAll((u) =>
+                        List<DeviceProfile> CanActiveDeviceProfiles = p.FindAll((u) =>
                         {
                             if (
                             ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
@@ -201,12 +201,12 @@ namespace GateAccessControl
                     //ReloadDataDeviceProfiles(Device);
                 });
 
-            DeleteDeviceProfilesCommand = new RelayCommand<List<DeviceProfiles>>(
+            DeleteDeviceProfilesCommand = new RelayCommand<List<DeviceProfile>>(
                 (p) =>
                 {
                     if (p != null)
                     {
-                        List<DeviceProfiles> CanDeleteDeviceProfiles = p.FindAll((u) =>
+                        List<DeviceProfile> CanDeleteDeviceProfiles = p.FindAll((u) =>
                         {
                             if (
                             ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
@@ -286,7 +286,7 @@ namespace GateAccessControl
                     ReloadDeviceProfiles(Device);
                 });
 
-            CloseDeviceProfilesManagementCommand = new RelayCommand<DeviceProfiles>(
+            CloseDeviceProfilesManagementCommand = new RelayCommand<DeviceProfile>(
                 (p) =>
                 {
                     return true;
@@ -297,9 +297,9 @@ namespace GateAccessControl
                 });
         }
 
-        private void ActiveDeviceProfiles(List<DeviceProfiles> profiles)
+        private void ActiveDeviceProfiles(List<DeviceProfile> profiles)
         {
-            foreach (DeviceProfiles item in profiles)
+            foreach (DeviceProfile item in profiles)
             {
                 if ((item.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
                         (item.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString()))
@@ -339,9 +339,9 @@ namespace GateAccessControl
             }
         }
 
-        private void DeactiveDeviceProfiles(List<DeviceProfiles> profiles)
+        private void DeactiveDeviceProfiles(List<DeviceProfile> profiles)
         {
-            foreach (DeviceProfiles item in profiles)
+            foreach (DeviceProfile item in profiles)
             {
                 if ((item.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
                         (item.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString()))
@@ -379,9 +379,9 @@ namespace GateAccessControl
             }
         }
 
-        public void DeleteDeviceProfiles(List<DeviceProfiles> profiles)
+        public void DeleteDeviceProfiles(List<DeviceProfile> profiles)
         {
-            foreach (DeviceProfiles item in profiles)
+            foreach (DeviceProfile item in profiles)
             {
                 if(SqliteDataAccess.DeleteDataDeviceProfiles(Device.DEVICE_ID, item))
                 {
@@ -399,7 +399,7 @@ namespace GateAccessControl
         {
             foreach (Profile item in profiles)
             {
-                if (SqliteDataAccess.InsertDataDeviceProfiles(Device.DEVICE_ID, new DeviceProfiles(item)))
+                if (SqliteDataAccess.InsertDataDeviceProfiles(Device.DEVICE_ID, new DeviceProfile(item)))
                 {
                     item.AddDeviceId(Device.DEVICE_ID);
                     SqliteDataAccess.UpdateDataProfile(item);
@@ -431,8 +431,8 @@ namespace GateAccessControl
             try
             {
                 _deviceProfiles.Clear();
-                List<DeviceProfiles> deviceProfileList = SqliteDataAccess.LoadAllDeviceProfiles(p.DEVICE_ID);
-                foreach (DeviceProfiles item in deviceProfileList)
+                List<DeviceProfile> deviceProfileList = SqliteDataAccess.LoadAllDeviceProfiles(p.DEVICE_ID);
+                foreach (DeviceProfile item in deviceProfileList)
                 {
                     _deviceProfiles.Add(item);
                 }
@@ -466,8 +466,8 @@ namespace GateAccessControl
             try
             {
                 _deviceProfiles.Clear();
-                List<DeviceProfiles> deviceProfileList = SqliteDataAccess.LoadAllDeviceProfiles(device.DEVICE_ID, className, subClass);
-                foreach (DeviceProfiles item in deviceProfileList)
+                List<DeviceProfile> deviceProfileList = SqliteDataAccess.LoadAllDeviceProfiles(device.DEVICE_ID, className, subClass);
+                foreach (DeviceProfile item in deviceProfileList)
                 {
                     _deviceProfiles.Add(item);
                 }
@@ -536,12 +536,12 @@ namespace GateAccessControl
             if (p != null)
             {
                 p.Filter = (obj) => (
-                (((DeviceProfiles)obj).ADDRESS.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
-                (((DeviceProfiles)obj).AD_NO.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
-                (((DeviceProfiles)obj).EMAIL.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
-                (((DeviceProfiles)obj).PROFILE_NAME.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
-                (((DeviceProfiles)obj).PHONE.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
-                (((DeviceProfiles)obj).PIN_NO.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower()))
+                (((DeviceProfile)obj).ADDRESS.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((DeviceProfile)obj).AD_NO.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((DeviceProfile)obj).EMAIL.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((DeviceProfile)obj).PROFILE_NAME.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((DeviceProfile)obj).PHONE.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((DeviceProfile)obj).PIN_NO.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower()))
             );
             }
         }

@@ -177,9 +177,9 @@ namespace GateAccessControl
                 }
                 foreach (int id in listDeviceId)
                 {
-                    List<DeviceProfiles> getCloneDeviceProfile = SqliteDataAccess.LoadAllDeviceProfiles(id,"","",p.PIN_NO);
+                    List<DeviceProfile> getCloneDeviceProfile = SqliteDataAccess.LoadAllDeviceProfiles(id,"","",p.PIN_NO);
 
-                    foreach (DeviceProfiles DP in getCloneDeviceProfile)
+                    foreach (DeviceProfile DP in getCloneDeviceProfile)
                     {
                         DP.CloneDataFromProfile(p);
                         if (p.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Suspended.ToString()))

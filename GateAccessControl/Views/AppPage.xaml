@@ -221,7 +221,6 @@
                                             VerticalContentAlignment="Center"
                                             BorderThickness="0"
                                             Command="{Binding EditDeviceCommand}"
-                                            CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                             Content="Edit">
                                             <Button.Style>
                                                 <Style TargetType="{x:Type Button}">
@@ -244,7 +243,6 @@
                                             Padding="5,0"
                                             BorderThickness="0"
                                             Command="{Binding RemoveDeviceCommand}"
-                                            CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                             Content="Remove">
                                             <Button.Style>
                                                 <Style TargetType="{x:Type Button}">
@@ -296,7 +294,7 @@
                                         IsReadOnly="True"
                                         ItemsSource="{Binding Devices, UpdateSourceTrigger=PropertyChanged}"
                                         SelectedIndex="0"
-                                        SelectedItem="{Binding SelectedDevice, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
+                                        SelectedItem="{Binding SelectedDevice, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                         SelectionMode="Single"
                                         SelectionUnit="FullRow">
                                         <DataGrid.Columns>
@@ -641,7 +639,8 @@
                                         Command="{Binding SelectDeviceProfilesCommand}"
                                         CommandParameter="{Binding ElementName=dg_device_profiles, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged}"
                                         IsReadOnly="True"
-                                        ItemsSource="{Binding DeviceProfiles, UpdateSourceTrigger=PropertyChanged}">
+                                        ItemsSource="{Binding DeviceProfiles, UpdateSourceTrigger=PropertyChanged}"
+                                        SelectedItem="{Binding SelectedDeviceProfile, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn
                                                 Width="Auto"
@@ -1125,7 +1124,8 @@
                                     CanUserDeleteRows="False"
                                     Command="{Binding SelectProfileCommand}"
                                     IsReadOnly="True"
-                                    ItemsSource="{Binding Profiles, UpdateSourceTrigger=PropertyChanged}">
+                                    ItemsSource="{Binding Profiles, UpdateSourceTrigger=PropertyChanged}"
+                                    SelectedItem="{Binding SelectedProfile, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                                     <md:CommandDataGrid.CommandParameter>
                                         <MultiBinding Converter="{StaticResource myLoadTimeCheckParametersConverter}" UpdateSourceTrigger="PropertyChanged">
                                             <Binding ElementName="dg_main_profiles" Path="SelectedItem" />

@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace GateAccessControl
 {
-    public class DeviceProfiles : INotifyPropertyChanged
+    public class DeviceProfile : INotifyPropertyChanged
     {
-        public DeviceProfiles()
+        public DeviceProfile()
         {
 
         }
 
-        public DeviceProfiles(Profile p)
+        public DeviceProfile(Profile p)
         {
             PROFILE_ID = 0;
             PIN_NO = p.PIN_NO;

@@ -192,7 +192,7 @@ namespace GateAccessControl
                      ExportProfiles(p);
                  });
 
-            SelectDeviceProfilesCommand = new RelayCommand<DeviceProfiles>(
+            SelectDeviceProfilesCommand = new RelayCommand<DeviceProfile>(
                  (p) =>
                  {
                          return true;
@@ -203,7 +203,7 @@ namespace GateAccessControl
                  });
 
 
-            SetTimeDeviceProfileCommnad = new RelayCommand<List<DeviceProfiles>>(
+            SetTimeDeviceProfileCommnad = new RelayCommand<List<DeviceProfile>>(
                  (p) =>
                  {
                      if (p != null && p.Count > 0 && SelectedDevice != null)
@@ -303,7 +303,7 @@ namespace GateAccessControl
                      p.SyncWorker.CancelAsync();
                  });
 
-            SyncCommand = new RelayCommand<List<DeviceProfiles>>(
+            SyncCommand = new RelayCommand<List<DeviceProfile>>(
                  (p) =>
                  {
                      /* 
@@ -346,18 +346,18 @@ namespace GateAccessControl
             EditDeviceCommand = new RelayCommand<Device>(
                 (p) =>
                 {
-                    return CanEditOrRemoveDevice(p);
+                    return CanEditOrRemoveDevice(SelectedDevice);
                 },
                 (p) =>
                 {
-                    EditDevice(p);
+                    EditDevice(SelectedDevice);
                     ReloadDataDevices();
                 });
 
             RemoveDeviceCommand = new RelayCommand<Device>(
                 (p) =>
                 {
-                    return CanEditOrRemoveDevice(p);
+                    return CanEditOrRemoveDevice(SelectedDevice);
                 },
                 (p) =>
                 {
@@ -368,9 +368,9 @@ namespace GateAccessControl
                         MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes
                         )
                     {
-                        if (RemoveDevice(p))
+                        if (RemoveDevice(SelectedDevice))
                         {
-                            ReloadDataDevices(p);
+                            ReloadDataDevices(SelectedDevice);
                         }
                     }
                 });
@@ -812,12 +812,12 @@ namespace GateAccessControl
             }
         }
 
-        private void SetTimeDeviceProfile(List<DeviceProfiles> p)
+        private void SetTimeDeviceProfile(List<DeviceProfile> p)
         {
             string myActiveTime = GetActiveTimeFromTextBoxes();
             if(!String.IsNullOrEmpty(myActiveTime))
             {
-                foreach (DeviceProfiles item in p)
+                foreach (DeviceProfile item in p)
                 {
                     item.ACTIVE_TIME = myActiveTime;
                     if(item.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString() && 
@@ -887,7 +887,7 @@ namespace GateAccessControl
             return null;
         }
 
-        private void ParseActiveTimeDeviceProfile_new(DeviceProfiles p)
+        private void ParseActiveTimeDeviceProfile_new(DeviceProfile p)
         {
             if (p!= null && !String.IsNullOrEmpty(p.ACTIVE_TIME))
             {
@@ -914,7 +914,7 @@ namespace GateAccessControl
             }
         }
 
-        private void ParseActiveTimeDeviceProfile_old(DeviceProfiles p)
+        private void ParseActiveTimeDeviceProfile_old(DeviceProfile p)
         {
             if (!String.IsNullOrEmpty(p.ACTIVE_TIME))
             {
@@ -1176,9 +1176,9 @@ namespace GateAccessControl
                     }
                     foreach (int id in listDeviceId)
                     {
-                        List<DeviceProfiles> getCloneDeviceProfile = SqliteDataAccess.LoadAllDeviceProfiles(id, "", "", p.PIN_NO);
+                        List<DeviceProfile> getCloneDeviceProfile = SqliteDataAccess.LoadAllDeviceProfiles(id, "", "", p.PIN_NO);
 
-                        foreach (DeviceProfiles DP in getCloneDeviceProfile)
+                        foreach (DeviceProfile DP in getCloneDeviceProfile)
                         {
                             DP.CloneDataFromProfile(p);
 
@@ -1274,8 +1274,8 @@ namespace GateAccessControl
                 try
                 {
                     _deviceProfiles.Clear();
-                    List<DeviceProfiles> deviceProfileList = SqliteDataAccess.LoadAllDeviceProfiles(p.DEVICE_ID);
-                    foreach (DeviceProfiles item in deviceProfileList)
+                    List<DeviceProfile> deviceProfileList = SqliteDataAccess.LoadAllDeviceProfiles(p.DEVICE_ID);
+                    foreach (DeviceProfile item in deviceProfileList)
                     {
                         _deviceProfiles.Add(item);
                     }
@@ -1324,12 +1324,12 @@ namespace GateAccessControl
             if (p != null)
             {
                 p.Filter = (obj) => (
-                (((DeviceProfiles)obj).ADDRESS.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
-                (((DeviceProfiles)obj).AD_NO.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
-                (((DeviceProfiles)obj).EMAIL.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
-                (((DeviceProfiles)obj).PROFILE_NAME.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
-                (((DeviceProfiles)obj).PHONE.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
-                (((DeviceProfiles)obj).PIN_NO.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower()))
+                (((DeviceProfile)obj).ADDRESS.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((DeviceProfile)obj).AD_NO.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((DeviceProfile)obj).EMAIL.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((DeviceProfile)obj).PROFILE_NAME.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((DeviceProfile)obj).PHONE.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((DeviceProfile)obj).PIN_NO.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower()))
             );
             }
         }
@@ -1437,8 +1437,8 @@ namespace GateAccessControl
             try
             {
                 _deviceProfiles.Clear();
-                List<DeviceProfiles> deviceProfileList = SqliteDataAccess.LoadAllDeviceProfiles(device.DEVICE_ID, className, subClass);
-                foreach (DeviceProfiles item in deviceProfileList)
+                List<DeviceProfile> deviceProfileList = SqliteDataAccess.LoadAllDeviceProfiles(device.DEVICE_ID, className, subClass);
+                foreach (DeviceProfile item in deviceProfileList)
                 {
                     _deviceProfiles.Add(item);
                 }
@@ -1484,7 +1484,7 @@ namespace GateAccessControl
         {
             if (p != null && p.DeviceItem.WebSocketStatus != null)
             {
-                if (p.DeviceItem.WebSocketStatus.Equals(RosStatus.Disconnected.ToString()) && !p.DeviceItem.IsSendingProfiles)
+                if (p.DeviceItem.WebSocketStatus == RosStatus.Disconnected.ToString() && p.DeviceItem.IsSendingProfiles == false)
                 {
                     return true;
                 }
@@ -1575,17 +1575,20 @@ namespace GateAccessControl
 
         private ObservableCollection<Profile> _profiles = new ObservableCollection<Profile>();
         private ObservableCollection<Device> _devices = new ObservableCollection<Device>();
-        private ObservableCollection<DeviceProfiles> _deviceProfiles = new ObservableCollection<DeviceProfiles>();
+        private ObservableCollection<DeviceProfile> _deviceProfiles = new ObservableCollection<DeviceProfile>();
         private ObservableCollection<TimeRecord> _timeChecks = new ObservableCollection<TimeRecord>();
         private ObservableCollection<CardType> _classes = new ObservableCollection<CardType>();
         
         public ObservableCollection<Profile> Profiles => _profiles;
         public ObservableCollection<Device> Devices => _devices;
-        public ObservableCollection<DeviceProfiles> DeviceProfiles => _deviceProfiles;
+        public ObservableCollection<DeviceProfile> DeviceProfiles => _deviceProfiles;
         public ObservableCollection<TimeRecord> TimeChecks => _timeChecks;
         public ObservableCollection<CardType> Classes => _classes;
 
         private Device _selectedDevice;
+        private Profile _selectedProfile;
+        private DeviceProfile _selectedDeviceProfile;
+        private DateTime _selectedTimeCheckDate;
         private int _syncProgressValue;
         private int lastHour = DateTime.Now.Hour;
         private int lastSec = DateTime.Now.Second;
@@ -1606,7 +1609,6 @@ namespace GateAccessControl
         public BackgroundWorker ExportWorker;
         private string _profilesWorkStatus;
         private bool _isExportingProfiles;
-        private DateTime _selectedTimeCheckDate;
 
 
         public DateTime SelectedTimeCheckDate
@@ -1676,6 +1678,26 @@ namespace GateAccessControl
             {
                 _selectedDevice = value;
                 RaisePropertyChanged("SelectedDevice");
+            }
+        }
+
+        public Profile SelectedProfile
+        {
+            get => _selectedProfile;
+            set
+            {
+                _selectedProfile = value;
+                RaisePropertyChanged("SelectedProfile");
+            }
+        }
+
+        public DeviceProfile SelectedDeviceProfile
+        {
+            get => _selectedDeviceProfile;
+            set
+            {
+                _selectedDeviceProfile = value;
+                RaisePropertyChanged("SelectedDeviceProfile");
             }
         }
         
@@ -1800,9 +1822,9 @@ namespace GateAccessControl
             }
         }
 
-        public List<DeviceProfiles> GetCanSyncDeviceProfiles(List<DeviceProfiles> p)
+        public List<DeviceProfile> GetCanSyncDeviceProfiles(List<DeviceProfile> p)
         {
-            List<DeviceProfiles> CanSyncDeviceProfiles = p.FindAll((u) =>
+            List<DeviceProfile> CanSyncDeviceProfiles = p.FindAll((u) =>
             {
                 switch (u.CLIENT_STATUS)
                 {

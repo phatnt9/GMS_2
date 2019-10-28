@@ -18,9 +18,9 @@ namespace GateAccessControl
         private int _syncProgressValue;
         public BackgroundWorker SyncWorker;
 
-        public void SyncDeviceProfiles(List<DeviceProfiles> profiles)
+        public void SyncDeviceProfiles(List<DeviceProfile> profiles)
         {
-            List<DeviceProfiles> syncList = new List<DeviceProfiles>(profiles);
+            List<DeviceProfile> syncList = new List<DeviceProfile>(profiles);
             SyncWorker = new BackgroundWorker();
             SyncWorker.WorkerSupportsCancellation = true;
             SyncWorker.WorkerReportsProgress = true;
@@ -59,7 +59,7 @@ namespace GateAccessControl
         {
             bool remainProfiles = true;
             DeviceItem.IsSendingProfiles = true;
-            List<DeviceProfiles> profiles = e.Argument as List<DeviceProfiles>;
+            List<DeviceProfile> profiles = e.Argument as List<DeviceProfile>;
             //Device device = (Device)genericlist[1];
             for (int i = 0; i < profiles.Count; i++)
             {
@@ -67,7 +67,7 @@ namespace GateAccessControl
                 {
                     remainProfiles = false;
                 }
-                DeviceProfiles deviceProfileToSend = profiles[i];
+                DeviceProfile deviceProfileToSend = profiles[i];
 
                 if ((deviceProfileToSend.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Active.ToString())) &&
                         (deviceProfileToSend.SERVER_STATUS.Equals(GlobalConstant.ServerStatus.None.ToString())))
@@ -80,7 +80,7 @@ namespace GateAccessControl
                         serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_DELETE;
                     }
 
-                    List<DeviceProfiles> sendList = new List<DeviceProfiles>();
+                    List<DeviceProfile> sendList = new List<DeviceProfile>();
                     sendList.Add(deviceProfileToSend);
                     if (DeviceItem.SendDeviceProfile(DEVICE_IP, serRes, sendList, remainProfiles))
                     {
@@ -120,7 +120,7 @@ namespace GateAccessControl
                         serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_DELETE;
                     }
 
-                    List<DeviceProfiles> sendList = new List<DeviceProfiles>();
+                    List<DeviceProfile> sendList = new List<DeviceProfile>();
                     sendList.Add(deviceProfileToSend);
                     if (DeviceItem.SendDeviceProfile(DEVICE_IP, serRes, sendList, remainProfiles))
                     {
@@ -160,7 +160,7 @@ namespace GateAccessControl
                         serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_DELETE;
                     }
 
-                    List<DeviceProfiles> sendList = new List<DeviceProfiles>();
+                    List<DeviceProfile> sendList = new List<DeviceProfile>();
                     sendList.Add(deviceProfileToSend);
                     if (DeviceItem.SendDeviceProfile(DEVICE_IP, serRes, sendList, remainProfiles))
                     {
@@ -200,7 +200,7 @@ namespace GateAccessControl
                         serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_DELETE;
                     }
 
-                    List<DeviceProfiles> sendList = new List<DeviceProfiles>();
+                    List<DeviceProfile> sendList = new List<DeviceProfile>();
                     sendList.Add(deviceProfileToSend);
                     if (DeviceItem.SendDeviceProfile(DEVICE_IP, serRes, sendList, remainProfiles))
                     {
@@ -240,7 +240,7 @@ namespace GateAccessControl
                         serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_DELETE;
                     }
 
-                    List<DeviceProfiles> sendList = new List<DeviceProfiles>();
+                    List<DeviceProfile> sendList = new List<DeviceProfile>();
                     sendList.Add(deviceProfileToSend);
                     if (DeviceItem.SendDeviceProfile(DEVICE_IP, serRes, sendList, remainProfiles))
                     {
@@ -280,7 +280,7 @@ namespace GateAccessControl
                         serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_DELETE;
                     }
 
-                    List<DeviceProfiles> sendList = new List<DeviceProfiles>();
+                    List<DeviceProfile> sendList = new List<DeviceProfile>();
                     sendList.Add(deviceProfileToSend);
                     if (DeviceItem.SendDeviceProfile(DEVICE_IP, serRes, sendList, remainProfiles))
                     {

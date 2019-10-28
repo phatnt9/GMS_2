@@ -15,8 +15,8 @@ namespace GateAccessControl.ViewModels
             {
                 //Console.WriteLine(values[0].ToString() + "-" + values[1].ToString());
                 IList IlistCardTypes = (IList)values[1];
-                var collection = IlistCardTypes.Cast<DeviceProfiles>();
-                List<DeviceProfiles> listReturn = collection.ToList();
+                var collection = IlistCardTypes.Cast<DeviceProfile>();
+                List<DeviceProfile> listReturn = collection.ToList();
                 return listReturn;
             }
             catch

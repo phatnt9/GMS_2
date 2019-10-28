@@ -15,7 +15,14 @@ namespace GateAccessControl
     {
         private static readonly log4net.ILog logFile = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public System.Timers.Timer checkAlive;
-
+        
+        public enum RosStatus
+        {
+            Pending = 0,
+            Connecting = 1,
+            Connected = 2,
+            Disconnected = 3
+        }
 
         public enum STATUSPROFILE
         {
@@ -68,7 +75,7 @@ namespace GateAccessControl
         public class JStringDeviceProfile
         {
             public int status;
-            public List<DeviceProfiles> data;
+            public List<DeviceProfile> data;
             public bool remainProfiles;
         }
 
@@ -336,7 +343,7 @@ namespace GateAccessControl
         }
 
 
-        public bool SendDeviceProfile(string ip, SERVERRESPONSE serverRes, List<DeviceProfiles> DeviceProfileToSend, bool remainProfiles)
+        public bool SendDeviceProfile(string ip, SERVERRESPONSE serverRes, List<DeviceProfile> DeviceProfileToSend, bool remainProfiles)
         {
             //Random r = new Random();
             //Thread.Sleep(100);
@@ -456,14 +463,6 @@ namespace GateAccessControl
                 byteArray = stream.ToArray();
             }
             return byteArray;
-        }
-
-        public enum RosStatus
-        {
-            Pending = 0,
-            Connecting = 1,
-            Connected = 2,
-            Disconnected = 3
         }
 
 
