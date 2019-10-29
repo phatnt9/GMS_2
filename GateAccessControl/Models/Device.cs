@@ -95,7 +95,7 @@ namespace GateAccessControl
                             deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
                             deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
                         }
-                        SqliteDataAccess.UpdateDataDeviceProfiles(DEVICE_ID, deviceProfileToSend);
+                        SqliteDataAccess.UpdateDeviceProfile(DEVICE_ID, deviceProfileToSend);
                     }
                     else
                     {
@@ -135,7 +135,7 @@ namespace GateAccessControl
                             deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
                             deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
                         }
-                        SqliteDataAccess.UpdateDataDeviceProfiles(DEVICE_ID, deviceProfileToSend);
+                        SqliteDataAccess.UpdateDeviceProfile(DEVICE_ID, deviceProfileToSend);
                     }
                     else
                     {
@@ -175,7 +175,7 @@ namespace GateAccessControl
                             deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
                             deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
                         }
-                        SqliteDataAccess.UpdateDataDeviceProfiles(DEVICE_ID, deviceProfileToSend);
+                        SqliteDataAccess.UpdateDeviceProfile(DEVICE_ID, deviceProfileToSend);
                     }
                     else
                     {
@@ -215,7 +215,7 @@ namespace GateAccessControl
                             deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
                             deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
                         }
-                        SqliteDataAccess.UpdateDataDeviceProfiles(DEVICE_ID, deviceProfileToSend);
+                        SqliteDataAccess.UpdateDeviceProfile(DEVICE_ID, deviceProfileToSend);
                     }
                     else
                     {
@@ -255,7 +255,7 @@ namespace GateAccessControl
                             deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
                             deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
                         }
-                        SqliteDataAccess.UpdateDataDeviceProfiles(DEVICE_ID, deviceProfileToSend);
+                        SqliteDataAccess.UpdateDeviceProfile(DEVICE_ID, deviceProfileToSend);
                     }
                     else
                     {
@@ -295,7 +295,7 @@ namespace GateAccessControl
                             deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
                             deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
                         }
-                        SqliteDataAccess.UpdateDataDeviceProfiles(DEVICE_ID, deviceProfileToSend);
+                        SqliteDataAccess.UpdateDeviceProfile(DEVICE_ID, deviceProfileToSend);
                     }
                     else
                     {

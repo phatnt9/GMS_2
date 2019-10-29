@@ -79,7 +79,7 @@ namespace GateAccessControl
                 (p) =>
                 {
                     AddDevice.DEVICE_STATUS = DeviceStatus.Pending.ToString();
-                    if(SqliteDataAccess.InsertDataDevice(AddDevice))
+                    if(SqliteDataAccess.InsertDevice(AddDevice))
                     {
                         AddDeviceStatus = "Succeed";
                     }

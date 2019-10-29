@@ -27,7 +27,7 @@ namespace GateAccessControl
             //string test = "Data Source=" + GlobalConstant.DatabasePath + @".\Datastore.db;Version=3;";
             return test;
         }
-        public static List<CardType> LoadAllCardType()
+        public static List<CardType> LoadCardTypes()
         {
             try
             {
@@ -43,7 +43,13 @@ namespace GateAccessControl
                 return new List<CardType>();
             }
         }
-        public static List<Device> LoadAllDevices(int deviceId = 0)
+
+        /// <summary>
+        /// 0: Load all
+        /// </summary>
+        /// <param name="deviceId"></param>
+        /// <returns></returns>
+        public static List<Device> LoadDevices(int deviceId)
         {
             try
             {
@@ -69,18 +75,19 @@ namespace GateAccessControl
                 return new List<Device>();
             }
         }
-        public static List<DeviceProfile> LoadAllDeviceProfiles(int deviceId, string className = "", string subClass = "", string pinNo = "")
+        public static List<DeviceProfile> LoadDeviceProfiles(int deviceId, string type, string group, string pinno)
         {
             try
             {
                 using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
                 {
-                    className = (className == null) ? "" : className;
-                    subClass = (subClass == null) ? "" : subClass;
+                    type = (type == null) ? "" : type;
+                    group = (group == null) ? "" : group;
+                    pinno = (pinno == null) ? "" : pinno;
                     var p = new DynamicParameters();
-                    p.Add("@CLASS_NAME", "%" + className + "%");
-                    p.Add("@SUB_CLASS", "%" + subClass + "%");
-                    p.Add("@PIN_NO", "%" + pinNo + "%");
+                    p.Add("@CLASS_NAME", "%" + type + "%");
+                    p.Add("@SUB_CLASS", "%" + group + "%");
+                    p.Add("@PIN_NO", "%" + pinno + "%");
                     var output = cnn.Query<DeviceProfile>("SELECT * FROM DT_DEVICE_PROFILES_" + deviceId + " WHERE ((CLASS_NAME LIKE (@CLASS_NAME)) AND (SUB_CLASS LIKE (@SUB_CLASS)) AND (PIN_NO LIKE (@PIN_NO)))", p);
                     return output.ToList();
                 }
@@ -91,19 +98,20 @@ namespace GateAccessControl
                 return new List<DeviceProfile>();
             }
         }
-        public static List<Profile> LoadAllProfiles(string className = "", string subClass = "")
+        public static List<Profile> LoadProfiles(string type, string group, string pinno)
         {
             try
             {
                 using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
                 {
-                    className = (className == null) ? "" : className;
-                    subClass = (subClass == null) ? "" : subClass;
+                    type = (type == null) ? "" : type;
+                    group = (group == null) ? "" : group;
+                    pinno = (pinno == null) ? "" : pinno;
                     var p = new DynamicParameters();
-                    p.Add("@CLASS_NAME", "%" + className + "%");
-                    p.Add("@SUB_CLASS", "%" + subClass + "%");
-
-                    var output = cnn.Query<Profile>("SELECT * FROM DT_PROFILE WHERE ((CLASS_NAME LIKE (@CLASS_NAME)) AND (SUB_CLASS LIKE (@SUB_CLASS)))", p);
+                    p.Add("@CLASS_NAME", "%" + type + "%");
+                    p.Add("@SUB_CLASS", "%" + group + "%");
+                    p.Add("@PIN_NO", "%" + pinno + "%");
+                    var output = cnn.Query<Profile>("SELECT * FROM DT_PROFILE WHERE ((CLASS_NAME LIKE (@CLASS_NAME)) AND (SUB_CLASS LIKE (@SUB_CLASS)) AND (PIN_NO LIKE (@PIN_NO)))", p);
                     return output.ToList();
                 }
             }
@@ -113,7 +121,7 @@ namespace GateAccessControl
                 return new List<Profile>();
             }
         }
-        public static List<TimeRecord> LoadAllTimeCheck(string PIN_NO, DateTime time, string ip = null)
+        public static List<TimeRecord> LoadTimeChecks(string PIN_NO, DateTime time, string ip = null)
         {
             try
             {
@@ -194,7 +202,7 @@ namespace GateAccessControl
                 return new List<TimeRecord>();
             }
         }
-        public static bool InsertDataDevice(Device device)
+        public static bool InsertDevice(Device device)
         {
             try
             {
@@ -218,7 +226,7 @@ namespace GateAccessControl
                 return false;
             }
         }
-        public static bool InsertDataProfile(Profile profile)
+        public static bool InsertProfile(Profile profile)
         {
             try
             {
@@ -240,7 +248,7 @@ namespace GateAccessControl
                 return false;
             }
         }
-        public static bool InsertDataClass(CardType cardType)
+        public static bool InsertClass(CardType cardType)
         {
             try
             {
@@ -256,7 +264,7 @@ namespace GateAccessControl
                 return false;
             }
         }
-        public static bool InsertDataDeviceProfiles(int deviceId, DeviceProfile _profile)
+        public static bool InsertDeviceProfile(int deviceId, DeviceProfile _profile)
         {
             try
             {
@@ -278,7 +286,7 @@ namespace GateAccessControl
                 return false;
             }
         }
-        public static bool InsertDataTimeCheck(TimeRecord timeRecord)
+        public static bool InsertTimeCheck(TimeRecord timeRecord)
         {
             try
             {
@@ -295,7 +303,7 @@ namespace GateAccessControl
             }
             
         }
-        public static bool UpdateDataDevice(Device device)
+        public static bool UpdateDevice(Device device)
         {
             try
             {
@@ -316,7 +324,7 @@ namespace GateAccessControl
                 return false;
             }
         }
-        public static bool UpdateDataProfile(Profile profile)
+        public static bool UpdateProfile(Profile profile)
         {
             try
             {
@@ -353,7 +361,7 @@ namespace GateAccessControl
             }
         }
 
-        public static bool UpdateDataDeviceProfiles(int deviceId, DeviceProfile _profile)
+        public static bool UpdateDeviceProfile(int deviceId, DeviceProfile _profile)
         {
             try
             {
@@ -392,7 +400,7 @@ namespace GateAccessControl
             }
         }
 
-        public static bool UpdateDataClass(CardType cardType)
+        public static bool UpdateCardType(CardType cardType)
         {
             try
             {
@@ -411,7 +419,7 @@ namespace GateAccessControl
             }
         }
 
-        public static bool DeleteDataDevice(Device device)
+        public static bool DeleteDevice(Device device)
         {
             try
             {
@@ -431,7 +439,7 @@ namespace GateAccessControl
                 return false;
             }
         }
-        public static bool DeleteDataProfile(Profile profile)
+        public static bool DeleteProfile(Profile profile)
         {
             try
             {
@@ -447,7 +455,7 @@ namespace GateAccessControl
                 return false;
             }
         }
-        public static bool DeleteDataCardType(CardType cardType)
+        public static bool DeleteCardType(CardType cardType)
         {
             try
             {
@@ -463,24 +471,8 @@ namespace GateAccessControl
                 return false;
             }
         }
-        public static bool DeleteDataDeviceCardType(DeviceCardType deviceCardType)
-        {
-            try
-            {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    cnn.Execute("DELETE FROM DT_DEVICE_CLASS WHERE DEVICE_CLASS_ID = @DEVICE_CLASS_ID", deviceCardType);
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return false;
-            }
-        }
 
-        public static bool DeleteDataDeviceProfiles(int deviceId, DeviceProfile _profile)
+        public static bool DeleteDeviceProfile(int deviceId, DeviceProfile _profile)
         {
             try
             {

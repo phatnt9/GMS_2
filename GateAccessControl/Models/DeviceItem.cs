@@ -345,9 +345,9 @@ namespace GateAccessControl
 
         public bool SendDeviceProfile(string ip, SERVERRESPONSE serverRes, List<DeviceProfile> DeviceProfileToSend, bool remainProfiles)
         {
-            //Random r = new Random();
+            Random r = new Random();
             //Thread.Sleep(100);
-            //return NextBool(r, 90); //wrong
+            return NextBool(r, 100); //wrong
             try
             {
                 JStringDeviceProfile JDeviceProfile = new JStringDeviceProfile();
@@ -435,7 +435,7 @@ namespace GateAccessControl
                         long date = long.Parse(tick);
                         DateTime dateTime = new DateTime(date);
                         TimeRecord timeCheck = new TimeRecord(ip, p.SERIAL_ID, dateTime);
-                        SqliteDataAccess.InsertDataTimeCheck(timeCheck);
+                        SqliteDataAccess.InsertTimeCheck(timeCheck);
                     }
                 }
                 StatusProfile = "Check-in records saved";

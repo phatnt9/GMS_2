@@ -28,7 +28,7 @@ namespace GateAccessControl.ViewModels
                         listDeviceId.Add(temp);
                     }
                 }
-                List<Device> devices = SqliteDataAccess.LoadAllDevices();
+                List<Device> devices = SqliteDataAccess.LoadDevices(0);
                 foreach (int id in listDeviceId)
                 {
                     foreach (Device item in devices)

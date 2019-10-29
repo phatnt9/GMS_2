@@ -85,11 +85,11 @@ namespace GateAccessControl
             {
                 if (cardType.CLASS_ID == 0)
                 {
-                    SqliteDataAccess.InsertDataClass(cardType);
+                    SqliteDataAccess.InsertClass(cardType);
                 }
                 else
                 {
-                    SqliteDataAccess.UpdateDataClass(cardType);
+                    SqliteDataAccess.UpdateCardType(cardType);
                 }
             }
         }
@@ -98,7 +98,7 @@ namespace GateAccessControl
         {
             foreach (CardType cardType in classes)
             {
-                SqliteDataAccess.DeleteDataCardType(cardType);
+                SqliteDataAccess.DeleteCardType(cardType);
             }
         }
 
@@ -107,7 +107,7 @@ namespace GateAccessControl
             try
             {
                 Classes.Clear();
-                List<CardType> classesList = SqliteDataAccess.LoadAllCardType();
+                List<CardType> classesList = SqliteDataAccess.LoadCardTypes();
                 foreach (CardType item in classesList)
                 {
                     Classes.Add(item);

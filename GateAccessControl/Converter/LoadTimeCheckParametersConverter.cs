@@ -16,7 +16,7 @@ namespace GateAccessControl.ViewModels
 
             if(p!= null && d != null)
             {
-                return SqliteDataAccess.LoadAllTimeCheck(p.PIN_NO, (DateTime)d);
+                return SqliteDataAccess.LoadTimeChecks(p.PIN_NO, (DateTime)d);
             }
             else
             {

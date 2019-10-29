@@ -143,7 +143,7 @@ namespace GateAccessControl
                 p.DATE_MODIFIED = DateTime.Now;
             }
 
-            if (SqliteDataAccess.UpdateDataProfile(p))
+            if (SqliteDataAccess.UpdateProfile(p))
             {
                 System.Windows.Forms.MessageBox.Show("Profile saved!");
                 UpdateProfileToAllDevice(p);
@@ -177,7 +177,7 @@ namespace GateAccessControl
                 }
                 foreach (int id in listDeviceId)
                 {
-                    List<DeviceProfile> getCloneDeviceProfile = SqliteDataAccess.LoadAllDeviceProfiles(id,"","",p.PIN_NO);
+                    List<DeviceProfile> getCloneDeviceProfile = SqliteDataAccess.LoadDeviceProfiles(id, "", "", p.PIN_NO);
 
                     foreach (DeviceProfile DP in getCloneDeviceProfile)
                     {
@@ -198,7 +198,7 @@ namespace GateAccessControl
                             }
                         }
 
-                        if (SqliteDataAccess.UpdateDataDeviceProfiles(id, DP))
+                        if (SqliteDataAccess.UpdateDeviceProfile(id, DP))
                         {
                             count++;
                         }
@@ -224,7 +224,7 @@ namespace GateAccessControl
             try
             {
                 _classes.Clear();
-                List<CardType> classesList = SqliteDataAccess.LoadAllCardType();
+                List<CardType> classesList = SqliteDataAccess.LoadCardTypes();
                 foreach (CardType item in classesList)
                 {
                     _classes.Add(item);

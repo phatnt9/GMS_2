@@ -66,7 +66,7 @@ namespace GateAccessControl
         }
         public void RemoveDeviceId(int removeDeviceId)
         {
-            List<Device> listDevices = SqliteDataAccess.LoadAllDevices();
+            List<Device> listDevices = SqliteDataAccess.LoadDevices(0);
             List<int> listDeviceId = new List<int>();
             if (!String.IsNullOrEmpty(LIST_DEVICE_ID))
             {

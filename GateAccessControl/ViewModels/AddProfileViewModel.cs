@@ -125,7 +125,7 @@ namespace GateAccessControl
         {
             addProfile.DATE_CREATED = DateTime.Now;
             addProfile.DATE_MODIFIED = DateTime.Now;
-            if (SqliteDataAccess.InsertDataProfile(addProfile))
+            if (SqliteDataAccess.InsertProfile(addProfile))
             {
                 //Success
                 System.Windows.Forms.MessageBox.Show("Profile added!");
@@ -147,7 +147,7 @@ namespace GateAccessControl
             try
             {
                 _classes.Clear();
-                List<CardType> classesList = SqliteDataAccess.LoadAllCardType();
+                List<CardType> classesList = SqliteDataAccess.LoadCardTypes();
                 foreach (CardType item in classesList)
                 {
                     _classes.Add(item);

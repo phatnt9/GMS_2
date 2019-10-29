@@ -290,7 +290,6 @@
                                         CanUserAddRows="False"
                                         CanUserDeleteRows="False"
                                         Command="{Binding SelectDeviceCommand}"
-                                        CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem}"
                                         IsReadOnly="True"
                                         ItemsSource="{Binding Devices, UpdateSourceTrigger=PropertyChanged}"
                                         SelectedIndex="0"
@@ -372,7 +371,6 @@
                                             Padding="5,0"
                                             BorderThickness="0"
                                             Command="{Binding RequesTimeRecordCommand}"
-                                            CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged}"
                                             Content="Request check-in records">
                                             <Button.Style>
                                                 <Style TargetType="{x:Type Button}">
@@ -400,7 +398,6 @@
                                             Padding="5,0"
                                             BorderThickness="0"
                                             Command="{Binding ConnectDeviceCommand}"
-                                            CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                             Content="Connect">
                                             <Button.Style>
                                                 <Style TargetType="{x:Type Button}">
@@ -423,7 +420,6 @@
                                             Padding="5,0"
                                             BorderThickness="0"
                                             Command="{Binding DisconnectDeviceCommand}"
-                                            CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                             Content="Disconnect">
                                             <Button.Style>
                                                 <Style TargetType="{x:Type Button}">
@@ -540,7 +536,6 @@
                                             Padding="5,0"
                                             VerticalContentAlignment="Center"
                                             Command="{Binding SearchClassDeviceProfilesCommand}"
-                                            CommandParameter="{Binding ElementName=dg_device_profiles, UpdateSourceTrigger=PropertyChanged, Path=Items}"
                                             DisplayMemberPath="CLASS_NAME"
                                             ItemsSource="{Binding Classes, UpdateSourceTrigger=PropertyChanged}"
                                             SelectedIndex="0"
@@ -552,7 +547,6 @@
                                             Padding="5,0"
                                             VerticalContentAlignment="Center"
                                             Command="{Binding SearchGroupDeviceProfilesCommand}"
-                                            CommandParameter="{Binding ElementName=dg_device_profiles, UpdateSourceTrigger=PropertyChanged, Path=Items}"
                                             SelectedIndex="0"
                                             Text="{Binding Search_deviceProfiles_group, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}">
                                             <ComboBoxItem>All</ComboBoxItem>
@@ -573,7 +567,7 @@
                                             Margin="3"
                                             Padding="5,0"
                                             Command="{Binding SearchOthersDeviceProfilesCommand}"
-                                            CommandParameter="{Binding ElementName=dg_device_profiles, UpdateSourceTrigger=PropertyChanged, Path=Items}"
+                                            CommandParameter="{Binding ElementName=dg_device_profiles, Path=Items, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                             Style="{StaticResource placeHolder}"
                                             Tag="Type to search"
                                             Text="{Binding Search_deviceProfiles_others, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}" />
@@ -588,7 +582,6 @@
                                             Padding="5,0"
                                             BorderThickness="0"
                                             Command="{Binding DeviceProfilesManageCommand}"
-                                            CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem}"
                                             Content="Manage">
                                             <Button.Style>
                                                 <Style TargetType="{x:Type Button}">
@@ -610,7 +603,6 @@
                                             Margin="3"
                                             Padding="5,0"
                                             Command="{Binding RefreshDeviceProfilesCommand}"
-                                            CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                             Content="Refresh"
                                             Visibility="Visible">
                                             <Button.Style>
@@ -637,7 +629,6 @@
                                         CanUserAddRows="False"
                                         CanUserDeleteRows="False"
                                         Command="{Binding SelectDeviceProfilesCommand}"
-                                        CommandParameter="{Binding ElementName=dg_device_profiles, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged}"
                                         IsReadOnly="True"
                                         ItemsSource="{Binding DeviceProfiles, UpdateSourceTrigger=PropertyChanged}"
                                         SelectedItem="{Binding SelectedDeviceProfile, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
@@ -841,7 +832,6 @@
                                             Padding="5,0"
                                             BorderThickness="0"
                                             Command="{Binding StopSyncCommand}"
-                                            CommandParameter="{Binding ElementName=dg_devices, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged}"
                                             Content="Stop">
                                             <Button.Style>
                                                 <Style TargetType="{x:Type Button}">
@@ -1003,7 +993,6 @@
                                         Padding="5,0"
                                         BorderThickness="0"
                                         Command="{Binding AddProfileCommand}"
-                                        CommandParameter="{Binding ElementName=dg_main_profiles, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                         Content="Add">
                                         <Button.Style>
                                             <Style TargetType="{x:Type Button}">
@@ -1027,7 +1016,6 @@
                                         VerticalContentAlignment="Center"
                                         BorderThickness="0"
                                         Command="{Binding EditProfileCommand}"
-                                        CommandParameter="{Binding ElementName=dg_main_profiles, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                         Content="Edit">
                                         <Button.Style>
                                             <Style TargetType="{x:Type Button}">
@@ -1050,7 +1038,6 @@
                                         Padding="5,0"
                                         BorderThickness="0"
                                         Command="{Binding RemoveProfileCommand}"
-                                        CommandParameter="{Binding ElementName=dg_main_profiles, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                         Content="Remove">
                                         <Button.Style>
                                             <Style TargetType="{x:Type Button}">
@@ -1078,7 +1065,6 @@
                                         Padding="5,0"
                                         VerticalContentAlignment="Center"
                                         Command="{Binding SearchClassProfilesCommand}"
-                                        CommandParameter="{Binding ElementName=dg_main_profiles, UpdateSourceTrigger=PropertyChanged, Path=Items}"
                                         DisplayMemberPath="CLASS_NAME"
                                         ItemsSource="{Binding Classes, UpdateSourceTrigger=PropertyChanged}"
                                         SelectedIndex="0"
@@ -1090,7 +1076,6 @@
                                         Padding="5,0"
                                         VerticalContentAlignment="Center"
                                         Command="{Binding SearchGroupProfilesCommand}"
-                                        CommandParameter="{Binding ElementName=dg_main_profiles, UpdateSourceTrigger=PropertyChanged, Path=Items}"
                                         SelectedIndex="0"
                                         Text="{Binding Search_profiles_group, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}">
                                         <ComboBoxItem>All</ComboBoxItem>
@@ -1126,12 +1111,6 @@
                                     IsReadOnly="True"
                                     ItemsSource="{Binding Profiles, UpdateSourceTrigger=PropertyChanged}"
                                     SelectedItem="{Binding SelectedProfile, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
-                                    <md:CommandDataGrid.CommandParameter>
-                                        <MultiBinding Converter="{StaticResource myLoadTimeCheckParametersConverter}" UpdateSourceTrigger="PropertyChanged">
-                                            <Binding ElementName="dg_main_profiles" Path="SelectedItem" />
-                                            <Binding ElementName="dtp_timecheck_date" Path="SelectedDate" />
-                                        </MultiBinding>
-                                    </md:CommandDataGrid.CommandParameter>
                                     <DataGrid.Columns>
                                         <DataGridTextColumn
                                             Width="Auto"
@@ -1352,7 +1331,8 @@
                                                                     <RowDefinition Height="25" />
                                                                 </Grid.RowDefinitions>
                                                                 <Grid Grid.Row="0" Grid.RowSpan="2">
-                                                                    <Image Source="{Binding ElementName=dg_main_profiles, Path=SelectedItem.IMAGE, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource myProfileImageConverter}}" />
+                                                                    <!--<Image Source="{Binding SelectedProfile.IMAGE, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource myProfileImageConverter}}" />-->
+                                                                    <Image Source="{Binding ProfileImage, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
                                                                 </Grid>
                                                                 <Grid Grid.Row="1">
                                                                     <StackPanel
@@ -1366,7 +1346,6 @@
                                                                             VerticalContentAlignment="Center"
                                                                             BorderThickness="0"
                                                                             Command="{Binding ReplaceProfileImageCommand}"
-                                                                            CommandParameter="{Binding ElementName=dg_main_profiles, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged}"
                                                                             Content="Change Image">
                                                                             <Button.Style>
                                                                                 <Style TargetType="{x:Type Button}">
@@ -1507,7 +1486,6 @@
                                             Padding="5,0"
                                             BorderThickness="0"
                                             Command="{Binding SelectPreviousDateCommand}"
-                                            CommandParameter="{Binding ElementName=dg_main_profiles, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged}"
                                             Content="Previous">
                                             <Button.Style>
                                                 <Style TargetType="{x:Type Button}">
@@ -1529,7 +1507,6 @@
                                             Margin="5,0"
                                             Padding="5,2"
                                             Command="{Binding SelectedDateChangeCommand}"
-                                            CommandParameter="{Binding ElementName=dg_main_profiles, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged}"
                                             SelectedDate="{Binding SelectedTimeCheckDate, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                         <Button
                                             x:Name="btn_nextDate"
@@ -1538,7 +1515,6 @@
                                             Padding="5,0"
                                             BorderThickness="0"
                                             Command="{Binding SelectNextDateCommand}"
-                                            CommandParameter="{Binding ElementName=dg_main_profiles, Path=SelectedItem, UpdateSourceTrigger=PropertyChanged}"
                                             Content="Next">
                                             <Button.Style>
                                                 <Style TargetType="{x:Type Button}">

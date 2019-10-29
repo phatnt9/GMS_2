@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Windows.Input;
 
@@ -87,13 +88,20 @@ namespace GateAccessControl
 
         private void SaveDevice(Device p)
         {
-            if (SqliteDataAccess.UpdateDataDevice(p))
+            if (SqliteDataAccess.UpdateDevice(p))
             {
                 EditDeviceStatus = "Succeed";
             }
             else
             {
                 EditDeviceStatus = "Unsucceed";
+                List<Device> reloadDevice = SqliteDataAccess.LoadDevices(EditDevice.DEVICE_ID);
+                foreach (Device d in reloadDevice)
+                {
+                    EditDevice.DEVICE_NAME = d.DEVICE_NAME;
+                    EditDevice.DEVICE_IP = d.DEVICE_IP;
+                    EditDevice.DEVICE_NOTE = d.DEVICE_NOTE;
+                }
             }
         }
 

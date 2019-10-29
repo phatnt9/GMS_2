@@ -19,10 +19,10 @@ namespace GateAccessControl.Views
     /// </summary>
     public partial class DeviceProfilesManagement : Window
     {
-        public DeviceProfilesManagement(Device p)
+        public DeviceProfilesManagement(Device d)
         {
             InitializeComponent();
-            DataContext = new DeviceProfilesManageViewModel(p);
+            DataContext = new DeviceProfilesManageViewModel(d);
         }
     }
 }

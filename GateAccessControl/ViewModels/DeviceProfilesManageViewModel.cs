@@ -307,7 +307,7 @@ namespace GateAccessControl
                     item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
                     item.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
 
-                    if (SqliteDataAccess.UpdateDataDeviceProfiles(Device.DEVICE_ID, item))
+                    if (SqliteDataAccess.UpdateDeviceProfile(Device.DEVICE_ID, item))
                     {
                         continue;
                     }
@@ -325,7 +325,7 @@ namespace GateAccessControl
                     item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
                     item.SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
 
-                    if (SqliteDataAccess.UpdateDataDeviceProfiles(Device.DEVICE_ID, item))
+                    if (SqliteDataAccess.UpdateDeviceProfile(Device.DEVICE_ID, item))
                     {
                         continue;
                     }
@@ -349,7 +349,7 @@ namespace GateAccessControl
                     item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
                     item.SERVER_STATUS = GlobalConstant.ServerStatus.Remove.ToString();
 
-                    if (SqliteDataAccess.UpdateDataDeviceProfiles(Device.DEVICE_ID, item))
+                    if (SqliteDataAccess.UpdateDeviceProfile(Device.DEVICE_ID, item))
                     {
                         continue;
                     }
@@ -366,7 +366,7 @@ namespace GateAccessControl
                     item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
                     item.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
 
-                    if (SqliteDataAccess.UpdateDataDeviceProfiles(Device.DEVICE_ID, item))
+                    if (SqliteDataAccess.UpdateDeviceProfile(Device.DEVICE_ID, item))
                     {
                         continue;
                     }
@@ -383,13 +383,13 @@ namespace GateAccessControl
         {
             foreach (DeviceProfile item in profiles)
             {
-                if(SqliteDataAccess.DeleteDataDeviceProfiles(Device.DEVICE_ID, item))
+                if(SqliteDataAccess.DeleteDeviceProfile(Device.DEVICE_ID, item))
                 {
                     List<Profile> listProfiles = Profiles.Where(x => x.PIN_NO.Equals(item.PIN_NO)).Cast<Profile>().ToList();
                     foreach (Profile pf in listProfiles)
                     {
                         pf.RemoveDeviceId(Device.DEVICE_ID);
-                        SqliteDataAccess.UpdateDataProfile(pf);
+                        SqliteDataAccess.UpdateProfile(pf);
                     }
                 }
             }
@@ -399,10 +399,10 @@ namespace GateAccessControl
         {
             foreach (Profile item in profiles)
             {
-                if (SqliteDataAccess.InsertDataDeviceProfiles(Device.DEVICE_ID, new DeviceProfile(item)))
+                if (SqliteDataAccess.InsertDeviceProfile(Device.DEVICE_ID, new DeviceProfile(item)))
                 {
                     item.AddDeviceId(Device.DEVICE_ID);
-                    SqliteDataAccess.UpdateDataProfile(item);
+                    SqliteDataAccess.UpdateProfile(item);
                 }
 
             }
@@ -413,7 +413,7 @@ namespace GateAccessControl
             try
             {
                 _classes.Clear();
-                List<CardType> classesList = SqliteDataAccess.LoadAllCardType();
+                List<CardType> classesList = SqliteDataAccess.LoadCardTypes();
                 Classes.Add(new CardType(0, "All"));
                 foreach (CardType item in classesList)
                 {
@@ -426,30 +426,12 @@ namespace GateAccessControl
             }
         }
 
-        private void ReloadDataDeviceProfiles(Device p)
-        {
-            try
-            {
-                _deviceProfiles.Clear();
-                List<DeviceProfile> deviceProfileList = SqliteDataAccess.LoadAllDeviceProfiles(p.DEVICE_ID);
-                foreach (DeviceProfile item in deviceProfileList)
-                {
-                    _deviceProfiles.Add(item);
-                }
-
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-            }
-        }
-
-        public void ReloadDataProfiles(string className = "", string subClass = "")
+        public void ReloadDataProfiles(string type, string group)
         {
             try
             {
                 _profiles.Clear();
-                List<Profile> profileList = SqliteDataAccess.LoadAllProfiles(className, subClass);
+                List<Profile> profileList = SqliteDataAccess.LoadProfiles(type, group, "");
                 foreach (Profile item in profileList)
                 {
                     _profiles.Add(item);
@@ -466,7 +448,7 @@ namespace GateAccessControl
             try
             {
                 _deviceProfiles.Clear();
-                List<DeviceProfile> deviceProfileList = SqliteDataAccess.LoadAllDeviceProfiles(device.DEVICE_ID, className, subClass);
+                List<DeviceProfile> deviceProfileList = SqliteDataAccess.LoadDeviceProfiles(device.DEVICE_ID, className, subClass, "");
                 foreach (DeviceProfile item in deviceProfileList)
                 {
                     _deviceProfiles.Add(item);
@@ -487,15 +469,15 @@ namespace GateAccessControl
         {
             if (Search_profiles_class == null)
             {
-                Search_profiles_class = "";
+                Search_profiles_class = "All";
             }
             if (Search_profiles_group == null)
             {
-                Search_profiles_group = "";
+                Search_profiles_group = "All";
             }
-            string classSearch = Search_profiles_class == "All" ? "" : Search_profiles_class;
-            string groupSearch = Search_profiles_group == "All" ? "" : Search_profiles_group;
-            ReloadDataProfiles(classSearch, groupSearch);
+            string type = Search_profiles_class == "All" ? "" : Search_profiles_class;
+            string group = Search_profiles_group == "All" ? "" : Search_profiles_group;
+            ReloadDataProfiles(type, group);
         }
 
         public void ReloadDeviceProfiles(Device p)

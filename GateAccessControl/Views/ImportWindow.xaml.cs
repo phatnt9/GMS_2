@@ -241,11 +241,11 @@ namespace GateAccessControl.Views
                                 {
                                     CLASS_NAME = profile.CLASS_NAME
                                 };
-                                SqliteDataAccess.InsertDataClass(NewClass);
+                                SqliteDataAccess.InsertClass(NewClass);
                                 //Add or Update Profile
                                 if (isAddProfile)
                                 {
-                                    if (SqliteDataAccess.InsertDataProfile(profile))
+                                    if (SqliteDataAccess.InsertProfile(profile))
                                     {
                                         ImportProfileImage(importFileFolder, profile.IMAGE);
                                     }
@@ -253,7 +253,7 @@ namespace GateAccessControl.Views
                                 else
                                 {
                                     //if (SqliteDataAccess.UpdateDataProfile(profile, profile.PROFILE_STATUS))
-                                    if (SqliteDataAccess.UpdateDataProfile(profile))
+                                    if (SqliteDataAccess.UpdateProfile(profile))
                                     {
                                         ImportProfileImage(importFileFolder, profile.IMAGE);
                                     }
@@ -264,7 +264,7 @@ namespace GateAccessControl.Views
                                 //Add or Update Profile
                                 if (isAddProfile)
                                 {
-                                    if (SqliteDataAccess.InsertDataProfile(profile))
+                                    if (SqliteDataAccess.InsertProfile(profile))
                                     {
                                         ImportProfileImage(importFileFolder, profile.IMAGE);
                                     }
@@ -272,7 +272,7 @@ namespace GateAccessControl.Views
                                 else
                                 {
                                     //if (SqliteDataAccess.UpdateDataProfile(profile, profile.PROFILE_STATUS))
-                                    if (SqliteDataAccess.UpdateDataProfile(profile))
+                                    if (SqliteDataAccess.UpdateProfile(profile))
                                     {
                                         ImportProfileImage(importFileFolder, profile.IMAGE);
                                     }
