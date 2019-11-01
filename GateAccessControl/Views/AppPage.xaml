@@ -600,11 +600,11 @@
                                         </Button>
                                         <Button
                                             x:Name="btn_deviceprofiles_refresh"
-                                            Margin="3"
+                                            Margin="3,3"
                                             Padding="5,0"
+                                            BorderThickness="0"
                                             Command="{Binding RefreshDeviceProfilesCommand}"
-                                            Content="Refresh"
-                                            Visibility="Visible">
+                                            Content="Refresh">
                                             <Button.Style>
                                                 <Style TargetType="{x:Type Button}">
                                                     <Style.Triggers>
@@ -1178,7 +1178,7 @@
                                             Width="Auto"
                                             Binding="{Binding Path=LIST_DEVICE_ID, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                             Header="List Device"
-                                            Visibility="Hidden" />
+                                            Visibility="Visible" />
                                         <DataGridTextColumn
                                             Width="Auto"
                                             Binding="{Binding Path=DATE_CREATED, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"

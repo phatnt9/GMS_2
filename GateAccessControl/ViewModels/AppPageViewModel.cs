@@ -95,7 +95,14 @@ namespace GateAccessControl
             RefreshDeviceProfilesCommand = new RelayCommand<Device>(
                  (p) =>
                  {
-                     return (SelectedDevice != null);
+                     if (SelectedDevice != null)
+                     {
+                         return true;
+                     }
+                     else
+                     {
+                         return false;
+                     }
                  },
                  (p) =>
                  {
@@ -161,7 +168,7 @@ namespace GateAccessControl
             ExportProfilesCommand = new RelayCommand<List<Profile>>(
                  (p) =>
                  {
-                     return (p != null && p.Count > 0);
+                     return (p != null && p.Count > 0 && IsExportingProfiles == false);
                  },
                  (p) =>
                  {
@@ -295,7 +302,7 @@ namespace GateAccessControl
                       */
                      if (SelectedDevice != null && p != null)
                      {
-                         //if (SelectedDevice.DeviceItem.IsSendingProfiles || !CheckDeviceStatus(SelectedDevice).Equals("Connected"))
+                         //if (SelectedDevice.DeviceItem.IsSendingProfiles || SelectedDevice.DeviceItem.WebSocketStatus != RosStatus.Connected.ToString())
                          //{
                          //    return false;
                          //} //right
@@ -454,7 +461,17 @@ namespace GateAccessControl
                 });
 
             ImportProfilesCommand = new RelayCommand<Profile>(
-                (p) => true,
+                (p) =>
+                {
+                    if (IsExportingProfiles == false)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                },
                 (p) =>
                 {
                     ReloadCardTypes();
@@ -868,12 +885,10 @@ namespace GateAccessControl
                     if(SqliteDataAccess.UpdateDeviceProfile(SelectedDevice.DEVICE_ID, item))
                     {
                         ApplyActiveTimeStatus = "Success!";
-                        return true;
                     }
                     else
                     {
                         ApplyActiveTimeStatus = "Unsuccess!";
-                        return false;
                     }
                 }
                 return true;
@@ -1271,6 +1286,7 @@ namespace GateAccessControl
         {
             if (p != null)
             {
+                p.DeviceItem.WebSocketStatus = RosStatus.Pending.ToString();
                 p.DeviceItem.checkAlive.Start();
                 p.DeviceItem.Start("ws://" + p.DEVICE_IP + ":9090");
             }
@@ -1528,6 +1544,7 @@ namespace GateAccessControl
                 RaisePropertyChanged("Profiles");
             }
         }
+
         public ObservableCollection<Device> Devices
         {
             get => _devices;
@@ -1537,6 +1554,7 @@ namespace GateAccessControl
                 RaisePropertyChanged("Devices");
             }
         }
+
         public ObservableCollection<DeviceProfile> DeviceProfiles
         {
             get => _deviceProfiles;
@@ -1546,6 +1564,7 @@ namespace GateAccessControl
                 RaisePropertyChanged("DeviceProfiles");
             }
         }
+
         public ObservableCollection<TimeRecord> TimeChecks
         {
             get => _timeChecks;
@@ -1555,6 +1574,7 @@ namespace GateAccessControl
                 RaisePropertyChanged("TimeChecks");
             }
         }
+
         public ObservableCollection<CardType> Classes
         {
             get => _classes;

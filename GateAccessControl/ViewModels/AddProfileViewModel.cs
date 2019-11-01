@@ -43,7 +43,15 @@ namespace GateAccessControl
         }
 
         private ObservableCollection<CardType> _classes = new ObservableCollection<CardType>();
-        public ObservableCollection<CardType> Classes => _classes;
+        public ObservableCollection<CardType> Classes
+        {
+            get => _classes;
+            set
+            {
+                _classes = value;
+                RaisePropertyChanged("Classes");
+            }
+        }
 
         public ICommand InsertProfileCommand { get; set; }
         public ICommand CloseAddProfileCommand { get; set; }
@@ -146,12 +154,7 @@ namespace GateAccessControl
         {
             try
             {
-                _classes.Clear();
-                List<CardType> classesList = SqliteDataAccess.LoadCardTypes();
-                foreach (CardType item in classesList)
-                {
-                    _classes.Add(item);
-                }
+                Classes = new ObservableCollection<CardType>(SqliteDataAccess.LoadCardTypes());
             }
             catch (Exception ex)
             {

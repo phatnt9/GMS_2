@@ -286,6 +286,34 @@ namespace GateAccessControl
                 return false;
             }
         }
+        public static bool InsertDeviceProfile(int deviceId, List<Profile> _profiles)
+        {
+            try
+            {
+                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+                {
+                    string insertCmd = "INSERT INTO DT_DEVICE_PROFILES_" + deviceId +
+                        " (PIN_NO,AD_NO,PROFILE_NAME,CLASS_NAME,SUB_CLASS,GENDER,DOB,DISU,EMAIL,ADDRESS," +
+                        "PHONE,PROFILE_STATUS,IMAGE,DATE_TO_LOCK,CHECK_DATE_TO_LOCK," +
+                        "LICENSE_PLATE,DATE_CREATED,DATE_MODIFIED,SERVER_STATUS,CLIENT_STATUS,ACTIVE_TIME) " +
+                        "VALUES (@PIN_NO,@AD_NO,@PROFILE_NAME,@CLASS_NAME,@SUB_CLASS,@GENDER,@DOB,@DISU,@EMAIL,@ADDRESS," +
+                        "@PHONE,@PROFILE_STATUS,@IMAGE,@DATE_TO_LOCK,@CHECK_DATE_TO_LOCK," +
+                        "@LICENSE_PLATE,@DATE_CREATED,@DATE_MODIFIED,@SERVER_STATUS,@CLIENT_STATUS,@ACTIVE_TIME)";
+
+                    foreach (Profile p in _profiles)
+                    {
+                        DeviceProfile dp = new DeviceProfile(p);
+                        cnn.Execute(insertCmd, dp);
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return false;
+            }
+        }
         public static bool InsertTimeCheck(TimeRecord timeRecord)
         {
             try
@@ -582,7 +610,7 @@ namespace GateAccessControl
                         cnn.Execute("CREATE TABLE \"DT_DEVICE\" " +
                             "(\"DEVICE_ID\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE," +
                             "\"DEVICE_IP\" TEXT NOT NULL UNIQUE," +
-                            "\"DEVICE_NAME\" TEXT NOT NULL," +
+                            "\"DEVICE_NAME\" TEXT NOT NULL UNIQUE," +
                             "\"DEVICE_STATUS\" TEXT NOT NULL," +
                             "\"DEVICE_NOTE\" TEXT)");
 

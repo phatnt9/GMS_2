@@ -42,7 +42,7 @@ namespace GateAccessControl
         public void AddDeviceId(int deviceId)
         {
             List<int> listDeviceId = new List<int>();
-            if (LIST_DEVICE_ID == null)
+            if (String.IsNullOrEmpty(LIST_DEVICE_ID))
             {
                 LIST_DEVICE_ID += deviceId + ",";
             }
