@@ -345,9 +345,9 @@ namespace GateAccessControl
 
         public bool SendDeviceProfile(string ip, SERVERRESPONSE serverRes, List<DeviceProfile> DeviceProfileToSend, bool remainProfiles)
         {
-            Random r = new Random();
-            //Thread.Sleep(100);
-            return NextBool(r, 100); //wrong
+            //Random r = new Random();
+            ////Thread.Sleep(100);
+            //return NextBool(r, 100); //wrong
             try
             {
                 JStringDeviceProfile JDeviceProfile = new JStringDeviceProfile();

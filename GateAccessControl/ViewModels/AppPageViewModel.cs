@@ -302,15 +302,15 @@ namespace GateAccessControl
                       */
                      if (SelectedDevice != null && p != null)
                      {
-                         //if (SelectedDevice.DeviceItem.IsSendingProfiles || SelectedDevice.DeviceItem.WebSocketStatus != RosStatus.Connected.ToString())
-                         //{
-                         //    return false;
-                         //} //right
-
-                         if (SelectedDevice.DeviceItem.IsSendingProfiles)
+                         if (SelectedDevice.DeviceItem.IsSendingProfiles || SelectedDevice.DeviceItem.WebSocketStatus != RosStatus.Connected.ToString())
                          {
                              return false;
-                         } //wrong
+                         } //right
+
+                         //if (SelectedDevice.DeviceItem.IsSendingProfiles)
+                         //{
+                         //    return false;
+                         //} //wrong
 
                          return (GetCanSyncDeviceProfiles(p).Count > 0);
                      }
@@ -1025,14 +1025,25 @@ namespace GateAccessControl
         }
         private void SuspendStudentCheckTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if(CheckNoDeviceIsSyncing())
+            if (CheckNoDeviceIsSyncing())
             {
                 if (lastHour < DateTime.Now.Hour || (lastHour == 23 && DateTime.Now.Hour == 0))
                 {
                     lastHour = DateTime.Now.Hour;
                     Console.WriteLine("Catch " + DateTime.Now.ToLongTimeString() + "s.");
-                    CheckSuspendAllProfile();
+                    if (CheckSuspendAllProfile())
+                    {
+                        Console.WriteLine("Success Check");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Fail Check");
+                    }
                 }
+            }
+            else
+            {
+                Console.WriteLine("An Device is Syncing");
             }
         }
 
@@ -1469,6 +1480,7 @@ namespace GateAccessControl
             int _noDeviceSyncing = 0;
             foreach (Device item in Devices)
             {
+                Console.WriteLine("Device: "+item.DEVICE_NAME +" - IsSyncing: "+item.DeviceItem.IsSendingProfiles);
                 if(item.DeviceItem.IsSendingProfiles)
                 {
                     _noDeviceSyncing++;

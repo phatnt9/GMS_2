@@ -52,7 +52,7 @@
                                 <Setter Property="Background" Value="#5998C5" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Setter Property="Visibility" Value="Visible" />
                             </Trigger>
                         </Style.Triggers>
                     </Style>

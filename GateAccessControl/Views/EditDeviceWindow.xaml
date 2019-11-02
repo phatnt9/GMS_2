@@ -113,7 +113,7 @@
                                     <Setter Property="Background" Value="#29BF12" />
                                 </Trigger>
                                 <Trigger Property="IsEnabled" Value="False">
-                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Setter Property="Visibility" Value="Visible" />
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -134,7 +134,7 @@
                                     <Setter Property="Background" Value="#D83636" />
                                 </Trigger>
                                 <Trigger Property="IsEnabled" Value="False">
-                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Setter Property="Visibility" Value="Visible" />
                                 </Trigger>
                             </Style.Triggers>
                         </Style>

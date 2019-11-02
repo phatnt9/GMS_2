@@ -84,7 +84,7 @@
                                             <Setter Property="Background" Value="#222E50" />
                                         </Trigger>
                                         <Trigger Property="IsEnabled" Value="False">
-                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Setter Property="Visibility" Value="Visible" />
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
@@ -114,7 +114,7 @@
                                             <Setter Property="Background" Value="#222E50" />
                                         </Trigger>
                                         <Trigger Property="IsEnabled" Value="False">
-                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Setter Property="Visibility" Value="Visible" />
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
@@ -138,7 +138,7 @@
                                             <Setter Property="Background" Value="#D83636" />
                                         </Trigger>
                                         <Trigger Property="IsEnabled" Value="False">
-                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Setter Property="Visibility" Value="Visible" />
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
@@ -161,7 +161,7 @@
                                             <Setter Property="Background" Value="#D83636" />
                                         </Trigger>
                                         <Trigger Property="IsEnabled" Value="False">
-                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Setter Property="Visibility" Value="Visible" />
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
