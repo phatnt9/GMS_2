@@ -43,7 +43,18 @@ namespace GateAccessControl
         }
 
         private ObservableCollection<CardType> _classes = new ObservableCollection<CardType>();
-        public ObservableCollection<CardType> Classes => _classes;
+        public ObservableCollection<CardType> Classes
+        {
+            get
+            {
+                return _classes;
+            }
+            set
+            {
+                _classes = value;
+                RaisePropertyChanged("Classes");
+            }
+        }
 
         public ICommand SaveProfileCommand { get; set; }
         public ICommand CloseEditProfileCommand { get; set; }
@@ -160,75 +171,77 @@ namespace GateAccessControl
 
         private bool UpdateProfileToAllDevice(Profile p)
         {
-            int count = 0;
-            List<int> listDeviceId = new List<int>();
-
-            if (!String.IsNullOrEmpty(p.LIST_DEVICE_ID))
+            if (p != null)
             {
-                string[] listVar = p.LIST_DEVICE_ID.Split(',');
-                foreach (string var in listVar)
-                {
-                    int temp;
-                    Int32.TryParse(var, out temp);
-                    if (temp != 0)
-                    {
-                        listDeviceId.Add(temp);
-                    }
-                }
-                foreach (int id in listDeviceId)
-                {
-                    List<DeviceProfile> getCloneDeviceProfile = SqliteDataAccess.LoadDeviceProfiles(id, "", "", p.PIN_NO);
+                int count = 0;
+                List<int> listDeviceId = new List<int>();
 
-                    foreach (DeviceProfile DP in getCloneDeviceProfile)
+                if (!String.IsNullOrEmpty(p.LIST_DEVICE_ID))
+                {
+                    string[] listVar = p.LIST_DEVICE_ID.Split(',');
+                    foreach (string var in listVar)
                     {
-                        DP.CloneDataFromProfile(p);
-                        if (p.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Suspended.ToString()))
+                        int temp;
+                        Int32.TryParse(var, out temp);
+                        if (temp != 0)
                         {
-                            if (!DP.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Deleted.ToString()))
-                            {
-                                DP.CLIENT_STATUS = GlobalConstant.ClientStatus.Delete.ToString();
-                            }
-                        }
-                        else
-                        {
-                            DP.CLIENT_STATUS = GlobalConstant.ClientStatus.Unknow.ToString();
-                            if (DP.SERVER_STATUS.Equals(GlobalConstant.ServerStatus.None.ToString()))
-                            {
-                                DP.SERVER_STATUS = GlobalConstant.ServerStatus.Update.ToString();
-                            }
-                        }
-
-                        if (SqliteDataAccess.UpdateDeviceProfile(id, DP))
-                        {
-                            count++;
+                            listDeviceId.Add(temp);
                         }
                     }
-                    
-                }
-                if (count > 0)
-                {
-                    return true;
+                    foreach (int id in listDeviceId)
+                    {
+                        List<DeviceProfile> getCloneDeviceProfile = SqliteDataAccess.LoadDeviceProfiles(id, "", "", p.PIN_NO);
+
+                        foreach (DeviceProfile DP in getCloneDeviceProfile)
+                        {
+                            DP.CloneDataFromProfile(p);
+                            if (p.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Suspended.ToString()))
+                            {
+                                if (!DP.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Deleted.ToString()))
+                                {
+                                    DP.CLIENT_STATUS = GlobalConstant.ClientStatus.Delete.ToString();
+                                }
+                            }
+                            else
+                            {
+                                DP.CLIENT_STATUS = GlobalConstant.ClientStatus.Unknow.ToString();
+                                if (DP.SERVER_STATUS.Equals(GlobalConstant.ServerStatus.None.ToString()))
+                                {
+                                    DP.SERVER_STATUS = GlobalConstant.ServerStatus.Update.ToString();
+                                }
+                            }
+
+                            if (SqliteDataAccess.UpdateDeviceProfile(id, DP))
+                            {
+                                count++;
+                            }
+                        }
+
+                    }
+                    if (count > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
                 else
                 {
-                    return false;
+                    return true;
                 }
             }
             else
             {
-                return true;
+                return false;
             }
         }
         public void ReloadDataCardTypes()
         {
             try
             {
-                _classes.Clear();
-                List<CardType> classesList = SqliteDataAccess.LoadCardTypes();
-                foreach (CardType item in classesList)
-                {
-                    _classes.Add(item);
-                }
+                Classes = new ObservableCollection<CardType>(SqliteDataAccess.LoadCardTypes());
             }
             catch (Exception ex)
             {
