@@ -42,6 +42,7 @@ namespace GateAccessControl
         public ICommand AddProfileCommand { get; set; }
         public ICommand EditProfileCommand { get; set; }
         public ICommand RemoveProfileCommand { get; set; }
+        public ICommand RefreshProfileCommand { get; set; }
         public ICommand SelectProfileCommand { get; set; }
         public ICommand ExportProfilesCommand { get; set; }
         public ICommand StopExportProfilesCommand { get; set; }
@@ -90,6 +91,16 @@ namespace GateAccessControl
                  (p) =>
                  {
                      ReloadDevices();
+                 });
+
+            RefreshProfileCommand = new RelayCommand<Profile>(
+                 (p) =>
+                 {
+                     return (CheckNoDeviceIsSyncing() && IsExportingProfiles == false);
+                 },
+                 (p) =>
+                 {
+                     ReloadProfiles();
                  });
 
             RefreshDeviceProfilesCommand = new RelayCommand<Device>(

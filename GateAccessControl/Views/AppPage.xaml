@@ -1054,6 +1054,28 @@
                                             </Style>
                                         </Button.Style>
                                     </Button>
+                                    <Button
+                                        x:Name="btn_profile_refresh"
+                                        Margin="3"
+                                        Padding="5,0"
+                                        BorderThickness="0"
+                                        Command="{Binding RefreshProfileCommand}"
+                                        Content="Refresh">
+                                        <Button.Style>
+                                            <Style TargetType="{x:Type Button}">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsEnabled" Value="True">
+                                                        <Setter Property="Foreground" Value="White" />
+                                                        <Setter Property="FontWeight" Value="DemiBold" />
+                                                        <Setter Property="Background" Value="#222E50" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
                                 </StackPanel>
                             </Grid>
                             <Grid Grid.Row="1">
