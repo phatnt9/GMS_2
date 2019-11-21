@@ -137,7 +137,7 @@ namespace GateAccessControl
             DeactiveDeviceProfilesCommand = new RelayCommand<List<DeviceProfile>>(
                 (p) =>
                 {
-                    if (p != null)
+                    if (p != null && IsSelectingProfiles == false && IsDeletingProfiles == false)
                     {
                         List<DeviceProfile> CanDeactiveDeviceProfiles = p.FindAll((u) =>
                         {
@@ -174,7 +174,7 @@ namespace GateAccessControl
             ActiveDeviceProfilesCommand = new RelayCommand<List<DeviceProfile>>(
                 (p) =>
                 {
-                    if (p != null)
+                    if (p != null && IsSelectingProfiles == false && IsDeletingProfiles == false)
                     {
                         List<DeviceProfile> CanActiveDeviceProfiles = p.FindAll((u) =>
                         {
@@ -297,7 +297,18 @@ namespace GateAccessControl
                 },
                 (p) =>
                 {
-                    DeleteWorker.CancelAsync();
+                    if (DeleteWorker != null && DeleteWorker.IsBusy)
+                    {
+                        DeleteWorker.CancelAsync();
+                    }
+                    if (DeactiveWorker != null && DeactiveWorker.IsBusy)
+                    {
+                        DeactiveWorker.CancelAsync();
+                    }
+                    if (ActiveWorker != null && ActiveWorker.IsBusy)
+                    {
+                        ActiveWorker.CancelAsync();
+                    }
                 });
 
             CloseDeviceProfilesManagementCommand = new RelayCommand<DeviceProfile>(
@@ -311,84 +322,172 @@ namespace GateAccessControl
                 });
         }
 
-        private void ActiveDeviceProfiles(List<DeviceProfile> profiles)
+        private void ActiveDeviceProfiles(List<DeviceProfile> deviceProfiles)
         {
-            foreach (DeviceProfile item in profiles)
-            {
-                if ((item.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                        (item.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString()))
-                {
-                    item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                    item.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+            DeleteProgressValue = 0;
+            ActiveWorker = new BackgroundWorker();
+            ActiveWorker.WorkerSupportsCancellation = true;
+            ActiveWorker.WorkerReportsProgress = true;
+            ActiveWorker.DoWork += ActiveWorker_DoWork;
+            ActiveWorker.RunWorkerCompleted += ActiveWorker_RunWorkerCompleted;
+            ActiveWorker.ProgressChanged += ActiveWorker_ProgressChanged;
+            ActiveWorker.RunWorkerAsync(argument: deviceProfiles);
+            
+        }
 
-                    if (SqliteDataAccess.UpdateDeviceProfile(Device.DEVICE_ID, item))
+        private void ActiveWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            DeleteProgressValue = e.ProgressPercentage;
+        }
+
+        private void ActiveWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                // handle the error
+            }
+            else if (e.Cancelled)
+            {
+                // handle cancellation
+            }
+            else
+            {
+                // handle complete
+            }
+            DeleteProgressValue = 0;
+            IsDeletingProfiles = false;
+            ReloadDeviceProfiles(Device);
+        }
+
+        private void ActiveWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            IsDeletingProfiles = true;
+            List<DeviceProfile> deviceProfiles = e.Argument as List<DeviceProfile>;
+            for (int i = 0; i < deviceProfiles.Count; i++)
+            {
+                if ((deviceProfiles[i].PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                        (deviceProfiles[i].SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString()))
+                {
+                    deviceProfiles[i].PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
+                    deviceProfiles[i].SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+
+                    if (SqliteDataAccess.UpdateDeviceProfile(Device.DEVICE_ID, deviceProfiles[i]))
                     {
-                        continue;
+                        //continue;
                     }
                     else
                     {
-                        item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                        item.SERVER_STATUS = GlobalConstant.ServerStatus.Remove.ToString();
+                        deviceProfiles[i].PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
+                        deviceProfiles[i].SERVER_STATUS = GlobalConstant.ServerStatus.Remove.ToString();
                     }
-                    continue;
                 }
 
-                if ((item.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
-                        (item.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString()))
+                if ((deviceProfiles[i].PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                        (deviceProfiles[i].SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString()))
                 {
-                    item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
-                    item.SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
+                    deviceProfiles[i].PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
+                    deviceProfiles[i].SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
 
-                    if (SqliteDataAccess.UpdateDeviceProfile(Device.DEVICE_ID, item))
+                    if (SqliteDataAccess.UpdateDeviceProfile(Device.DEVICE_ID, deviceProfiles[i]))
                     {
-                        continue;
+                        //continue;
                     }
                     else
                     {
-                        item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
-                        item.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+                        deviceProfiles[i].PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
+                        deviceProfiles[i].SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
                     }
-                    continue;
+                }
+
+                (sender as BackgroundWorker).ReportProgress((i * 100) / deviceProfiles.Count);
+                if (ActiveWorker.CancellationPending)
+                {
+                    break;
                 }
             }
         }
 
-        private void DeactiveDeviceProfiles(List<DeviceProfile> profiles)
+        private void DeactiveDeviceProfiles(List<DeviceProfile> deviceProfiles)
         {
-            foreach (DeviceProfile item in profiles)
-            {
-                if ((item.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                        (item.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString()))
-                {
-                    item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                    item.SERVER_STATUS = GlobalConstant.ServerStatus.Remove.ToString();
+            DeleteProgressValue = 0;
+            DeactiveWorker = new BackgroundWorker();
+            DeactiveWorker.WorkerSupportsCancellation = true;
+            DeactiveWorker.WorkerReportsProgress = true;
+            DeactiveWorker.DoWork += DeactiveWorker_DoWork;
+            DeactiveWorker.RunWorkerCompleted += DeactiveWorker_RunWorkerCompleted;
+            DeactiveWorker.ProgressChanged += DeactiveWorker_ProgressChanged;
+            DeactiveWorker.RunWorkerAsync(argument: deviceProfiles);
 
-                    if (SqliteDataAccess.UpdateDeviceProfile(Device.DEVICE_ID, item))
+        }
+
+        private void DeactiveWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            DeleteProgressValue = e.ProgressPercentage;
+        }
+
+        private void DeactiveWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                // handle the error
+            }
+            else if (e.Cancelled)
+            {
+                // handle cancellation
+            }
+            else
+            {
+                // handle complete
+            }
+            DeleteProgressValue = 0;
+            IsDeletingProfiles = false;
+            ReloadDeviceProfiles(Device);
+        }
+
+        private void DeactiveWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            IsDeletingProfiles = true;
+            List<DeviceProfile> deviceProfiles = e.Argument as List<DeviceProfile>;
+            for (int i = 0; i < deviceProfiles.Count; i++)
+            {
+                if ((deviceProfiles[i].PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                        (deviceProfiles[i].SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString()))
+                {
+                    deviceProfiles[i].PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
+                    deviceProfiles[i].SERVER_STATUS = GlobalConstant.ServerStatus.Remove.ToString();
+
+                    if (SqliteDataAccess.UpdateDeviceProfile(Device.DEVICE_ID, deviceProfiles[i]))
                     {
-                        continue;
+                        //continue;
                     }
                     else
                     {
-                        item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                        item.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+                        deviceProfiles[i].PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
+                        deviceProfiles[i].SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
                     }
                 }
 
-                if ((item.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
-                        (item.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString()))
+                if ((deviceProfiles[i].PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                        (deviceProfiles[i].SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString()))
                 {
-                    item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
-                    item.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+                    deviceProfiles[i].PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
+                    deviceProfiles[i].SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
 
-                    if (SqliteDataAccess.UpdateDeviceProfile(Device.DEVICE_ID, item))
+                    if (SqliteDataAccess.UpdateDeviceProfile(Device.DEVICE_ID, deviceProfiles[i]))
                     {
-                        continue;
+                        //continue;
                     }
                     else
                     {
-                        item.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
-                        item.SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
+                        deviceProfiles[i].PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
+                        deviceProfiles[i].SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
                     }
+                }
+
+                (sender as BackgroundWorker).ReportProgress((i * 100) / deviceProfiles.Count);
+                if (DeactiveWorker.CancellationPending)
+                {
+                    break;
                 }
             }
         }
@@ -613,6 +712,8 @@ namespace GateAccessControl
         private bool _isDeletingProfiles;
         public BackgroundWorker SelectWorker;
         public BackgroundWorker DeleteWorker;
+        public BackgroundWorker DeactiveWorker;
+        public BackgroundWorker ActiveWorker;
 
         private string _search_profiles_class;
         private string _search_profiles_group;

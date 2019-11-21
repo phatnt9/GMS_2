@@ -1491,7 +1491,7 @@ namespace GateAccessControl
             int _noDeviceSyncing = 0;
             foreach (Device item in Devices)
             {
-                Console.WriteLine("Device: "+item.DEVICE_NAME +" - IsSyncing: "+item.DeviceItem.IsSendingProfiles);
+                //Console.WriteLine("Device: "+item.DEVICE_NAME +" - IsSyncing: "+item.DeviceItem.IsSendingProfiles);
                 if(item.DeviceItem.IsSendingProfiles)
                 {
                     _noDeviceSyncing++;
