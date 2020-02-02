@@ -30,23 +30,6 @@ namespace GateAccessControl
             return test;
         }
 
-        public static async Task<List<CardType>> LoadCardTypesAsync()
-        {
-            try
-            {
-                string url = "http://localhost:8080/serverschool/load/cardType";
-                Task<string> responseTask = client.GetStringAsync(url);
-                var responseString = await responseTask;
-                List<CardType> listObjects = JsonConvert.DeserializeObject<List<CardType>>(responseString);
-                return listObjects;
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return new List<CardType>();
-            }
-        }
-
         public static List<CardType> LoadCardTypes()
         {
             try
@@ -61,23 +44,6 @@ namespace GateAccessControl
             {
                 logFile.Error(ex.Message);
                 return new List<CardType>();
-            }
-        }
-
-        public static async Task<List<Device>> LoadDevicesAsync(int deviceId)
-        {
-            try
-            {
-                string url = "http://localhost:8080/serverschool/load/deviceInf/?deviceId=" + deviceId;
-                Task<string> responseTask = client.GetStringAsync(url);
-                var responseString = await responseTask;
-                List<Device> listObjects = JsonConvert.DeserializeObject<List<Device>>(responseString);
-                return listObjects;
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return new List<Device>();
             }
         }
 
@@ -283,36 +249,6 @@ namespace GateAccessControl
                         "@LICENSE_PLATE,@LIST_DEVICE_ID,@DATE_CREATED,@DATE_MODIFIED)", profile);
                 }
                 return true;
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return false;
-            }
-        }
-
-        public static async Task<bool> InsertClassAsync(CardType cardType)
-        {
-            try
-            {
-                string url = "http://localhost:8080/serverschool/insert/cardType";
-
-                var values = new Dictionary<string, string>
-                {
-                { "item1", JsonConvert.SerializeObject(cardType) }
-                };
-                var content = new FormUrlEncodedContent(values);
-                var response = await client.PostAsync(url, content);
-                var responseString = await response.Content.ReadAsStringAsync();
-                bool result = false;
-                if (bool.TryParse(responseString, out result))
-                {
-                    return result;
-                }
-                else
-                {
-                    return false;
-                }
             }
             catch (Exception ex)
             {
@@ -750,6 +686,314 @@ namespace GateAccessControl
                     cnn.Execute(txtQuery);
                 }
                 return true;
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return false;
+            }
+        }
+
+        public static async Task<List<CardType>> LoadCardTypesAsync()
+        {
+            try
+            {
+                string serverIp = Properties.Settings.Default.WebServerAddress;
+                string serverPort = Properties.Settings.Default.WebServerPort;
+                string url = $@"{serverIp}:{serverPort}/serverschool/load/cardType";
+
+                Task<string> responseTask = client.GetStringAsync(url);
+                var responseString = await responseTask;
+                List<CardType> listObjects = JsonConvert.DeserializeObject<List<CardType>>(responseString);
+                return listObjects;
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return new List<CardType>();
+            }
+        }
+
+        public static async Task<bool> InsertCardTypesAsync(CardType cardType)
+        {
+            try
+            {
+                string serverIp = Properties.Settings.Default.WebServerAddress;
+                string serverPort = Properties.Settings.Default.WebServerPort;
+                string url = $@"{serverIp}:{serverPort}/serverschool/insert/cardType";
+
+                var values = new Dictionary<string, string>
+                {
+                { "item1", JsonConvert.SerializeObject(cardType) }
+                };
+                var content = new FormUrlEncodedContent(values);
+                var response = await client.PostAsync(url, content);
+                var responseString = await response.Content.ReadAsStringAsync();
+                bool result = false;
+                if (bool.TryParse(responseString, out result))
+                {
+                    return result;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return false;
+            }
+        }
+
+        public static async Task<bool> DeleteCardTypeAsync(CardType cardType)
+        {
+            try
+            {
+                string serverIp = Properties.Settings.Default.WebServerAddress;
+                string serverPort = Properties.Settings.Default.WebServerPort;
+                string url = $@"{serverIp}:{serverPort}/serverschool/delete/cardType";
+
+                var values = new Dictionary<string, string>
+                {
+                { "item1", JsonConvert.SerializeObject(cardType) }
+                };
+                var content = new FormUrlEncodedContent(values);
+                var response = await client.PostAsync(url, content);
+                var responseString = await response.Content.ReadAsStringAsync();
+                bool result = false;
+                if (bool.TryParse(responseString, out result))
+                {
+                    return result;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return false;
+            }
+        }
+
+        public static async Task<List<Device>> LoadDevicesAsync(int deviceId)
+        {
+            try
+            {
+                string serverIp = Properties.Settings.Default.WebServerAddress;
+                string serverPort = Properties.Settings.Default.WebServerPort;
+                string url = $@"{serverIp}:{serverPort}/serverschool/load/deviceInf/?deviceId=" + deviceId;
+
+                Task<string> responseTask = client.GetStringAsync(url);
+                var responseString = await responseTask;
+                List<Device> listObjects = JsonConvert.DeserializeObject<List<Device>>(responseString);
+                return listObjects;
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return new List<Device>();
+            }
+        }
+
+        public static async Task<bool> InsertDeviceAsync(Device device)
+        {
+            try
+            {
+                string serverIp = Properties.Settings.Default.WebServerAddress;
+                string serverPort = Properties.Settings.Default.WebServerPort;
+                string url = $@"{serverIp}:{serverPort}/serverschool/insert/deviceInf";
+
+                var values = new Dictionary<string, string>
+                {
+                { "item1", JsonConvert.SerializeObject(device) }
+                };
+                var content = new FormUrlEncodedContent(values);
+                var response = await client.PostAsync(url, content);
+                var responseString = await response.Content.ReadAsStringAsync();
+                bool result = false;
+                if (bool.TryParse(responseString, out result))
+                {
+                    return result;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return false;
+            }
+        }
+
+        public static async Task<bool> DeleteDeviceAsync(Device device)
+        {
+            try
+            {
+                string serverIp = Properties.Settings.Default.WebServerAddress;
+                string serverPort = Properties.Settings.Default.WebServerPort;
+                string url = $@"{serverIp}:{serverPort}/serverschool/delete/deviceInf";
+
+                var values = new Dictionary<string, string>
+                {
+                { "item1", JsonConvert.SerializeObject(device) }
+                };
+                var content = new FormUrlEncodedContent(values);
+                var response = await client.PostAsync(url, content);
+                var responseString = await response.Content.ReadAsStringAsync();
+                bool result = false;
+                if (bool.TryParse(responseString, out result))
+                {
+                    return result;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return false;
+            }
+        }
+
+        public static async Task<bool> CreateDeviceProfilesTableAsync(int deviceId)
+        {
+            try
+            {
+                string serverIp = Properties.Settings.Default.WebServerAddress;
+                string serverPort = Properties.Settings.Default.WebServerPort;
+                string url = $@"{serverIp}:{serverPort}/serverschool/createTable/deviceProfile/?deviceId={deviceId}";
+
+                Task<string> responseTask = client.GetStringAsync(url);
+                var responseString = await responseTask;
+                bool result = false;
+                if (bool.TryParse(responseString, out result))
+                {
+                    return result;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return false;
+            }
+        }
+
+        public static async Task<List<DeviceProfile>> LoadDeviceProfilesAsync(int deviceId, string type, string group, string pinno)
+        {
+            try
+            {
+                string serverIp = Properties.Settings.Default.WebServerAddress;
+                string serverPort = Properties.Settings.Default.WebServerPort;
+                string url = $@"{serverIp}:{serverPort}/serverschool/load/deviceProfile/?deviceId={deviceId}&type={type}&group={group}&pinno={pinno}";
+
+                Task<string> responseTask = client.GetStringAsync(url);
+                var responseString = await responseTask;
+                List<DeviceProfile> listObjects = JsonConvert.DeserializeObject<List<DeviceProfile>>(responseString);
+                return listObjects;
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return new List<DeviceProfile>();
+            }
+        }
+
+        public static async Task<bool> InsertDeviceProfileAsync(int deviceId, DeviceProfile _profile)
+        {
+            try
+            {
+                string serverIp = Properties.Settings.Default.WebServerAddress;
+                string serverPort = Properties.Settings.Default.WebServerPort;
+
+                string url = $@"{serverIp}:{serverPort}/serverschool/insert/deviceProfile/?deviceId={deviceId}";
+
+                var values = new Dictionary<string, string>
+                {
+                { "item1", JsonConvert.SerializeObject(_profile) }
+                };
+                var content = new FormUrlEncodedContent(values);
+                var response = await client.PostAsync(url, content);
+                var responseString = await response.Content.ReadAsStringAsync();
+                bool result = false;
+                if (bool.TryParse(responseString, out result))
+                {
+                    return result;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return false;
+            }
+        }
+
+        public static async Task<bool> UpdateDeviceProfileAsync(int deviceId, DeviceProfile _profile)
+        {
+            try
+            {
+                string serverIp = Properties.Settings.Default.WebServerAddress;
+                string serverPort = Properties.Settings.Default.WebServerPort;
+
+                string url = $@"{serverIp}:{serverPort}/serverschool/update/deviceProfile/?deviceId={deviceId}";
+
+                var values = new Dictionary<string, string>
+                {
+                { "item1", JsonConvert.SerializeObject(_profile) }
+                };
+                var content = new FormUrlEncodedContent(values);
+                var response = await client.PostAsync(url, content);
+                var responseString = await response.Content.ReadAsStringAsync();
+                bool result = false;
+                if (bool.TryParse(responseString, out result))
+                {
+                    return result;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return false;
+            }
+        }
+
+        public static async Task<bool> DeleteDeviceProfileAsync(int deviceId, DeviceProfile _profile)
+        {
+            try
+            {
+                string serverIp = Properties.Settings.Default.WebServerAddress;
+                string serverPort = Properties.Settings.Default.WebServerPort;
+                string url = $@"{serverIp}:{serverPort}/serverschool/delete/deviceProfile/?deviceId={deviceId}& pinno={_profile.PIN_NO}";
+
+                Task<string> responseTask = client.GetStringAsync(url);
+                var responseString = await responseTask;
+                bool result = false;
+                if (bool.TryParse(responseString, out result))
+                {
+                    return result;
+                }
+                else
+                {
+                    return false;
+                }
             }
             catch (Exception ex)
             {

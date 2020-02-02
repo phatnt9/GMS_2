@@ -34,5 +34,29 @@ namespace GateAccessControl.Properties {
                 this["RequestTimeCheckInterval"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("192.168.1.0")]
+        public string WebServerAddress {
+            get {
+                return ((string)(this["WebServerAddress"]));
+            }
+            set {
+                this["WebServerAddress"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("8080")]
+        public string WebServerPort {
+            get {
+                return ((string)(this["WebServerPort"]));
+            }
+            set {
+                this["WebServerPort"] = value;
+            }
+        }
     }
 }
