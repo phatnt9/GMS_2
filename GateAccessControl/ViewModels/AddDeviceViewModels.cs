@@ -16,12 +16,10 @@ namespace GateAccessControl
         private bool? _dialogResult;
         private string _addDeviceStatus;
         private Device _addDevice;
+
         public bool? DialogResult
         {
-            get
-            {
-                return _dialogResult;
-            }
+            get => _dialogResult;
             set
             {
                 _dialogResult = value;
@@ -31,10 +29,7 @@ namespace GateAccessControl
 
         public Device AddDevice
         {
-            get
-            {
-                return _addDevice;
-            }
+            get => _addDevice;
             set
             {
                 _addDevice = value;
@@ -44,10 +39,7 @@ namespace GateAccessControl
 
         public String AddDeviceStatus
         {
-            get
-            {
-                return _addDeviceStatus;
-            }
+            get => _addDeviceStatus;
             set
             {
                 _addDeviceStatus = value;
@@ -60,12 +52,11 @@ namespace GateAccessControl
         public ICommand AddDeviceCommand { get; set; }
         public ICommand CloseAddDeviceCommand { get; set; }
 
-
         public AddDeviceViewModels()
         {
             AddDevice = new Device();
             AddDeviceCommand = new RelayCommand<Device>(
-                (p) => 
+                (p) =>
                 {
                     if (ValidateIPv4(AddDevice.DEVICE_IP) && !String.IsNullOrEmpty(AddDevice.DEVICE_NAME))
                     {
@@ -79,7 +70,7 @@ namespace GateAccessControl
                 (p) =>
                 {
                     AddDevice.DEVICE_STATUS = DeviceStatus.Pending.ToString();
-                    if(SqliteDataAccess.InsertDevice(AddDevice))
+                    if (SqliteDataAccess.InsertDevice(AddDevice))
                     {
                         AddDeviceStatus = "Succeed";
                     }
@@ -119,6 +110,5 @@ namespace GateAccessControl
                 return false;
             }
         }
-
     }
 }

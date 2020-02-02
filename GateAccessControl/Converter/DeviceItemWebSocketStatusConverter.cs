@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Globalization;
-using System.Windows;
 using System.Windows.Data;
 using WebSocketSharp;
 
 namespace GateAccessControl.ViewModels
 {
-    class DeviceItemWebSocketStatusConverter : IValueConverter
+    internal class DeviceItemWebSocketStatusConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

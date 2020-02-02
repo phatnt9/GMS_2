@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
 namespace GateAccessControl
 {
@@ -14,22 +9,17 @@ namespace GateAccessControl
 
         public int CLASS_ID
         {
-            get
-            {
-                return _classId;
-            }
+            get => _classId;
             set
             {
                 _classId = value;
                 OnPropertyChanged("CLASS_ID");
             }
         }
+
         public string CLASS_NAME
         {
-            get
-            {
-                return _className;
-            }
+            get => _className;
             set
             {
                 _className = value;
@@ -52,10 +42,13 @@ namespace GateAccessControl
         protected void OnPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
+            {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
-        #endregion
+        #endregion INotifyPropertyChanged Members
     }
 }

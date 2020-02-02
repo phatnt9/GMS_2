@@ -2,24 +2,20 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 
 namespace GateAccessControl
 {
-    class EditProfileViewModel : ViewModelBase
+    internal class EditProfileViewModel : ViewModelBase
     {
         private static readonly log4net.ILog logFile = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private bool? _dialogResult;
+
         public bool? DialogResult
         {
-            get
-            {
-                return _dialogResult;
-            }
+            get => _dialogResult;
             set
             {
                 _dialogResult = value;
@@ -27,14 +23,11 @@ namespace GateAccessControl
             }
         }
 
-
         private Profile _editProfile;
+
         public Profile EditProfile
         {
-            get
-            {
-                return _editProfile;
-            }
+            get => _editProfile;
             set
             {
                 _editProfile = value;
@@ -43,12 +36,10 @@ namespace GateAccessControl
         }
 
         private ObservableCollection<CardType> _classes = new ObservableCollection<CardType>();
+
         public ObservableCollection<CardType> Classes
         {
-            get
-            {
-                return _classes;
-            }
+            get => _classes;
             set
             {
                 _classes = value;
@@ -127,8 +118,6 @@ namespace GateAccessControl
                 File.Copy(importFilePath,
                     Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK\Image\" + p.IMAGE, true);
                 p.IMAGE = p.IMAGE;
-
-
             }
         }
 
@@ -136,9 +125,10 @@ namespace GateAccessControl
         {
             DialogResult = true;
         }
+
         private bool SaveProfile(Profile p)
         {
-            if(p.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Active.ToString()))
+            if (p.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Active.ToString()))
             {
                 if (p.CHECK_DATE_TO_LOCK && DateTime.Now.CompareTo(p.DATE_TO_LOCK) >= 0)
                 {
@@ -165,8 +155,6 @@ namespace GateAccessControl
                 System.Windows.Forms.MessageBox.Show("Field with (*) is mandatory!");
                 return false;
             }
-
-            
         }
 
         private bool UpdateProfileToAllDevice(Profile p)
@@ -216,7 +204,6 @@ namespace GateAccessControl
                                 count++;
                             }
                         }
-
                     }
                     if (count > 0)
                     {
@@ -237,6 +224,7 @@ namespace GateAccessControl
                 return false;
             }
         }
+
         public void ReloadDataCardTypes()
         {
             try

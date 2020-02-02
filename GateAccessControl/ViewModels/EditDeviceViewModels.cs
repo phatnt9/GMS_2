@@ -5,7 +5,7 @@ using System.Windows.Input;
 
 namespace GateAccessControl
 {
-    class EditDeviceViewModels : ViewModelBase
+    internal class EditDeviceViewModels : ViewModelBase
     {
         private bool? _dialogResult;
         private string _editDeviceStatus;
@@ -13,10 +13,7 @@ namespace GateAccessControl
 
         public Device EditDevice
         {
-            get
-            {
-                return _editDevice;
-            }
+            get => _editDevice;
             set
             {
                 _editDevice = value;
@@ -26,33 +23,28 @@ namespace GateAccessControl
 
         public String EditDeviceStatus
         {
-            get
-            {
-                return _editDeviceStatus;
-            }
+            get => _editDeviceStatus;
             set
             {
                 _editDeviceStatus = value;
                 RaisePropertyChanged("EditDeviceStatus");
             }
         }
+
         public bool? DialogResult
         {
-            get
-            {
-                return _dialogResult;
-            }
+            get => _dialogResult;
             set
             {
                 _dialogResult = value;
                 RaisePropertyChanged("DialogResult");
             }
         }
+
         private static readonly log4net.ILog logFile = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public ICommand EditDeviceCommand { get; set; }
         public ICommand CloseEditDeviceCommand { get; set; }
-
 
         public EditDeviceViewModels(Device device)
         {
@@ -107,7 +99,6 @@ namespace GateAccessControl
 
         public void CloseWindow()
         {
-
             DialogResult = true;
         }
 

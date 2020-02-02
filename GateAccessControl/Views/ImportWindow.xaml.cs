@@ -1,12 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
-using System.Globalization;
 using Excel = Microsoft.Office.Interop.Excel;
-using System.Collections.Generic;
 
 namespace GateAccessControl.Views
 {
@@ -21,6 +20,7 @@ namespace GateAccessControl.Views
         private bool isAddProfile = true; //add-true, update-false
         private List<CardType> classes;
         private BackgroundWorker ImortWorker;
+
         public ImportWindow(List<CardType> classes)
         {
             InitializeComponent();
@@ -133,7 +133,6 @@ namespace GateAccessControl.Views
                 ngayThang = DateTime.Parse(dateTime);
             }
             return ngayThang;
-            
         }
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
@@ -170,15 +169,15 @@ namespace GateAccessControl.Views
                         profile.AD_NO = xlRange.Cells[i, 3].Value2.ToString().ToUpper();
 
                         profile.PROFILE_NAME = xlRange.Cells[i, 2].Value2.ToString().ToUpper();
-                        
+
                         profile.CLASS_NAME = xlRange.Cells[i, 9].Value2.ToString();
 
                         profile.SUB_CLASS = (xlRange.Cells[i, 10].Value2 == null) ? "" : xlRange.Cells[i, 10].Value2.ToString();
 
                         profile.GENDER = (xlRange.Cells[i, 4].Value2.ToString() == "Male" ? "Male" : "Female");
-                        
+
                         profile.DOB = ParseDateTimeFormCell(xlRange.Cells[i, 5].Value2.ToString());
-                        
+
                         profile.DISU = ParseDateTimeFormCell(xlRange.Cells[i, 6].Value2.ToString());
 
                         profile.EMAIL = (xlRange.Cells[i, 11].Value2 == null) ? "" : xlRange.Cells[i, 11].Value2.ToString();
@@ -190,7 +189,7 @@ namespace GateAccessControl.Views
                         profile.PROFILE_STATUS = xlRange.Cells[i, 14].Value2.ToString();
 
                         profile.IMAGE = xlRange.Cells[i, 7].Value2.ToString();
-                        
+
                         if (xlRange.Cells[i, 16].Value2 != null)
                         {
                             profile.CHECK_DATE_TO_LOCK = Boolean.Parse(xlRange.Cells[i, 16].Value2.ToString());
@@ -230,7 +229,6 @@ namespace GateAccessControl.Views
                             profile.DATE_CREATED = (xlRange.Cells[i, 18].Value2 == null) ? DateTime.Now : ParseDateTimeFormCell(xlRange.Cells[i, 18].Value2.ToString());
                             profile.DATE_MODIFIED = DateTime.Now;
                         }
-
 
                         try
                         {
@@ -278,7 +276,6 @@ namespace GateAccessControl.Views
                                     }
                                 }
                             }
-                            
                         }
                         catch (Exception ex)
                         {
@@ -318,7 +315,7 @@ namespace GateAccessControl.Views
 
         public bool CheckClassNameValid(List<CardType> list, string ClassName)
         {
-            foreach(CardType item in list)
+            foreach (CardType item in list)
             {
                 if (item.CLASS_NAME.Equals(ClassName))
                 {
@@ -363,6 +360,5 @@ namespace GateAccessControl.Views
                 logFile.Error(ex.Message);
             }
         }
-
     }
 }

@@ -6,17 +6,15 @@ using System.Windows.Input;
 
 namespace GateAccessControl
 {
-    class ClassManagementViewModel : ViewModelBase
+    internal class ClassManagementViewModel : ViewModelBase
     {
         private static readonly log4net.ILog logFile = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private bool? _dialogResult;
+
         public bool? DialogResult
         {
-            get
-            {
-                return _dialogResult;
-            }
+            get => _dialogResult;
             set
             {
                 _dialogResult = value;
@@ -25,6 +23,7 @@ namespace GateAccessControl
         }
 
         private ObservableCollection<CardType> _classes = new ObservableCollection<CardType>();
+
         public ObservableCollection<CardType> Classes
         {
             get => _classes;
@@ -38,11 +37,9 @@ namespace GateAccessControl
         public ICommand RemoveClassesCommand { get; set; }
         public ICommand SaveClassesCommand { get; set; }
         public ICommand CloseClassManagementCommand { get; set; }
-        
 
         public ClassManagementViewModel()
         {
-
             SaveClassesCommand = new RelayCommand<ObservableCollection<CardType>>(
                 (p) =>
                 {
@@ -82,7 +79,6 @@ namespace GateAccessControl
                 {
                     CloseWindow();
                 });
-
 
             ReloadDataCardTypes();
         }

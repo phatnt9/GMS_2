@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
+using System.IO;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
-using System.IO;
-using System.Drawing;
 
 namespace GateAccessControl.ViewModels
 {
-    class ProfileImageConverter : IValueConverter
+    internal class ProfileImageConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -64,7 +60,7 @@ namespace GateAccessControl.ViewModels
             }
             watch.Stop();
             elapsedMs = watch.ElapsedMilliseconds;
-            Console.WriteLine("Load Picture time:"+elapsedMs.ToString());
+            Console.WriteLine("Load Picture time:" + elapsedMs.ToString());
             return true;
         }
 

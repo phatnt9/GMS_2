@@ -78,7 +78,6 @@ namespace GateAccessControl
                             Close();
                             webSocket.Connect();
                         }
-
                     }
                     catch { }
                 }
@@ -256,18 +255,17 @@ namespace GateAccessControl
         }
 
         private WebSocket _webSocket;
+
         public WebSocket webSocket
         {
-            get
-            {
-                return _webSocket;
-            }
+            get => _webSocket;
             set
             {
                 _webSocket = value;
                 OnPropertyChanged("webSocket");
             }
         }
+
         private Dictionary<int, Publisher> publishers = new Dictionary<int, Publisher>();
         private Dictionary<int, Subscriber> subscribers = new Dictionary<int, Subscriber>();
         private Dictionary<int, ServiceCaller> serviceCallers = new Dictionary<int, ServiceCaller>();
@@ -371,10 +369,13 @@ namespace GateAccessControl
         protected void OnPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
+            {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
-        #endregion
+        #endregion INotifyPropertyChanged Members
     }
 }

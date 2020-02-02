@@ -332,7 +332,6 @@ namespace GateAccessControl
             ActiveWorker.RunWorkerCompleted += ActiveWorker_RunWorkerCompleted;
             ActiveWorker.ProgressChanged += ActiveWorker_ProgressChanged;
             ActiveWorker.RunWorkerAsync(argument: deviceProfiles);
-            
         }
 
         private void ActiveWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -417,7 +416,6 @@ namespace GateAccessControl
             DeactiveWorker.RunWorkerCompleted += DeactiveWorker_RunWorkerCompleted;
             DeactiveWorker.ProgressChanged += DeactiveWorker_ProgressChanged;
             DeactiveWorker.RunWorkerAsync(argument: deviceProfiles);
-
         }
 
         private void DeactiveWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -543,7 +541,7 @@ namespace GateAccessControl
                         SqliteDataAccess.UpdateProfile(pf);
                     }
                 }
-                
+
                 (sender as BackgroundWorker).ReportProgress((i * 100) / deviceProfiles.Count);
                 if (DeleteWorker.CancellationPending)
                 {
@@ -593,10 +591,9 @@ namespace GateAccessControl
             IsSelectingProfiles = true;
             List<Profile> profiles = e.Argument as List<Profile>;
 
-
             for (int i = 0; i < profiles.Count; i++)
             {
-                if (SqliteDataAccess.InsertDeviceProfile(Device.DEVICE_ID,new DeviceProfile(profiles[i])))
+                if (SqliteDataAccess.InsertDeviceProfile(Device.DEVICE_ID, new DeviceProfile(profiles[i])))
                 {
                     profiles[i].AddDeviceId(Device.DEVICE_ID);
                     SqliteDataAccess.UpdateProfile(profiles[i]);

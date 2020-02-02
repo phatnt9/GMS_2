@@ -14,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using static GateAccessControl.DeviceItem;
+
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace GateAccessControl
@@ -28,6 +29,7 @@ namespace GateAccessControl
         Cancelled,
         Error,
     }
+
     public class AppPageViewModel : ViewModelBase
     {
         public ICommand AddDeviceCommand { get; set; }
@@ -50,7 +52,7 @@ namespace GateAccessControl
         public ICommand DeviceProfilesManageCommand { get; set; }
         public ICommand SelectDeviceProfilesCommand { get; set; }
         public ICommand RefreshDeviceProfilesCommand { get; set; }
-        
+
         public ICommand ImportProfilesCommand { get; set; }
         public ICommand ManageClassCommand { get; set; }
 
@@ -70,8 +72,6 @@ namespace GateAccessControl
         public ICommand SelectedDateChangeCommand { get; set; }
         public ICommand SelectPreviousDateCommand { get; set; }
         public ICommand SelectNextDateCommand { get; set; }
-
-        
 
         public AppPageViewModel()
         {
@@ -175,7 +175,6 @@ namespace GateAccessControl
                      ExportWorker.CancelAsync();
                  });
 
-
             ExportProfilesCommand = new RelayCommand<List<Profile>>(
                  (p) =>
                  {
@@ -189,13 +188,12 @@ namespace GateAccessControl
             SelectDeviceProfilesCommand = new RelayCommand<DeviceProfile>(
                  (p) =>
                  {
-                         return true;
+                     return true;
                  },
                  (p) =>
                  {
                      ParseActiveTimeDeviceProfile(SelectedDeviceProfile);
                  });
-
 
             SetTimeDeviceProfileCommnad = new RelayCommand<List<DeviceProfile>>(
                  (p) =>
@@ -242,7 +240,6 @@ namespace GateAccessControl
                      {
                          ReloadDeviceProfiles(SelectedDevice);
                      }
-
                  });
 
             RemoveProfileCommand = new RelayCommand<Profile>(
@@ -260,12 +257,11 @@ namespace GateAccessControl
                        MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes
                        )
                      {
-                         if(RemoveProfile(SelectedProfile))
+                         if (RemoveProfile(SelectedProfile))
                          {
                              Profiles.Remove(SelectedProfile);
                          }
                      }
-                       
                  });
 
             SelectProfileCommand = new RelayCommand<List<TimeRecord>>(
@@ -305,7 +301,7 @@ namespace GateAccessControl
             SyncCommand = new RelayCommand<List<DeviceProfile>>(
                  (p) =>
                  {
-                     /* 
+                     /*
                       * User must select a Device and some Profiles to be able to Sync Profiles.
                       * Device must be connected before Syncing.
                       * If that Device is in process of Sending something, then you cannot Sync too.
@@ -383,7 +379,7 @@ namespace GateAccessControl
                 },
                 (p) =>
                 {
-                    if(SelectedDevice != null)
+                    if (SelectedDevice != null)
                     {
                         SqliteDataAccess.CreateDeviceProfilesTable("DT_DEVICE_PROFILES_" + SelectedDevice.DEVICE_ID);
                         ReloadDeviceProfiles(SelectedDevice);
@@ -504,7 +500,6 @@ namespace GateAccessControl
 
         private void ReloadProfileImage(Profile p)
         {
-            
             BackgroundWorker LoadImageWorker = new BackgroundWorker();
             LoadImageWorker.WorkerSupportsCancellation = true;
             LoadImageWorker.WorkerReportsProgress = true;
@@ -512,8 +507,6 @@ namespace GateAccessControl
             LoadImageWorker.RunWorkerCompleted += LoadImageWorker_RunWorkerCompleted;
             LoadImageWorker.ProgressChanged += LoadImageWorker_ProgressChanged;
             LoadImageWorker.RunWorkerAsync(p);
-
-            
         }
 
         private void LoadImageWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -671,9 +664,9 @@ namespace GateAccessControl
                     for (int j = 0; j < 19; j++)
                     {
                         if (j == 0)//No
-                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = i + 1;  }
+                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = i + 1; }
                         if (j == 1)//Name
-                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].PROFILE_NAME;  }
+                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].PROFILE_NAME; }
                         if (j == 2)//Adno
                         {
                             Range cells = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[cellRowIndex, cellColumnIndex];
@@ -705,9 +698,9 @@ namespace GateAccessControl
                             cell.Validation.InCellDropdown = true;
                         }
                         if (j == 4)//DOB
-                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].DOB;}
+                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].DOB; }
                         if (j == 5)//Disu
-                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].DISU;}
+                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].DISU; }
                         if (j == 6)//Image
                         {
                             Range cells = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[cellRowIndex, cellColumnIndex];
@@ -783,7 +776,7 @@ namespace GateAccessControl
                         if (j == 10)//Email
                         { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].EMAIL; }
                         if (j == 11)//Address
-                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].ADDRESS;}
+                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].ADDRESS; }
                         if (j == 12)//Phone
                         {
                             Range cells = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[cellRowIndex, cellColumnIndex];
@@ -883,17 +876,17 @@ namespace GateAccessControl
         private bool SetTimeDeviceProfile(List<DeviceProfile> p)
         {
             string myActiveTime = GetActiveTimeFromTextBoxes();
-            if(!String.IsNullOrEmpty(myActiveTime))
+            if (!String.IsNullOrEmpty(myActiveTime))
             {
                 foreach (DeviceProfile item in p)
                 {
                     item.ACTIVE_TIME = myActiveTime;
-                    if(item.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString() && 
+                    if (item.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString() &&
                         item.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString())
                     {
                         item.SERVER_STATUS = GlobalConstant.ServerStatus.Update.ToString();
                     }
-                    if(SqliteDataAccess.UpdateDeviceProfile(SelectedDevice.DEVICE_ID, item))
+                    if (SqliteDataAccess.UpdateDeviceProfile(SelectedDevice.DEVICE_ID, item))
                     {
                         ApplyActiveTimeStatus = "Success!";
                     }
@@ -908,14 +901,13 @@ namespace GateAccessControl
             {
                 return false;
             }
-           
         }
 
         private string GetActiveTimeFromTextBoxes()
         {
             string returnStr = "";
             int count = 0;
-            if(ActiveTimeSchedule_1)
+            if (ActiveTimeSchedule_1)
             {
                 if (ValidateTime(Active_from_1))
                 {
@@ -961,7 +953,7 @@ namespace GateAccessControl
 
         private void ParseActiveTimeDeviceProfile(DeviceProfile p)
         {
-            if (p!= null && !String.IsNullOrEmpty(p.ACTIVE_TIME))
+            if (p != null && !String.IsNullOrEmpty(p.ACTIVE_TIME))
             {
                 string[] listVar = p.ACTIVE_TIME.Split('-');
                 for (int i = 0; i < 4; i++)
@@ -1025,7 +1017,7 @@ namespace GateAccessControl
                 });
             }
         }
-        
+
         private void CreateCheckSuspendProfilesTimer()
         {
             System.Timers.Timer SuspendStudentCheckTimer = new System.Timers.Timer(30000); //One second, (use less to add precision, use more to consume less processor time
@@ -1034,6 +1026,7 @@ namespace GateAccessControl
             SuspendStudentCheckTimer.Elapsed += SuspendStudentCheckTimer_Elapsed;
             SuspendStudentCheckTimer.Start();
         }
+
         private void SuspendStudentCheckTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             if (CheckNoDeviceIsSyncing())
@@ -1068,7 +1061,7 @@ namespace GateAccessControl
                 //Check status --> check date to Suspend --> Suspend(active)
                 foreach (Profile profile in profiles)
                 {
-                    if (profile.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Active.ToString()) && 
+                    if (profile.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Active.ToString()) &&
                         profile.CHECK_DATE_TO_LOCK == true)
                     {
                         if (DateTime.Now > profile.DATE_TO_LOCK)
@@ -1082,7 +1075,6 @@ namespace GateAccessControl
                             }
                             else
                             {
-
                             }
                         }
                     }
@@ -1099,7 +1091,7 @@ namespace GateAccessControl
                 ReloadProfiles();
             }
         }
-        
+
         private bool RemoveProfile(Profile p)
         {
             if (String.IsNullOrEmpty(p.LIST_DEVICE_ID))
@@ -1147,11 +1139,9 @@ namespace GateAccessControl
 
                 p.IMAGE = origin;
                 SaveProfileUpdateImage(p);
-
-
             }
         }
-        
+
         public bool SaveProfileUpdateImage(Profile p)
         {
             if (p.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Active.ToString()))
@@ -1181,7 +1171,6 @@ namespace GateAccessControl
                 System.Windows.Forms.MessageBox.Show("Field with (*) is mandatory!");
                 return false;
             }
-
         }
 
         private bool UpdateProfileToAllDevice(Profile p)
@@ -1231,7 +1220,6 @@ namespace GateAccessControl
                                 count++;
                             }
                         }
-
                     }
                     if (count > 0)
                     {
@@ -1297,7 +1285,7 @@ namespace GateAccessControl
 
         private void DisconnectDevice(Device p)
         {
-            if(p != null)
+            if (p != null)
             {
                 p.DeviceItem.Dispose();
             }
@@ -1363,7 +1351,7 @@ namespace GateAccessControl
             try
             {
                 List<CardType> classesList = SqliteDataAccess.LoadCardTypes();
-                classesList.Insert(0,new CardType(-1, "All"));
+                classesList.Insert(0, new CardType(-1, "All"));
                 Classes = new ObservableCollection<CardType>(classesList);
             }
             catch (Exception ex)
@@ -1426,7 +1414,7 @@ namespace GateAccessControl
 
         public bool ReloadDataTimeCheck(Profile selectedProfile, DateTime selectedDate)
         {
-            Console.WriteLine("Reload TimeCheck: "+selectedDate.ToShortDateString());
+            Console.WriteLine("Reload TimeCheck: " + selectedDate.ToShortDateString());
             if (selectedDate != null && selectedProfile != null)
             {
                 TimeChecks = new ObservableCollection<TimeRecord>(SqliteDataAccess.LoadTimeChecks(selectedProfile.PIN_NO, selectedDate));
@@ -1436,7 +1424,6 @@ namespace GateAccessControl
             {
                 return false;
             }
-                
         }
 
         private bool CanEditOrRemoveDevice(Device p)
@@ -1492,7 +1479,7 @@ namespace GateAccessControl
             foreach (Device item in Devices)
             {
                 //Console.WriteLine("Device: "+item.DEVICE_NAME +" - IsSyncing: "+item.DeviceItem.IsSendingProfiles);
-                if(item.DeviceItem.IsSendingProfiles)
+                if (item.DeviceItem.IsSendingProfiles)
                 {
                     _noDeviceSyncing++;
                 }
@@ -1548,7 +1535,6 @@ namespace GateAccessControl
             }
         }
 
-
         private static readonly log4net.ILog logFile = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private ObservableCollection<Profile> _profiles = new ObservableCollection<Profile>();
@@ -1556,7 +1542,7 @@ namespace GateAccessControl
         private ObservableCollection<DeviceProfile> _deviceProfiles = new ObservableCollection<DeviceProfile>();
         private ObservableCollection<TimeRecord> _timeChecks = new ObservableCollection<TimeRecord>();
         private ObservableCollection<CardType> _classes = new ObservableCollection<CardType>();
-        
+
         public ObservableCollection<Profile> Profiles
         {
             get => _profiles;
@@ -1633,7 +1619,6 @@ namespace GateAccessControl
         private bool _isExportingProfiles;
         private BitmapImage _profileImage;
 
-
         public BitmapImage ProfileImage
         {
             get => _profileImage;
@@ -1643,7 +1628,6 @@ namespace GateAccessControl
                 RaisePropertyChanged("ProfileImage");
             }
         }
-
 
         public DateTime SelectedTimeCheckDate
         {
@@ -1684,7 +1668,7 @@ namespace GateAccessControl
                 RaisePropertyChanged("ExportProfilesProgressValue");
             }
         }
-        
+
         public String ApplyActiveTimeStatus
         {
             get => _applyActiveTimeStatus;
@@ -1734,7 +1718,6 @@ namespace GateAccessControl
                 RaisePropertyChanged("SelectedDeviceProfile");
             }
         }
-        
 
         public Boolean ActiveTimeSchedule_1
         {
@@ -1942,7 +1925,6 @@ namespace GateAccessControl
             throw new NotImplementedException();
         }
     }
-    
 
     public class ActiveTimeTo1Converter : IValueConverter
     {
@@ -1961,7 +1943,6 @@ namespace GateAccessControl
             throw new NotImplementedException();
         }
     }
-    
 
     public class ActiveTimeFrom2Converter : IValueConverter
     {
@@ -1980,7 +1961,6 @@ namespace GateAccessControl
             throw new NotImplementedException();
         }
     }
-    
 
     public class ActiveTimeTo2Converter : IValueConverter
     {
@@ -1999,5 +1979,4 @@ namespace GateAccessControl
             throw new NotImplementedException();
         }
     }
-
 }

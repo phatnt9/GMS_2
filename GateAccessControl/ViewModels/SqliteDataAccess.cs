@@ -1,11 +1,12 @@
 ﻿using Dapper;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace GateAccessControl
@@ -13,7 +14,8 @@ namespace GateAccessControl
     public class SqliteDataAccess
     {
         private static readonly log4net.ILog logFile = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        
+        private static readonly HttpClient client = new HttpClient();
+
         /// <summary>
         /// Return the connection string to main Database
         /// </summary>
@@ -27,6 +29,24 @@ namespace GateAccessControl
             //string test = "Data Source=" + GlobalConstant.DatabasePath + @".\Datastore.db;Version=3;";
             return test;
         }
+
+        public static async Task<List<CardType>> LoadCardTypesAsync()
+        {
+            try
+            {
+                string url = "http://localhost:8080/serverschool/load/cardType";
+                Task<string> responseTask = client.GetStringAsync(url);
+                var responseString = await responseTask;
+                List<CardType> listObjects = JsonConvert.DeserializeObject<List<CardType>>(responseString);
+                return listObjects;
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return new List<CardType>();
+            }
+        }
+
         public static List<CardType> LoadCardTypes()
         {
             try
@@ -41,6 +61,23 @@ namespace GateAccessControl
             {
                 logFile.Error(ex.Message);
                 return new List<CardType>();
+            }
+        }
+
+        public static async Task<List<Device>> LoadDevicesAsync(int deviceId)
+        {
+            try
+            {
+                string url = "http://localhost:8080/serverschool/load/deviceInf/?deviceId=" + deviceId;
+                Task<string> responseTask = client.GetStringAsync(url);
+                var responseString = await responseTask;
+                List<Device> listObjects = JsonConvert.DeserializeObject<List<Device>>(responseString);
+                return listObjects;
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return new List<Device>();
             }
         }
 
@@ -75,6 +112,7 @@ namespace GateAccessControl
                 return new List<Device>();
             }
         }
+
         public static List<DeviceProfile> LoadDeviceProfiles(int deviceId, string type, string group, string pinno)
         {
             try
@@ -98,6 +136,7 @@ namespace GateAccessControl
                 return new List<DeviceProfile>();
             }
         }
+
         public static List<Profile> LoadProfiles(string type, string group, string pinno)
         {
             try
@@ -121,6 +160,7 @@ namespace GateAccessControl
                 return new List<Profile>();
             }
         }
+
         public static List<TimeRecord> LoadTimeChecks(string PIN_NO, DateTime time, string ip = null)
         {
             try
@@ -202,6 +242,7 @@ namespace GateAccessControl
                 return new List<TimeRecord>();
             }
         }
+
         public static bool InsertDevice(Device device)
         {
             try
@@ -226,6 +267,7 @@ namespace GateAccessControl
                 return false;
             }
         }
+
         public static bool InsertProfile(Profile profile)
         {
             try
@@ -248,6 +290,37 @@ namespace GateAccessControl
                 return false;
             }
         }
+
+        public static async Task<bool> InsertClassAsync(CardType cardType)
+        {
+            try
+            {
+                string url = "http://localhost:8080/serverschool/insert/cardType";
+
+                var values = new Dictionary<string, string>
+                {
+                { "item1", JsonConvert.SerializeObject(cardType) }
+                };
+                var content = new FormUrlEncodedContent(values);
+                var response = await client.PostAsync(url, content);
+                var responseString = await response.Content.ReadAsStringAsync();
+                bool result = false;
+                if (bool.TryParse(responseString, out result))
+                {
+                    return result;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return false;
+            }
+        }
+
         public static bool InsertClass(CardType cardType)
         {
             try
@@ -264,6 +337,7 @@ namespace GateAccessControl
                 return false;
             }
         }
+
         public static bool InsertDeviceProfile(int deviceId, DeviceProfile _profile)
         {
             try
@@ -286,6 +360,7 @@ namespace GateAccessControl
                 return false;
             }
         }
+
         public static bool InsertDeviceProfile(int deviceId, List<Profile> _profiles)
         {
             try
@@ -314,6 +389,7 @@ namespace GateAccessControl
                 return false;
             }
         }
+
         public static bool InsertTimeCheck(TimeRecord timeRecord)
         {
             try
@@ -329,8 +405,8 @@ namespace GateAccessControl
                 logFile.Error(ex.Message);
                 return false;
             }
-            
         }
+
         public static bool UpdateDevice(Device device)
         {
             try
@@ -352,6 +428,7 @@ namespace GateAccessControl
                 return false;
             }
         }
+
         public static bool UpdateProfile(Profile profile)
         {
             try
@@ -457,7 +534,7 @@ namespace GateAccessControl
                 }
                 using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
                 {
-                    cnn.Execute("DROP TABLE IF EXISTS DT_DEVICE_PROFILES_"+device.DEVICE_ID, device);
+                    cnn.Execute("DROP TABLE IF EXISTS DT_DEVICE_PROFILES_" + device.DEVICE_ID, device);
                 }
                 return true;
             }
@@ -467,6 +544,7 @@ namespace GateAccessControl
                 return false;
             }
         }
+
         public static bool DeleteProfile(Profile profile)
         {
             try
@@ -483,6 +561,7 @@ namespace GateAccessControl
                 return false;
             }
         }
+
         public static bool DeleteCardType(CardType cardType)
         {
             try
@@ -516,6 +595,7 @@ namespace GateAccessControl
                 return false;
             }
         }
+
         /// <summary>
         /// Create dynamic table containt profiles for each device in main Database
         /// </summary>
@@ -529,7 +609,7 @@ namespace GateAccessControl
                 {
                     using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
                     {
-                        cnn.Execute("CREATE TABLE IF NOT EXISTS \""+ tableName + "\" " +
+                        cnn.Execute("CREATE TABLE IF NOT EXISTS \"" + tableName + "\" " +
                                "(\"PROFILE_ID\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, " +
                                "\"PIN_NO\" TEXT NOT NULL UNIQUE, " +
                                "\"AD_NO\" TEXT NOT NULL, " +
@@ -566,6 +646,7 @@ namespace GateAccessControl
                 return false;
             }
         }
+
         /// <summary>
         /// Create main Database with its tables
         /// </summary>
@@ -631,6 +712,7 @@ namespace GateAccessControl
                 return false;
             }
         }
+
         public static bool InsertDataDeviceProfiles_DUY(string _tableName, DeviceProfile _profile)
         {
             try
@@ -653,7 +735,7 @@ namespace GateAccessControl
 
                     + "'" + _profile.IMAGE + "'" + ","
                     + "'" + _profile.DISU + "'" + ","
-                    
+
                     + "'" + _profile.DATE_TO_LOCK + "'" + ","
                     + "'" + _profile.CHECK_DATE_TO_LOCK + "'" + ","
                     + "'" + _profile.LICENSE_PLATE + "'" + ","

@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Windows.Data;
-
 
 namespace GateAccessControl.ViewModels
 {
-    class DeviceProfilesActiveTimeConverter : IMultiValueConverter
+    internal class DeviceProfilesActiveTimeConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
@@ -16,11 +12,11 @@ namespace GateAccessControl.ViewModels
             string time1_to = (string)values[1];
             string time2_from = (string)values[2];
             string time2_to = (string)values[3];
-            foreach(var item in values)
+            foreach (var item in values)
             {
                 if (!ValidateTime(item.ToString()))
                 {
-                    return null; 
+                    return null;
                 }
             }
             return time1_from + "," + time1_to + "," + time2_from + "," + time2_to;

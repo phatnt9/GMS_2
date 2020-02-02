@@ -1,18 +1,6 @@
-﻿using GateAccessControl.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace GateAccessControl.Views
 {
@@ -21,7 +9,8 @@ namespace GateAccessControl.Views
     /// </summary>
     public partial class LoginPage : Page
     {
-        Frame frame;
+        private Frame frame;
+
         public LoginPage(Frame frame)
         {
             this.frame = frame;
@@ -38,7 +27,7 @@ namespace GateAccessControl.Views
 
         private void Btn_login_Click(object sender, RoutedEventArgs e)
         {
-            if(tb_userName.Text == "admin" && tb_password.Password == "atek")
+            if (tb_userName.Text == "admin" && tb_password.Password == "atek")
             {
                 GlobalConstant.CreateFolderToSaveData();
                 SqliteDataAccess.CreateDatabase();

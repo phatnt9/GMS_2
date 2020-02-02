@@ -9,7 +9,6 @@ namespace GateAccessControl
     {
         public CommandTextBox() : base()
         {
-
         }
 
         #region ICommand Interface Members
@@ -25,14 +24,8 @@ namespace GateAccessControl
 
         public ICommand Command
         {
-            get
-            {
-                return (ICommand)GetValue(CommandProperty);
-            }
-            set
-            {
-                SetValue(CommandProperty, value);
-            }
+            get => (ICommand)GetValue(CommandProperty);
+            set => SetValue(CommandProperty, value);
         }
 
         public static readonly DependencyProperty ExecutedProperty =
@@ -44,14 +37,8 @@ namespace GateAccessControl
 
         public object Executed
         {
-            get
-            {
-                return (object)GetValue(ExecutedProperty);
-            }
-            set
-            {
-                SetValue(ExecutedProperty, value);
-            }
+            get => (object)GetValue(ExecutedProperty);
+            set => SetValue(ExecutedProperty, value);
         }
 
         public static readonly DependencyProperty CanExecuteProperty =
@@ -63,14 +50,8 @@ namespace GateAccessControl
 
         public object CanExecute
         {
-            get
-            {
-                return (object)GetValue(CanExecuteProperty);
-            }
-            set
-            {
-                SetValue(CanExecuteProperty, value);
-            }
+            get => (object)GetValue(CanExecuteProperty);
+            set => SetValue(CanExecuteProperty, value);
         }
 
         public static readonly DependencyProperty CommandTargetProperty =
@@ -82,14 +63,8 @@ namespace GateAccessControl
 
         public IInputElement CommandTarget
         {
-            get
-            {
-                return (IInputElement)GetValue(CommandTargetProperty);
-            }
-            set
-            {
-                SetValue(CommandTargetProperty, value);
-            }
+            get => (IInputElement)GetValue(CommandTargetProperty);
+            set => SetValue(CommandTargetProperty, value);
         }
 
         public static readonly DependencyProperty CommandParameterProperty =
@@ -101,17 +76,11 @@ namespace GateAccessControl
 
         public object CommandParameter
         {
-            get
-            {
-                return (object)GetValue(CommandParameterProperty);
-            }
-            set
-            {
-                SetValue(CommandParameterProperty, value);
-            }
+            get => (object)GetValue(CommandParameterProperty);
+            set => SetValue(CommandParameterProperty, value);
         }
 
-        #endregion
+        #endregion ICommand Interface Members
 
         // Command dependency property change callback.
         private static void CommandChanged(DependencyObject d,
@@ -120,6 +89,7 @@ namespace GateAccessControl
             CommandTextBox clb = (CommandTextBox)d;
             clb.HookUpCommand((ICommand)e.OldValue, (ICommand)e.NewValue);
         }
+
         // Add a new command to the Command Property.
         private void HookUpCommand(ICommand oldCommand, ICommand newCommand)
         {
@@ -136,7 +106,6 @@ namespace GateAccessControl
         {
             EventHandler handler = CanExecuteChanged;
             oldCommand.CanExecuteChanged -= handler;
-
         }
 
         // Add the command.
@@ -149,9 +118,9 @@ namespace GateAccessControl
                 newCommand.CanExecuteChanged += canExecuteChangedHandler;
             }
         }
+
         private void CanExecuteChanged(object sender, EventArgs e)
         {
-
             if (this.Command != null)
             {
                 RoutedCommand command = this.Command as RoutedCommand;

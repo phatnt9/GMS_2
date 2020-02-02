@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GateAccessControl
 {
@@ -316,12 +313,10 @@ namespace GateAccessControl
             DeviceItem = new DeviceItem();
             SyncProgressValue = 0;
         }
+
         public DeviceItem DeviceItem
         {
-            get
-            {
-                return _deviceItem;
-            }
+            get => _deviceItem;
             set
             {
                 _deviceItem = value;
@@ -341,58 +336,47 @@ namespace GateAccessControl
 
         public int DEVICE_ID
         {
-            get
-            {
-                return _deviceId;
-            }
+            get => _deviceId;
             set
             {
                 _deviceId = value;
                 OnPropertyChanged("DEVICE_ID");
             }
         }
+
         public String DEVICE_IP
         {
-            get
-            {
-                return _deviceIp;
-            }
+            get => _deviceIp;
             set
             {
                 _deviceIp = value;
                 OnPropertyChanged("DEVICE_IP");
             }
         }
+
         public String DEVICE_NAME
         {
-            get
-            {
-                return _deviceName;
-            }
+            get => _deviceName;
             set
             {
                 _deviceName = value;
                 OnPropertyChanged("DEVICE_NAME");
             }
         }
+
         public String DEVICE_STATUS
         {
-            get
-            {
-                return _deviceStatus;
-            }
+            get => _deviceStatus;
             set
             {
                 _deviceStatus = value;
                 OnPropertyChanged("DEVICE_STATUS");
             }
         }
+
         public String DEVICE_NOTE
         {
-            get
-            {
-                return _deviceNote;
-            }
+            get => _deviceNote;
             set
             {
                 _deviceNote = value;
@@ -405,10 +389,13 @@ namespace GateAccessControl
         protected void OnPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
+            {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
-        #endregion
+        #endregion INotifyPropertyChanged Members
     }
 }

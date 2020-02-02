@@ -261,7 +261,6 @@
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
                                         Text="{Binding AddProfile.LICENSE_PLATE, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-
                                 </StackPanel>
                             </Grid>
                         </Grid>

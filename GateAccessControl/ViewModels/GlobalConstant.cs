@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GateAccessControl
 {
@@ -14,12 +10,14 @@ namespace GateAccessControl
             Active = 0,
             Suspended = 1
         }
+
         public enum ClientStatus
         {
             Unknow = 0,
             Delete = 1,
             Deleted = 2
         }
+
         public enum ServerStatus
         {
             None = 0,
@@ -49,6 +47,7 @@ namespace GateAccessControl
         public static string messageTitileWarning = "Warning";
 
         private static readonly log4net.ILog logFile = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public static void CreateFolderToSaveData()
         {
             try
@@ -82,6 +81,7 @@ namespace GateAccessControl
                 logFile.Error(ex.Message);
             }
         }
+
         public enum Gender
         {
             Male = 0,

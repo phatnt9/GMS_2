@@ -7,7 +7,7 @@ using System.Windows.Data;
 
 namespace GateAccessControl.ViewModels
 {
-    class ProfileSelectedItemsConverter : IMultiValueConverter
+    internal class ProfileSelectedItemsConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {

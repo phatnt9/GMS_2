@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace GateAccessControl
@@ -15,7 +11,10 @@ namespace GateAccessControl
         public RelayCommand(Predicate<T> canExecute, Action<T> execute)
         {
             if (execute == null)
+            {
                 throw new ArgumentNullException("execute");
+            }
+
             _canExecute = canExecute;
             _execute = execute;
         }

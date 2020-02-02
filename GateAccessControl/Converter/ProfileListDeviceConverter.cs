@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Windows;
 using System.Windows.Data;
 
 namespace GateAccessControl.ViewModels
 {
-    class ProfileListDeviceConverter : IValueConverter
+    internal class ProfileListDeviceConverter : IValueConverter
     {
-        ObservableCollection<Device> _devices = new ObservableCollection<Device>();
+        private ObservableCollection<Device> _devices = new ObservableCollection<Device>();
         public ObservableCollection<Device> Devices => _devices;
+
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             Devices.Clear();
@@ -33,7 +33,7 @@ namespace GateAccessControl.ViewModels
                 {
                     foreach (Device item in devices)
                     {
-                        if(item.DEVICE_ID == id)
+                        if (item.DEVICE_ID == id)
                         {
                             Devices.Add(item);
                             break;

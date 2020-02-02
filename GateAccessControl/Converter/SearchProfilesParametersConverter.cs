@@ -7,7 +7,7 @@ using System.Windows.Data;
 
 namespace GateAccessControl.ViewModels
 {
-    class SearchProfilesParametersConverter : IMultiValueConverter
+    internal class SearchProfilesParametersConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
@@ -23,7 +23,6 @@ namespace GateAccessControl.ViewModels
             {
                 return new List<CardType>();
             }
-
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

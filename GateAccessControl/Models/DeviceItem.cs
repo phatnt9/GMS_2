@@ -11,11 +11,11 @@ using WebSocketSharp;
 
 namespace GateAccessControl
 {
-    public class DeviceItem :RosSocket
+    public class DeviceItem : RosSocket
     {
         private static readonly log4net.ILog logFile = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public System.Timers.Timer checkAlive;
-        
+
         public enum RosStatus
         {
             Pending = 0,
@@ -98,19 +98,16 @@ namespace GateAccessControl
         public FLAGSTATUSCLIENT OnFlagStatusClient;
 
         private string _statusProfile = STATUSPROFILE.Pending.ToString();
+
         public String StatusProfile
         {
-            get
-            {
-                return _statusProfile;
-            }
+            get => _statusProfile;
             set
             {
                 _statusProfile = value;
                 OnPropertyChanged("StatusProfile");
             }
         }
-
 
         public DeviceItem()
         {
@@ -120,6 +117,7 @@ namespace GateAccessControl
             checkAlive.Elapsed += CheckConnection;
             OnFlagStatusClient.OnConfirmProfileSuccess = CLIENTCMD.CLIENT_READY;
         }
+
         protected override void OnOpenedEvent()
         {
             try
@@ -160,6 +158,7 @@ namespace GateAccessControl
                 WebSocketStatus = RosStatus.Pending.ToString();
             }
         }
+
         public void createRosTerms()
         {
             int subscription_imagerequest = this.Subscribe("ReqImage", "std_msgs/String", ReqImgHandler);
@@ -168,11 +167,13 @@ namespace GateAccessControl
             publishdata = this.Advertise("ServerPublish", "std_msgs/String");
             int subscription = this.Subscribe("ClientPublish", "std_msgs/String", DataHandler);
         }
+
         protected override void OnClosedEvent(object sender, CloseEventArgs e)
         {
             //checkAlive.Stop();
             base.OnClosedEvent(sender, e);
         }
+
         private void DataHandler(Message message)
         {
             StandardString standard = (StandardString)message;
@@ -284,6 +285,7 @@ namespace GateAccessControl
                 logFile.Error(ex.Message);
             }
         }
+
         public void ReqImgHandler(Message message)
         {
             StandardString standard = (StandardString)message;
@@ -341,7 +343,6 @@ namespace GateAccessControl
         {
             return r.NextDouble() < truePercentage / 100.0;
         }
-
 
         public bool SendDeviceProfile(string ip, SERVERRESPONSE serverRes, List<DeviceProfile> DeviceProfileToSend, bool remainProfiles)
         {
@@ -406,7 +407,7 @@ namespace GateAccessControl
         {
             try
             {
-                if(!String.IsNullOrEmpty(WebSocketStatus) && WebSocketStatus.Equals(RosStatus.Connected.ToString()))
+                if (!String.IsNullOrEmpty(WebSocketStatus) && WebSocketStatus.Equals(RosStatus.Connected.ToString()))
                 {
                     StatusProfile = "Requesting check-in records";
                     dynamic product = new JObject();
@@ -452,6 +453,7 @@ namespace GateAccessControl
                 StatusProfile = "Ready";
             }
         }
+
         public Byte[] ImageToByte(Image img)
         {
             byte[] byteArray = new byte[0];
@@ -465,14 +467,11 @@ namespace GateAccessControl
             return byteArray;
         }
 
-
         private string _webSocketStatus;
+
         public String WebSocketStatus
         {
-            get
-            {
-                return _webSocketStatus;
-            }
+            get => _webSocketStatus;
             set
             {
                 _webSocketStatus = value;
@@ -481,12 +480,10 @@ namespace GateAccessControl
         }
 
         private bool _isSendingProfiles;
+
         public bool IsSendingProfiles
         {
-            get
-            {
-                return _isSendingProfiles;
-            }
+            get => _isSendingProfiles;
             set
             {
                 _isSendingProfiles = value;
@@ -495,6 +492,7 @@ namespace GateAccessControl
         }
     }
 }
+
 //case CLIENTCMD.REQUEST_PROFILE_ADD:
 //                    {
 //                        //sendProfile(ip, SERVERRESPONSE.RESP_PROFILE_ADD, new List<Profile>());

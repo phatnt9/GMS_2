@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GateAccessControl
 {
@@ -24,7 +21,7 @@ namespace GateAccessControl
         private string _phone;
         private string _profileStatus;
         private string _image;
-        
+
         private DateTime _dateToLock;
 
         private bool _checkDateToLock;
@@ -53,7 +50,7 @@ namespace GateAccessControl
                 {
                     int temp;
                     Int32.TryParse(var, out temp);
-                    if(temp != 0)
+                    if (temp != 0)
                     {
                         listDeviceId.Add(temp);
                     }
@@ -64,6 +61,7 @@ namespace GateAccessControl
                 }
             }
         }
+
         public void RemoveDeviceId(int removeDeviceId)
         {
             List<Device> listDevices = SqliteDataAccess.LoadDevices(0);
@@ -83,7 +81,7 @@ namespace GateAccessControl
                 LIST_DEVICE_ID = "";
                 foreach (int id in listDeviceId)
                 {
-                    if(id != removeDeviceId && CheckDeviceAlive(id, listDevices))
+                    if (id != removeDeviceId && CheckDeviceAlive(id, listDevices))
                     {
                         LIST_DEVICE_ID += id + ",";
                     }
@@ -93,9 +91,9 @@ namespace GateAccessControl
 
         private bool CheckDeviceAlive(int id, List<Device> devices)
         {
-            foreach(Device item in devices)
+            foreach (Device item in devices)
             {
-                if(item.DEVICE_ID == id)
+                if (item.DEVICE_ID == id)
                 {
                     return true;
                 }
@@ -105,238 +103,197 @@ namespace GateAccessControl
 
         public int PROFILE_ID
         {
-            get
-            {
-                return _profileId;
-            }
+            get => _profileId;
             set
             {
                 _profileId = value;
                 OnPropertyChanged("PROFILE_ID");
             }
         }
+
         public String PIN_NO
         {
-            get
-            {
-                return _pinno;
-            }
+            get => _pinno;
             set
             {
                 _pinno = value;
                 OnPropertyChanged("PIN_NO");
             }
         }
+
         public String AD_NO
         {
-            get
-            {
-                return _adno;
-            }
+            get => _adno;
             set
             {
                 _adno = value;
                 OnPropertyChanged("AD_NO");
             }
         }
+
         public String PROFILE_NAME
         {
-            get
-            {
-                return _profileName;
-            }
+            get => _profileName;
             set
             {
                 _profileName = value;
                 OnPropertyChanged("PROFILE_NAME");
             }
         }
+
         public String CLASS_NAME
         {
-            get
-            {
-                return _className;
-            }
+            get => _className;
             set
             {
                 _className = value;
                 OnPropertyChanged("CLASS_NAME");
             }
         }
+
         public String SUB_CLASS
         {
-            get
-            {
-                return _subClass;
-            }
+            get => _subClass;
             set
             {
                 _subClass = value;
                 OnPropertyChanged("SUB_CLASS");
             }
         }
+
         public String GENDER
         {
-            get
-            {
-                return _gender;
-            }
+            get => _gender;
             set
             {
                 _gender = value;
                 OnPropertyChanged("GENDER");
             }
         }
+
         public DateTime DOB
         {
-            get
-            {
-                return _dob;
-            }
+            get => _dob;
             set
             {
                 _dob = value;
                 OnPropertyChanged("DOB");
             }
         }
+
         public DateTime DISU
         {
-            get
-            {
-                return _disu;
-            }
+            get => _disu;
             set
             {
                 _disu = value;
                 OnPropertyChanged("DISU");
             }
         }
+
         public String EMAIL
         {
-            get
-            {
-                return _email;
-            }
+            get => _email;
             set
             {
                 _email = value;
                 OnPropertyChanged("EMAIL");
             }
         }
+
         public String ADDRESS
         {
-            get
-            {
-                return _address;
-            }
+            get => _address;
             set
             {
                 _address = value;
                 OnPropertyChanged("ADDRESS");
             }
         }
+
         public String PHONE
         {
-            get
-            {
-                return _phone;
-            }
+            get => _phone;
             set
             {
                 _phone = value;
                 OnPropertyChanged("PHONE");
             }
         }
+
         public String PROFILE_STATUS
         {
-            get
-            {
-                return _profileStatus;
-            }
+            get => _profileStatus;
             set
             {
                 _profileStatus = value;
                 OnPropertyChanged("PROFILE_STATUS");
             }
         }
+
         public String IMAGE
         {
-            get
-            {
-                return _image;
-            }
+            get => _image;
             set
             {
                 _image = value;
                 OnPropertyChanged("IMAGE");
             }
         }
+
         public DateTime DATE_TO_LOCK
         {
-            get
-            {
-                return _dateToLock;
-            }
+            get => _dateToLock;
             set
             {
                 _dateToLock = value;
                 OnPropertyChanged("DATE_TO_LOCK");
             }
         }
+
         public bool CHECK_DATE_TO_LOCK
         {
-            get
-            {
-                return _checkDateToLock;
-            }
+            get => _checkDateToLock;
             set
             {
                 _checkDateToLock = value;
                 OnPropertyChanged("CHECK_DATE_TO_LOCK");
             }
         }
+
         public String LICENSE_PLATE
         {
-            get
-            {
-                return _licensePlate;
-            }
+            get => _licensePlate;
             set
             {
                 _licensePlate = value;
                 OnPropertyChanged("LICENSE_PLATE");
             }
         }
+
         public DateTime DATE_CREATED
         {
-            get
-            {
-                return _dateCreated;
-            }
+            get => _dateCreated;
             set
             {
                 _dateCreated = value;
                 OnPropertyChanged("DATE_CREATED");
             }
         }
+
         public DateTime DATE_MODIFIED
         {
-            get
-            {
-                return _dateModified;
-            }
+            get => _dateModified;
             set
             {
                 _dateModified = value;
                 OnPropertyChanged("DATE_MODIFIED");
             }
         }
+
         public String LIST_DEVICE_ID
         {
-            get
-            {
-                return _listDeviceId;
-            }
+            get => _listDeviceId;
             set
             {
                 _listDeviceId = value;
@@ -344,17 +301,18 @@ namespace GateAccessControl
             }
         }
 
-
         #region INotifyPropertyChanged Members
 
         protected void OnPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
+            {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
-        #endregion
-
+        #endregion INotifyPropertyChanged Members
     }
 }

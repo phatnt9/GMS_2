@@ -1,25 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 
 namespace GateAccessControl
 {
-    class AddProfileViewModel : ViewModelBase
+    internal class AddProfileViewModel : ViewModelBase
     {
         private static readonly log4net.ILog logFile = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private bool? _dialogResult;
+
         public bool? DialogResult
         {
-            get
-            {
-                return _dialogResult;
-            }
+            get => _dialogResult;
             set
             {
                 _dialogResult = value;
@@ -27,14 +22,11 @@ namespace GateAccessControl
             }
         }
 
-
         private Profile _addProfile;
+
         public Profile AddProfile
         {
-            get
-            {
-                return _addProfile;
-            }
+            get => _addProfile;
             set
             {
                 _addProfile = value;
@@ -43,6 +35,7 @@ namespace GateAccessControl
         }
 
         private ObservableCollection<CardType> _classes = new ObservableCollection<CardType>();
+
         public ObservableCollection<CardType> Classes
         {
             get => _classes;
@@ -124,8 +117,6 @@ namespace GateAccessControl
                 File.Copy(importFilePath,
                     Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK\Image\" + p.IMAGE, true);
                 p.IMAGE = p.IMAGE;
-
-
             }
         }
 
@@ -150,6 +141,7 @@ namespace GateAccessControl
         {
             DialogResult = true;
         }
+
         public void ReloadDataCardTypes()
         {
             try

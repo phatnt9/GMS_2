@@ -954,7 +954,6 @@
                                     </DockPanel>
                                 </Grid>
                                 <Grid Grid.Row="1" />
-
                             </Grid>
                         </Grid>
                     </Grid>
@@ -1559,7 +1558,7 @@
                                             x:Name="btn_timecheck_export"
                                             Margin="3"
                                             Padding="5,0"
-                                            Content="Export"/>-->
+                                            Content="Export" />-->
                                     </StackPanel>
                                 </Grid>
                                 <Grid Grid.Row="1" Background="#f1f1f1">
@@ -1595,8 +1594,6 @@
                     </Grid>
                 </TabItem>
             </TabControl>
-
         </Grid>
-
     </Grid>
 </Page>
