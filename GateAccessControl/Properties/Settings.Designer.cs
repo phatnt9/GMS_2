@@ -37,7 +37,7 @@ namespace GateAccessControl.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("192.168.1.0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("192.168.1.3")]
         public string WebServerAddress {
             get {
                 return ((string)(this["WebServerAddress"]));

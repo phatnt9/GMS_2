@@ -216,10 +216,10 @@ namespace GateAccessControl
                 using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
                 {
                     var p = new DynamicParameters();
-                    p.Add("@DEVICE_IP", device.DEVICE_IP);
-                    p.Add("@DEVICE_NAME", device.DEVICE_NAME);
-                    p.Add("@DEVICE_STATUS", device.DEVICE_STATUS);
-                    p.Add("@DEVICE_NOTE", device.DEVICE_NOTE);
+                    p.Add("@DEVICE_IP", device.deviceIp);
+                    p.Add("@DEVICE_NAME", device.deviceName);
+                    p.Add("@DEVICE_STATUS", device.deviceStatus);
+                    p.Add("@DEVICE_NOTE", device.deviceNote);
                     cnn.Execute("INSERT INTO DT_DEVICE " +
                         "(DEVICE_IP,DEVICE_NAME,DEVICE_STATUS,DEVICE_NOTE) " +
                         "VALUES " +
@@ -470,7 +470,7 @@ namespace GateAccessControl
                 }
                 using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
                 {
-                    cnn.Execute("DROP TABLE IF EXISTS DT_DEVICE_PROFILES_" + device.DEVICE_ID, device);
+                    cnn.Execute("DROP TABLE IF EXISTS DT_DEVICE_PROFILES_" + device.deviceId, device);
                 }
                 return true;
             }
@@ -649,51 +649,6 @@ namespace GateAccessControl
             }
         }
 
-        public static bool InsertDataDeviceProfiles_DUY(string _tableName, DeviceProfile _profile)
-        {
-            try
-            {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    string txtQuery = "INSERT INTO " + _tableName + "(  PIN_NO, NAME, CLASS, GENDER, DOB, EMAIL, ADDRESS, PHONE, ADNO, " +
-                    "IMAGE, DISU, DATE_TO_LOCK, CHECK_DATE_TO_LOCK,  LICENSE_PLATE, STATUS, SYNC_STATUS, " +
-                    "ACTIVE_TIME,  DATE_CREATED, DATE_MODIFIED) VALUES ("
-                    // + _profile.ID + ","
-                    + "'" + _profile.PIN_NO + "'" + ","
-                    + "'" + _profile.PROFILE_NAME + "'" + ","
-                    + "'" + _profile.CLASS_NAME + "'" + ","
-                    + "'" + _profile.GENDER + "'" + ","
-                    + "'" + _profile.DOB + "'" + ","
-                    + "'" + _profile.EMAIL + "'" + ","
-                    + "'" + _profile.ADDRESS + "'" + ","
-                    + "'" + _profile.PHONE + "'" + ","
-                    + "'" + _profile.AD_NO + "'" + ","
-
-                    + "'" + _profile.IMAGE + "'" + ","
-                    + "'" + _profile.DISU + "'" + ","
-
-                    + "'" + _profile.DATE_TO_LOCK + "'" + ","
-                    + "'" + _profile.CHECK_DATE_TO_LOCK + "'" + ","
-                    + "'" + _profile.LICENSE_PLATE + "'" + ","
-                    + "'" + _profile.PROFILE_STATUS + "'" + ","
-                    + "'" + _profile.SERVER_STATUS + "'" + ","
-                    + "'" + _profile.CLIENT_STATUS + "'" + ","
-                    + "'" + _profile.ACTIVE_TIME + "'" + ","
-                    + "'" + _profile.DATE_CREATED + "'" + ","
-                    + "'" + _profile.DATE_MODIFIED + "'" +
-                    ")";
-
-                    cnn.Execute(txtQuery);
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return false;
-            }
-        }
-
         public static async Task<List<CardType>> LoadCardTypesAsync()
         {
             try
@@ -784,7 +739,7 @@ namespace GateAccessControl
             {
                 string serverIp = Properties.Settings.Default.WebServerAddress;
                 string serverPort = Properties.Settings.Default.WebServerPort;
-                string url = $@"{serverIp}:{serverPort}/serverschool/load/deviceInf/?deviceId=" + deviceId;
+                string url = $@"http://{serverIp}:{serverPort}/serverschool/load/deviceInf/?deviceId=" + deviceId;
 
                 Task<string> responseTask = client.GetStringAsync(url);
                 var responseString = await responseTask;
@@ -999,6 +954,142 @@ namespace GateAccessControl
             {
                 logFile.Error(ex.Message);
                 return false;
+            }
+        }
+
+        public static async Task<List<Profile>> LoadProfilesAsync(string type, string group, string pinno)
+        {
+            try
+            {
+                string serverIp = Properties.Settings.Default.WebServerAddress;
+                string serverPort = Properties.Settings.Default.WebServerPort;
+                string url = $@"{serverIp}:{serverPort}/serverschool/load/profile/?type={type}& group={group}& pinno={pinno}";
+
+                Task<string> responseTask = client.GetStringAsync(url);
+                var responseString = await responseTask;
+                List<Profile> listObjects = JsonConvert.DeserializeObject<List<Profile>>(responseString);
+                return listObjects;
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return new List<Profile>();
+            }
+        }
+
+        public static async Task<bool> InsertProfileAsync(Profile profile)
+        {
+            try
+            {
+                string serverIp = Properties.Settings.Default.WebServerAddress;
+                string serverPort = Properties.Settings.Default.WebServerPort;
+                string url = $@"{serverIp}:{serverPort}/serverschool/insert/profile";
+
+                var values = new Dictionary<string, string>
+                {
+                { "item1", JsonConvert.SerializeObject(profile) }
+                };
+                var content = new FormUrlEncodedContent(values);
+                var response = await client.PostAsync(url, content);
+                var responseString = await response.Content.ReadAsStringAsync();
+                bool result = false;
+                if (bool.TryParse(responseString, out result))
+                {
+                    return result;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return false;
+            }
+        }
+
+        public static async Task<bool> DeleteProfileAsync(Profile profile)
+        {
+            try
+            {
+                string serverIp = Properties.Settings.Default.WebServerAddress;
+                string serverPort = Properties.Settings.Default.WebServerPort;
+                string url = $@"{serverIp}:{serverPort}/serverschool/delete/profile/?&pinno={profile.PROFILE_ID}";
+
+                Task<string> responseTask = client.GetStringAsync(url);
+                var responseString = await responseTask;
+                bool result = false;
+                if (bool.TryParse(responseString, out result))
+                {
+                    return result;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return false;
+            }
+        }
+
+        public static async Task<bool> UpdateProfileAsync(Profile profile)
+        {
+            try
+            {
+                string serverIp = Properties.Settings.Default.WebServerAddress;
+                string serverPort = Properties.Settings.Default.WebServerPort;
+                string url = $@"{serverIp}:{serverPort}/serverschool/update/profile";
+
+                var values = new Dictionary<string, string>
+                {
+                { "item1", JsonConvert.SerializeObject(profile) }
+                };
+                var content = new FormUrlEncodedContent(values);
+                var response = await client.PostAsync(url, content);
+                var responseString = await response.Content.ReadAsStringAsync();
+                bool result = false;
+                if (bool.TryParse(responseString, out result))
+                {
+                    return result;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return false;
+            }
+        }
+
+        public static async Task<List<TimeRecord>> LoadTimeChecksAsync(string PIN_NO, DateTime time, string ip = null)
+        {
+            try
+            {
+                string serverIp = Properties.Settings.Default.WebServerAddress;
+                string serverPort = Properties.Settings.Default.WebServerPort;
+                string url = $@"{serverIp}:{serverPort}/serverschool/load/timeRecord";
+
+                var values = new Dictionary<string, string>
+                {
+                { "item1", JsonConvert.SerializeObject(PIN_NO) }
+                };
+                var content = new FormUrlEncodedContent(values);
+                var response = await client.PostAsync(url, content);
+                var responseString = await response.Content.ReadAsStringAsync();
+                List<TimeRecord> listObjects = JsonConvert.DeserializeObject<List<TimeRecord>>(responseString);
+                return listObjects;
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return new List<TimeRecord>();
             }
         }
     }

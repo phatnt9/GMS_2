@@ -11,9 +11,9 @@ namespace GateAccessControl.ViewModels
             try
             {
                 Device returnDevice = new Device();
-                returnDevice.DEVICE_NAME = values[0].ToString();
-                returnDevice.DEVICE_IP = values[1].ToString();
-                returnDevice.DEVICE_NOTE = values[2].ToString();
+                returnDevice.deviceName = values[0].ToString();
+                returnDevice.deviceIp = values[1].ToString();
+                returnDevice.deviceNote = values[2].ToString();
                 return returnDevice;
             }
             catch

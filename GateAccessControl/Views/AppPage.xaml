@@ -299,19 +299,19 @@
                                         <DataGrid.Columns>
                                             <DataGridTextColumn
                                                 Width="Auto"
-                                                Binding="{Binding Path=DEVICE_ID, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Binding="{Binding Path=deviceId, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                 Header="ID"
                                                 IsReadOnly="True"
                                                 Visibility="Visible" />
                                             <DataGridTextColumn
                                                 Width="*"
-                                                Binding="{Binding Path=DEVICE_NAME, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Binding="{Binding Path=deviceName, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                 Header="NAME"
                                                 IsReadOnly="True"
                                                 Visibility="Visible" />
                                             <DataGridTextColumn
                                                 Width="*"
-                                                Binding="{Binding Path=DEVICE_IP, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Binding="{Binding Path=deviceIp, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                 Header="IP"
                                                 IsReadOnly="True"
                                                 Visibility="Visible" />

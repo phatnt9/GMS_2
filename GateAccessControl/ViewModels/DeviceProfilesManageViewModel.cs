@@ -370,7 +370,7 @@ namespace GateAccessControl
                     deviceProfiles[i].PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
                     deviceProfiles[i].SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
 
-                    if (SqliteDataAccess.UpdateDeviceProfile(Device.DEVICE_ID, deviceProfiles[i]))
+                    if (SqliteDataAccess.UpdateDeviceProfile(Device.deviceId, deviceProfiles[i]))
                     {
                         //continue;
                     }
@@ -387,7 +387,7 @@ namespace GateAccessControl
                     deviceProfiles[i].PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
                     deviceProfiles[i].SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
 
-                    if (SqliteDataAccess.UpdateDeviceProfile(Device.DEVICE_ID, deviceProfiles[i]))
+                    if (SqliteDataAccess.UpdateDeviceProfile(Device.deviceId, deviceProfiles[i]))
                     {
                         //continue;
                     }
@@ -454,7 +454,7 @@ namespace GateAccessControl
                     deviceProfiles[i].PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
                     deviceProfiles[i].SERVER_STATUS = GlobalConstant.ServerStatus.Remove.ToString();
 
-                    if (SqliteDataAccess.UpdateDeviceProfile(Device.DEVICE_ID, deviceProfiles[i]))
+                    if (SqliteDataAccess.UpdateDeviceProfile(Device.deviceId, deviceProfiles[i]))
                     {
                         //continue;
                     }
@@ -471,7 +471,7 @@ namespace GateAccessControl
                     deviceProfiles[i].PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
                     deviceProfiles[i].SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
 
-                    if (SqliteDataAccess.UpdateDeviceProfile(Device.DEVICE_ID, deviceProfiles[i]))
+                    if (SqliteDataAccess.UpdateDeviceProfile(Device.deviceId, deviceProfiles[i]))
                     {
                         //continue;
                     }
@@ -532,12 +532,12 @@ namespace GateAccessControl
             List<DeviceProfile> deviceProfiles = e.Argument as List<DeviceProfile>;
             for (int i = 0; i < deviceProfiles.Count; i++)
             {
-                if (SqliteDataAccess.DeleteDeviceProfile(Device.DEVICE_ID, deviceProfiles[i]))
+                if (SqliteDataAccess.DeleteDeviceProfile(Device.deviceId, deviceProfiles[i]))
                 {
                     List<Profile> listProfiles = Profiles.Where(x => x.PIN_NO.Equals(deviceProfiles[i].PIN_NO)).Cast<Profile>().ToList();
                     foreach (Profile pf in listProfiles)
                     {
-                        pf.RemoveDeviceId(Device.DEVICE_ID);
+                        pf.RemoveDeviceId(Device.deviceId);
                         SqliteDataAccess.UpdateProfile(pf);
                     }
                 }
@@ -593,9 +593,9 @@ namespace GateAccessControl
 
             for (int i = 0; i < profiles.Count; i++)
             {
-                if (SqliteDataAccess.InsertDeviceProfile(Device.DEVICE_ID, new DeviceProfile(profiles[i])))
+                if (SqliteDataAccess.InsertDeviceProfile(Device.deviceId, new DeviceProfile(profiles[i])))
                 {
-                    profiles[i].AddDeviceId(Device.DEVICE_ID);
+                    profiles[i].AddDeviceId(Device.deviceId);
                     SqliteDataAccess.UpdateProfile(profiles[i]);
                 }
                 (sender as BackgroundWorker).ReportProgress((i * 100) / profiles.Count);
@@ -658,7 +658,7 @@ namespace GateAccessControl
             string group = Search_deviceProfiles_group == "All" ? "" : Search_deviceProfiles_group;
             try
             {
-                DeviceProfiles = new ObservableCollection<DeviceProfile>(SqliteDataAccess.LoadDeviceProfiles(d.DEVICE_ID, type, group, ""));
+                DeviceProfiles = new ObservableCollection<DeviceProfile>(SqliteDataAccess.LoadDeviceProfiles(d.deviceId, type, group, ""));
                 return true;
             }
             catch (Exception ex)

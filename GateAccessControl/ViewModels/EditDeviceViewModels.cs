@@ -53,7 +53,7 @@ namespace GateAccessControl
             EditDeviceCommand = new RelayCommand<Device>(
               (p) =>
               {
-                  if (ValidateIPv4(EditDevice.DEVICE_IP) && !String.IsNullOrEmpty(EditDevice.DEVICE_NAME))
+                  if (ValidateIPv4(EditDevice.deviceIp) && !String.IsNullOrEmpty(EditDevice.deviceName))
                   {
                       return true;
                   }
@@ -87,12 +87,12 @@ namespace GateAccessControl
             else
             {
                 EditDeviceStatus = "Unsucceed";
-                List<Device> reloadDevice = SqliteDataAccess.LoadDevices(EditDevice.DEVICE_ID);
+                List<Device> reloadDevice = SqliteDataAccess.LoadDevices(EditDevice.deviceId);
                 foreach (Device d in reloadDevice)
                 {
-                    EditDevice.DEVICE_NAME = d.DEVICE_NAME;
-                    EditDevice.DEVICE_IP = d.DEVICE_IP;
-                    EditDevice.DEVICE_NOTE = d.DEVICE_NOTE;
+                    EditDevice.deviceName = d.deviceName;
+                    EditDevice.deviceIp = d.deviceIp;
+                    EditDevice.deviceNote = d.deviceNote;
                 }
             }
         }

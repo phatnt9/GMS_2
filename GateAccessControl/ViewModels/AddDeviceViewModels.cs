@@ -58,7 +58,7 @@ namespace GateAccessControl
             AddDeviceCommand = new RelayCommand<Device>(
                 (p) =>
                 {
-                    if (ValidateIPv4(AddDevice.DEVICE_IP) && !String.IsNullOrEmpty(AddDevice.DEVICE_NAME))
+                    if (ValidateIPv4(AddDevice.deviceIp) && !String.IsNullOrEmpty(AddDevice.deviceName))
                     {
                         return true;
                     }
@@ -69,7 +69,7 @@ namespace GateAccessControl
                 },
                 (p) =>
                 {
-                    AddDevice.DEVICE_STATUS = DeviceStatus.Pending.ToString();
+                    AddDevice.deviceStatus = DeviceStatus.Pending.ToString();
                     if (SqliteDataAccess.InsertDevice(AddDevice))
                     {
                         AddDeviceStatus = "Succeed";

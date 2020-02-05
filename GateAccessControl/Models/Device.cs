@@ -79,7 +79,7 @@ namespace GateAccessControl
 
                     List<DeviceProfile> sendList = new List<DeviceProfile>();
                     sendList.Add(deviceProfileToSend);
-                    if (DeviceItem.SendDeviceProfile(DEVICE_IP, serRes, sendList, remainProfiles))
+                    if (DeviceItem.SendDeviceProfile(deviceIp, serRes, sendList, remainProfiles))
                     {
                         if (deviceProfileToSend.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
                         {
@@ -92,7 +92,7 @@ namespace GateAccessControl
                             deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
                             deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
                         }
-                        SqliteDataAccess.UpdateDeviceProfile(DEVICE_ID, deviceProfileToSend);
+                        SqliteDataAccess.UpdateDeviceProfile(deviceId, deviceProfileToSend);
                     }
                     else
                     {
@@ -119,7 +119,7 @@ namespace GateAccessControl
 
                     List<DeviceProfile> sendList = new List<DeviceProfile>();
                     sendList.Add(deviceProfileToSend);
-                    if (DeviceItem.SendDeviceProfile(DEVICE_IP, serRes, sendList, remainProfiles))
+                    if (DeviceItem.SendDeviceProfile(deviceIp, serRes, sendList, remainProfiles))
                     {
                         if (deviceProfileToSend.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
                         {
@@ -132,7 +132,7 @@ namespace GateAccessControl
                             deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
                             deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
                         }
-                        SqliteDataAccess.UpdateDeviceProfile(DEVICE_ID, deviceProfileToSend);
+                        SqliteDataAccess.UpdateDeviceProfile(deviceId, deviceProfileToSend);
                     }
                     else
                     {
@@ -159,7 +159,7 @@ namespace GateAccessControl
 
                     List<DeviceProfile> sendList = new List<DeviceProfile>();
                     sendList.Add(deviceProfileToSend);
-                    if (DeviceItem.SendDeviceProfile(DEVICE_IP, serRes, sendList, remainProfiles))
+                    if (DeviceItem.SendDeviceProfile(deviceIp, serRes, sendList, remainProfiles))
                     {
                         if (deviceProfileToSend.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
                         {
@@ -172,7 +172,7 @@ namespace GateAccessControl
                             deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
                             deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
                         }
-                        SqliteDataAccess.UpdateDeviceProfile(DEVICE_ID, deviceProfileToSend);
+                        SqliteDataAccess.UpdateDeviceProfile(deviceId, deviceProfileToSend);
                     }
                     else
                     {
@@ -199,7 +199,7 @@ namespace GateAccessControl
 
                     List<DeviceProfile> sendList = new List<DeviceProfile>();
                     sendList.Add(deviceProfileToSend);
-                    if (DeviceItem.SendDeviceProfile(DEVICE_IP, serRes, sendList, remainProfiles))
+                    if (DeviceItem.SendDeviceProfile(deviceIp, serRes, sendList, remainProfiles))
                     {
                         if (deviceProfileToSend.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
                         {
@@ -212,7 +212,7 @@ namespace GateAccessControl
                             deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
                             deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
                         }
-                        SqliteDataAccess.UpdateDeviceProfile(DEVICE_ID, deviceProfileToSend);
+                        SqliteDataAccess.UpdateDeviceProfile(deviceId, deviceProfileToSend);
                     }
                     else
                     {
@@ -239,7 +239,7 @@ namespace GateAccessControl
 
                     List<DeviceProfile> sendList = new List<DeviceProfile>();
                     sendList.Add(deviceProfileToSend);
-                    if (DeviceItem.SendDeviceProfile(DEVICE_IP, serRes, sendList, remainProfiles))
+                    if (DeviceItem.SendDeviceProfile(deviceIp, serRes, sendList, remainProfiles))
                     {
                         if (deviceProfileToSend.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
                         {
@@ -252,7 +252,7 @@ namespace GateAccessControl
                             deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
                             deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
                         }
-                        SqliteDataAccess.UpdateDeviceProfile(DEVICE_ID, deviceProfileToSend);
+                        SqliteDataAccess.UpdateDeviceProfile(deviceId, deviceProfileToSend);
                     }
                     else
                     {
@@ -279,7 +279,7 @@ namespace GateAccessControl
 
                     List<DeviceProfile> sendList = new List<DeviceProfile>();
                     sendList.Add(deviceProfileToSend);
-                    if (DeviceItem.SendDeviceProfile(DEVICE_IP, serRes, sendList, remainProfiles))
+                    if (DeviceItem.SendDeviceProfile(deviceIp, serRes, sendList, remainProfiles))
                     {
                         if (deviceProfileToSend.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
                         {
@@ -292,7 +292,7 @@ namespace GateAccessControl
                             deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
                             deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
                         }
-                        SqliteDataAccess.UpdateDeviceProfile(DEVICE_ID, deviceProfileToSend);
+                        SqliteDataAccess.UpdateDeviceProfile(deviceId, deviceProfileToSend);
                     }
                     else
                     {
@@ -334,53 +334,53 @@ namespace GateAccessControl
             }
         }
 
-        public int DEVICE_ID
+        public int deviceId
         {
             get => _deviceId;
             set
             {
                 _deviceId = value;
-                OnPropertyChanged("DEVICE_ID");
+                OnPropertyChanged("deviceId");
             }
         }
 
-        public String DEVICE_IP
+        public String deviceIp
         {
             get => _deviceIp;
             set
             {
                 _deviceIp = value;
-                OnPropertyChanged("DEVICE_IP");
+                OnPropertyChanged("deviceIp");
             }
         }
 
-        public String DEVICE_NAME
+        public String deviceName
         {
             get => _deviceName;
             set
             {
                 _deviceName = value;
-                OnPropertyChanged("DEVICE_NAME");
+                OnPropertyChanged("deviceName");
             }
         }
 
-        public String DEVICE_STATUS
+        public String deviceStatus
         {
             get => _deviceStatus;
             set
             {
                 _deviceStatus = value;
-                OnPropertyChanged("DEVICE_STATUS");
+                OnPropertyChanged("deviceStatus");
             }
         }
 
-        public String DEVICE_NOTE
+        public String deviceNote
         {
             get => _deviceNote;
             set
             {
                 _deviceNote = value;
-                OnPropertyChanged("DEVICE_NOTE");
+                OnPropertyChanged("deviceNote");
             }
         }
 

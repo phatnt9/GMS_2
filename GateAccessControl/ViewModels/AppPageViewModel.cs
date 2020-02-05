@@ -381,7 +381,7 @@ namespace GateAccessControl
                 {
                     if (SelectedDevice != null)
                     {
-                        SqliteDataAccess.CreateDeviceProfilesTable("DT_DEVICE_PROFILES_" + SelectedDevice.DEVICE_ID);
+                        SqliteDataAccess.CreateDeviceProfilesTable("DT_DEVICE_PROFILES_" + SelectedDevice.deviceId);
                         ReloadDeviceProfiles(SelectedDevice);
                     }
                 });
@@ -886,7 +886,7 @@ namespace GateAccessControl
                     {
                         item.SERVER_STATUS = GlobalConstant.ServerStatus.Update.ToString();
                     }
-                    if (SqliteDataAccess.UpdateDeviceProfile(SelectedDevice.DEVICE_ID, item))
+                    if (SqliteDataAccess.UpdateDeviceProfile(SelectedDevice.deviceId, item))
                     {
                         ApplyActiveTimeStatus = "Success!";
                     }
@@ -1297,7 +1297,7 @@ namespace GateAccessControl
             {
                 p.DeviceItem.WebSocketStatus = RosStatus.Pending.ToString();
                 p.DeviceItem.checkAlive.Start();
-                p.DeviceItem.Start("ws://" + p.DEVICE_IP + ":9090");
+                p.DeviceItem.Start("ws://" + p.deviceIp + ":9090");
             }
         }
 
@@ -1365,11 +1365,12 @@ namespace GateAccessControl
         /// </summary>
         /// <param name="removedDevice"></param>
         /// <returns></returns>
-        public bool ReloadDevices(Device removedDevice = null)
+        public async Task<bool> ReloadDevices(Device removedDevice = null)
         {
             try
             {
-                List<Device> deviceList = SqliteDataAccess.LoadDevices(0);
+                List<Device> deviceList = await SqliteDataAccess.LoadDevicesAsync(0);
+                //List<Device> deviceList = SqliteDataAccess.LoadDevices(0);
                 foreach (Device item in deviceList)
                 {
                     Device device = CheckExistDevice(Devices, item);
@@ -1381,9 +1382,9 @@ namespace GateAccessControl
                     else
                     {
                         //Update Device
-                        device.DEVICE_IP = item.DEVICE_IP;
-                        device.DEVICE_NAME = item.DEVICE_NAME;
-                        device.DEVICE_NOTE = item.DEVICE_NOTE;
+                        device.deviceIp = item.deviceIp;
+                        device.deviceName = item.deviceName;
+                        device.deviceNote = item.deviceNote;
                     }
                 }
                 //Remove Device
@@ -1404,7 +1405,7 @@ namespace GateAccessControl
         {
             foreach (Device item in list)
             {
-                if ((item.DEVICE_ID == devices.DEVICE_ID))
+                if ((item.deviceId == devices.deviceId))
                 {
                     return item;
                 }
@@ -1525,7 +1526,7 @@ namespace GateAccessControl
             string group = Search_deviceProfiles_group == "All" ? "" : Search_deviceProfiles_group;
             try
             {
-                DeviceProfiles = new ObservableCollection<DeviceProfile>(SqliteDataAccess.LoadDeviceProfiles(d.DEVICE_ID, type, group, ""));
+                DeviceProfiles = new ObservableCollection<DeviceProfile>(SqliteDataAccess.LoadDeviceProfiles(d.deviceId, type, group, ""));
                 return true;
             }
             catch (Exception ex)

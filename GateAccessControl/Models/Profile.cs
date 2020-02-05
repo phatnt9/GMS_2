@@ -93,7 +93,7 @@ namespace GateAccessControl
         {
             foreach (Device item in devices)
             {
-                if (item.DEVICE_ID == id)
+                if (item.deviceId == id)
                 {
                     return true;
                 }

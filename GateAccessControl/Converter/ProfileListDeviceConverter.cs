@@ -33,7 +33,7 @@ namespace GateAccessControl.ViewModels
                 {
                     foreach (Device item in devices)
                     {
-                        if (item.DEVICE_ID == id)
+                        if (item.deviceId == id)
                         {
                             Devices.Add(item);
                             break;
