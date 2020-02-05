@@ -739,7 +739,7 @@ namespace GateAccessControl
             {
                 string serverIp = Properties.Settings.Default.WebServerAddress;
                 string serverPort = Properties.Settings.Default.WebServerPort;
-                string url = $@"http://{serverIp}:{serverPort}/serverschool/load/deviceInf/?deviceId=" + deviceId;
+                string url = $@"http://{serverIp}:{serverPort}/serverschool/load/deviceInf/?deviceId={deviceId}";
 
                 Task<string> responseTask = client.GetStringAsync(url);
                 var responseString = await responseTask;
@@ -1015,7 +1015,7 @@ namespace GateAccessControl
             {
                 string serverIp = Properties.Settings.Default.WebServerAddress;
                 string serverPort = Properties.Settings.Default.WebServerPort;
-                string url = $@"{serverIp}:{serverPort}/serverschool/delete/profile/?&pinno={profile.PROFILE_ID}";
+                string url = $@"{serverIp}:{serverPort}/serverschool/delete/profile/?&pinno={profile.profileId}";
 
                 Task<string> responseTask = client.GetStringAsync(url);
                 var responseString = await responseTask;

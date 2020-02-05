@@ -101,23 +101,23 @@ namespace GateAccessControl
             return false;
         }
 
-        public int PROFILE_ID
+        public int profileId
         {
             get => _profileId;
             set
             {
                 _profileId = value;
-                OnPropertyChanged("PROFILE_ID");
+                OnPropertyChanged("profileId");
             }
         }
 
-        public String PIN_NO
+        public String pinno
         {
             get => _pinno;
             set
             {
                 _pinno = value;
-                OnPropertyChanged("PIN_NO");
+                OnPropertyChanged("pinno");
             }
         }
 

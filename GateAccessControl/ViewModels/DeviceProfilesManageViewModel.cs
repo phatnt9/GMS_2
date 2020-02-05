@@ -534,7 +534,7 @@ namespace GateAccessControl
             {
                 if (SqliteDataAccess.DeleteDeviceProfile(Device.deviceId, deviceProfiles[i]))
                 {
-                    List<Profile> listProfiles = Profiles.Where(x => x.PIN_NO.Equals(deviceProfiles[i].PIN_NO)).Cast<Profile>().ToList();
+                    List<Profile> listProfiles = Profiles.Where(x => x.pinno.Equals(deviceProfiles[i].PIN_NO)).Cast<Profile>().ToList();
                     foreach (Profile pf in listProfiles)
                     {
                         pf.RemoveDeviceId(Device.deviceId);
@@ -678,7 +678,7 @@ namespace GateAccessControl
                 (((Profile)obj).EMAIL.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
                 (((Profile)obj).PROFILE_NAME.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
                 (((Profile)obj).PHONE.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
-                (((Profile)obj).PIN_NO.ToLower().Contains(Search_profiles_others.ToString().ToLower()))
+                (((Profile)obj).pinno.ToLower().Contains(Search_profiles_others.ToString().ToLower()))
             );
             }
         }

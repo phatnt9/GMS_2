@@ -163,7 +163,7 @@ namespace GateAccessControl.Views
                         if (xlRange.Cells[i, 8] != null && xlRange.Cells[i, 8].Value2 != null)
                         {
                             serialId = xlRange.Cells[i, 8].Value2.ToString();
-                            profile.PIN_NO = serialId;
+                            profile.pinno = serialId;
                         }
 
                         profile.AD_NO = xlRange.Cells[i, 3].Value2.ToString().ToUpper();

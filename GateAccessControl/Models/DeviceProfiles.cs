@@ -12,7 +12,7 @@ namespace GateAccessControl
         public DeviceProfile(Profile p)
         {
             PROFILE_ID = 0;
-            PIN_NO = p.PIN_NO;
+            PIN_NO = p.pinno;
             AD_NO = p.AD_NO;
             PROFILE_NAME = p.PROFILE_NAME;
             CLASS_NAME = p.CLASS_NAME;
@@ -37,7 +37,7 @@ namespace GateAccessControl
 
         public void CloneDataFromProfile(Profile p)
         {
-            PIN_NO = p.PIN_NO;
+            PIN_NO = p.pinno;
             AD_NO = p.AD_NO;
             PROFILE_NAME = p.PROFILE_NAME;
             CLASS_NAME = p.CLASS_NAME;

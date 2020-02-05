@@ -714,7 +714,7 @@ namespace GateAccessControl
                             Range cells = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[cellRowIndex, cellColumnIndex];
                             cells.NumberFormat = "@";
                             cells.HorizontalAlignment = XlHAlign.xlHAlignRight;
-                            cells.Value2 = profileList[i].PIN_NO;
+                            cells.Value2 = profileList[i].pinno;
                             //worksheet.Range[cellColumnIndex].NumberFormat = "0";
                             //worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].PIN_NO;
                         }
@@ -1194,7 +1194,7 @@ namespace GateAccessControl
                     }
                     foreach (int id in listDeviceId)
                     {
-                        List<DeviceProfile> getCloneDeviceProfile = SqliteDataAccess.LoadDeviceProfiles(id, "", "", p.PIN_NO);
+                        List<DeviceProfile> getCloneDeviceProfile = SqliteDataAccess.LoadDeviceProfiles(id, "", "", p.pinno);
 
                         foreach (DeviceProfile DP in getCloneDeviceProfile)
                         {
@@ -1311,7 +1311,7 @@ namespace GateAccessControl
                 (((Profile)obj).EMAIL.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
                 (((Profile)obj).PROFILE_NAME.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
                 (((Profile)obj).PHONE.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
-                (((Profile)obj).PIN_NO.ToLower().Contains(Search_profiles_others.ToString().ToLower()))
+                (((Profile)obj).pinno.ToLower().Contains(Search_profiles_others.ToString().ToLower()))
             );
             }
         }
@@ -1418,7 +1418,7 @@ namespace GateAccessControl
             Console.WriteLine("Reload TimeCheck: " + selectedDate.ToShortDateString());
             if (selectedDate != null && selectedProfile != null)
             {
-                TimeChecks = new ObservableCollection<TimeRecord>(SqliteDataAccess.LoadTimeChecks(selectedProfile.PIN_NO, selectedDate));
+                TimeChecks = new ObservableCollection<TimeRecord>(SqliteDataAccess.LoadTimeChecks(selectedProfile.pinno, selectedDate));
                 return true;
             }
             else
