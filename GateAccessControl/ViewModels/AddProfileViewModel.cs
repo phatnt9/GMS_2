@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
 
@@ -53,7 +55,7 @@ namespace GateAccessControl
         public AddProfileViewModel()
         {
             AddProfile = new Profile();
-            ReloadDataCardTypes();
+            ReloadDataCardTypesAsync();
 
             ReplaceProfileImageCommand = new RelayCommand<Profile>(
                  (p) =>
@@ -62,7 +64,7 @@ namespace GateAccessControl
                  },
                  (p) =>
                  {
-                     ReplaceProfileImage(AddProfile.IMAGE, AddProfile);
+                     ReplaceProfileImage(AddProfile.image, AddProfile);
                  });
 
             InsertProfileCommand = new RelayCommand<Profile>(
@@ -108,23 +110,24 @@ namespace GateAccessControl
                 string fileName = openFileDialog1.SafeFileName;
                 if (String.IsNullOrEmpty(origin))
                 {
-                    p.IMAGE = fileName;
+                    p.image = fileName;
                 }
                 else
                 {
-                    p.IMAGE = origin;
+                    p.image = origin;
                 }
                 File.Copy(importFilePath,
-                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK\Image\" + p.IMAGE, true);
-                p.IMAGE = p.IMAGE;
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK\Image\" + p.image, true);
+                p.image = p.image;
             }
         }
 
-        private void InsertProfile(Profile addProfile)
+        private async void InsertProfile(Profile addProfile)
         {
-            addProfile.DATE_CREATED = DateTime.Now;
-            addProfile.DATE_MODIFIED = DateTime.Now;
-            if (SqliteDataAccess.InsertProfile(addProfile))
+            addProfile.date_created = DateTime.Now;
+            addProfile.date_modified = DateTime.Now;
+            Task<bool> insertTask = SqliteDataAccess.InsertProfileAsync(addProfile);
+            if (await insertTask)
             {
                 //Success
                 System.Windows.Forms.MessageBox.Show("Profile added!");
@@ -142,16 +145,11 @@ namespace GateAccessControl
             DialogResult = true;
         }
 
-        public void ReloadDataCardTypes()
+        public async Task ReloadDataCardTypesAsync()
         {
-            try
-            {
-                Classes = new ObservableCollection<CardType>(SqliteDataAccess.LoadCardTypes());
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-            }
+            Task<List<CardType>> loadTask = SqliteDataAccess.LoadCardTypesAsync();
+            List<CardType> classesList = await loadTask;
+            Classes = new ObservableCollection<CardType>(classesList);
         }
     }
 }

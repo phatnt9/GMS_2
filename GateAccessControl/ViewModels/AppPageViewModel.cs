@@ -78,7 +78,7 @@ namespace GateAccessControl
             SelectedTimeCheckDate = DateTime.Now;
             ReloadDevices();
             ReloadProfiles();
-            ReloadCardTypes();
+            ReloadCardTypesAsync();
             SyncProgressValue = 0;
             CreateCheckSuspendProfilesTimer();
             CreateRequestTimeChecksTimer();
@@ -117,7 +117,7 @@ namespace GateAccessControl
                  },
                  (p) =>
                  {
-                     ReloadDeviceProfiles(SelectedDevice);
+                     ReloadDeviceProfilesAsync(SelectedDevice);
                  });
 
             SelectNextDateCommand = new RelayCommand<Profile>(
@@ -128,7 +128,7 @@ namespace GateAccessControl
                  (p) =>
                  {
                      SelectedTimeCheckDate = SelectedTimeCheckDate.AddDays(1);
-                     ReloadDataTimeCheck(SelectedProfile, SelectedTimeCheckDate);
+                     ReloadDataTimeCheckAsync(SelectedProfile, SelectedTimeCheckDate);
                  });
 
             SelectPreviousDateCommand = new RelayCommand<Profile>(
@@ -139,7 +139,7 @@ namespace GateAccessControl
                  (p) =>
                  {
                      SelectedTimeCheckDate = SelectedTimeCheckDate.AddDays(-1);
-                     ReloadDataTimeCheck(SelectedProfile, SelectedTimeCheckDate);
+                     ReloadDataTimeCheckAsync(SelectedProfile, SelectedTimeCheckDate);
                  });
 
             SelectedDateChangeCommand = new RelayCommand<Profile>(
@@ -209,10 +209,7 @@ namespace GateAccessControl
                  },
                  (p) =>
                  {
-                     if (SetTimeDeviceProfile(p))
-                     {
-                         ReloadProfiles();
-                     }
+                     SetTimeDeviceProfileAsync(p);
                  });
 
             AddProfileCommand = new RelayCommand<Profile>(
@@ -238,7 +235,7 @@ namespace GateAccessControl
                      ReloadProfiles();
                      if (SelectedDevice != null)
                      {
-                         ReloadDeviceProfiles(SelectedDevice);
+                         ReloadDeviceProfilesAsync(SelectedDevice);
                      }
                  });
 
@@ -246,7 +243,7 @@ namespace GateAccessControl
                  (p) =>
                  {
                      //Cannot when any device is syncing
-                     return (SelectedProfile != null && CheckNoDeviceIsSyncing() && String.IsNullOrEmpty(SelectedProfile.LIST_DEVICE_ID));
+                     return (SelectedProfile != null && CheckNoDeviceIsSyncing() && String.IsNullOrEmpty(SelectedProfile.list_device_id));
                  },
                  (p) =>
                  {
@@ -257,10 +254,7 @@ namespace GateAccessControl
                        MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes
                        )
                      {
-                         if (RemoveProfile(SelectedProfile))
-                         {
-                             Profiles.Remove(SelectedProfile);
-                         }
+                         RemoveProfileAsync(SelectedProfile);
                      }
                  });
 
@@ -271,7 +265,7 @@ namespace GateAccessControl
                  },
                  (p) =>
                  {
-                     ReloadDataTimeCheck(SelectedProfile, SelectedTimeCheckDate);
+                     ReloadDataTimeCheckAsync(SelectedProfile, SelectedTimeCheckDate);
                      ReloadProfileImage(SelectedProfile);
                  });
 
@@ -282,9 +276,9 @@ namespace GateAccessControl
                  },
                  (p) =>
                  {
-                     ReplaceProfileImage(SelectedProfile.IMAGE, SelectedProfile);
+                     ReplaceProfileImage(SelectedProfile.image, SelectedProfile);
                      ReloadProfileImage(SelectedProfile);
-                     ReloadDeviceProfiles(SelectedDevice);
+                     ReloadDeviceProfilesAsync(SelectedDevice);
                  });
 
             StopSyncCommand = new RelayCommand<Device>(
@@ -365,10 +359,7 @@ namespace GateAccessControl
                         MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes
                         )
                     {
-                        if (RemoveDevice(SelectedDevice))
-                        {
-                            Devices.Remove(SelectedDevice);
-                        }
+                        RemoveDeviceAsync(SelectedDevice);
                     }
                 });
 
@@ -381,8 +372,7 @@ namespace GateAccessControl
                 {
                     if (SelectedDevice != null)
                     {
-                        SqliteDataAccess.CreateDeviceProfilesTable("DT_DEVICE_PROFILES_" + SelectedDevice.deviceId);
-                        ReloadDeviceProfiles(SelectedDevice);
+                        SelectDeviceAsync();
                     }
                 });
 
@@ -395,7 +385,7 @@ namespace GateAccessControl
                 {
                     ManageDeviceProfiles(SelectedDevice);
                     ReloadProfiles();
-                    ReloadDeviceProfiles(SelectedDevice);
+                    ReloadDeviceProfilesAsync(SelectedDevice);
                 });
 
             ConnectDeviceCommand = new RelayCommand<Device>(
@@ -450,14 +440,14 @@ namespace GateAccessControl
                 (p) => true,
                 (p) =>
                 {
-                    ReloadDeviceProfiles(SelectedDevice);
+                    ReloadDeviceProfilesAsync(SelectedDevice);
                 });
 
             SearchGroupDeviceProfilesCommand = new RelayCommand<ItemCollection>(
                 (p) => true,
                 (p) =>
                 {
-                    ReloadDeviceProfiles(SelectedDevice);
+                    ReloadDeviceProfilesAsync(SelectedDevice);
                 });
 
             SearchOthersDeviceProfilesCommand = new RelayCommand<ItemCollection>(
@@ -481,12 +471,12 @@ namespace GateAccessControl
                 },
                 (p) =>
                 {
-                    ReloadCardTypes();
+                    ReloadCardTypesAsync();
                     IEnumerable<CardType> obsCollection = Classes;
                     List<CardType> list = new List<CardType>(obsCollection);
                     ImportProfiles(list);
                     ReloadProfiles();
-                    ReloadCardTypes();
+                    ReloadCardTypesAsync();
                 });
 
             ManageClassCommand = new RelayCommand<CardType>(
@@ -494,7 +484,7 @@ namespace GateAccessControl
                 (p) =>
                 {
                     ManageClass();
-                    ReloadCardTypes();
+                    ReloadCardTypesAsync();
                 });
         }
 
@@ -525,7 +515,7 @@ namespace GateAccessControl
             // the code that you want to measure comes here
             if (p != null)
             {
-                string imagePath = GlobalConstant.ImagePath + "\\" + p.IMAGE.ToString();
+                string imagePath = GlobalConstant.ImagePath + "\\" + p.image.ToString();
                 string defaultImagePath = GlobalConstant.ImagePath + "\\default.png";
                 File.Exists(imagePath);
                 if (File.Exists(imagePath))
@@ -616,7 +606,7 @@ namespace GateAccessControl
             IsExportingProfiles = false;
         }
 
-        private void ExportWorker_DoWork(object sender, DoWorkEventArgs e)
+        private async void ExportWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             IsExportingProfiles = true;
             ProfilesWorkStatus = AppStatus.Exporting.ToString();
@@ -626,7 +616,8 @@ namespace GateAccessControl
             Excel.Worksheet worksheet = null;
             try
             {
-                List<CardType> listClasses = SqliteDataAccess.LoadCardTypes();
+                Task<List<CardType>> loadTask = SqliteDataAccess.LoadCardTypesAsync();
+                List<CardType> listClasses = await loadTask;
 
                 SaveFileDialog saveDialog = genericList[0] as SaveFileDialog;
 
@@ -666,13 +657,13 @@ namespace GateAccessControl
                         if (j == 0)//No
                         { worksheet.Cells[cellRowIndex, cellColumnIndex] = i + 1; }
                         if (j == 1)//Name
-                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].PROFILE_NAME; }
+                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].profileName; }
                         if (j == 2)//Adno
                         {
                             Range cells = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[cellRowIndex, cellColumnIndex];
                             cells.NumberFormat = "@";
                             cells.HorizontalAlignment = XlHAlign.xlHAlignRight;
-                            cells.Value2 = profileList[i].AD_NO;
+                            cells.Value2 = profileList[i].adno;
                             //worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].ADNO;
                         }
                         if (j == 3)//Gender
@@ -692,21 +683,21 @@ namespace GateAccessControl
                                Excel.XlFormatConditionOperator.xlBetween,
                                flatList,
                                Type.Missing);
-                            cell.Value2 = profileList[i].GENDER.ToString();
+                            cell.Value2 = profileList[i].gender.ToString();
                             cell.Locked = true;
                             cell.Validation.IgnoreBlank = true;
                             cell.Validation.InCellDropdown = true;
                         }
                         if (j == 4)//DOB
-                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].DOB; }
+                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].dob; }
                         if (j == 5)//Disu
-                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].DISU; }
+                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].disu; }
                         if (j == 6)//Image
                         {
                             Range cells = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[cellRowIndex, cellColumnIndex];
                             cells.NumberFormat = "@";
                             cells.HorizontalAlignment = XlHAlign.xlHAlignRight;
-                            cells.Value2 = profileList[i].IMAGE;
+                            cells.Value2 = profileList[i].image;
                             //worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].IMAGE;
                         }
                         if (j == 7)//PIN No.
@@ -726,7 +717,7 @@ namespace GateAccessControl
                             var list = new List<string>();
                             foreach (CardType classes in listClasses)
                             {
-                                list.Add(classes.CLASS_NAME);
+                                list.Add(classes.className);
                             }
                             var flatList = string.Join(",", list.ToArray());
 
@@ -738,7 +729,7 @@ namespace GateAccessControl
                                Excel.XlFormatConditionOperator.xlBetween,
                                flatList,
                                Type.Missing);
-                            cell.Value2 = profileList[i].CLASS_NAME;
+                            cell.Value2 = profileList[i].className;
                             cell.Validation.IgnoreBlank = true;
                             cell.Validation.InCellDropdown = true;
                         }
@@ -768,21 +759,21 @@ namespace GateAccessControl
                                Excel.XlFormatConditionOperator.xlBetween,
                                flatList,
                                Type.Missing);
-                            cell.Value2 = profileList[i].SUB_CLASS;
+                            cell.Value2 = profileList[i].subClass;
                             cell.Validation.IgnoreBlank = true;
                             cell.Validation.InCellDropdown = true;
                         }
 
                         if (j == 10)//Email
-                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].EMAIL; }
+                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].email; }
                         if (j == 11)//Address
-                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].ADDRESS; }
+                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].address; }
                         if (j == 12)//Phone
                         {
                             Range cells = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[cellRowIndex, cellColumnIndex];
                             cells.NumberFormat = "@";
                             cells.HorizontalAlignment = XlHAlign.xlHAlignRight;
-                            cells.Value2 = profileList[i].PHONE;
+                            cells.Value2 = profileList[i].phone;
                             //worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].PHONE;
                         }
                         if (j == 13)//Status
@@ -802,7 +793,7 @@ namespace GateAccessControl
                                Excel.XlFormatConditionOperator.xlBetween,
                                flatList,
                                Type.Missing);
-                            cell.Value2 = profileList[i].PROFILE_STATUS;
+                            cell.Value2 = profileList[i].profileStatus;
                             cell.Locked = true;
                             cell.Validation.IgnoreBlank = true;
                             cell.Validation.InCellDropdown = true;
@@ -810,9 +801,9 @@ namespace GateAccessControl
 
                         if (j == 14)//Expire Date
                         {
-                            if (profileList[i].CHECK_DATE_TO_LOCK == true)
+                            if (profileList[i].check_date_to_lock == true)
                             {
-                                { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].DATE_TO_LOCK; }
+                                { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].date_to_lock; }
                             }
                             else
                             {
@@ -834,17 +825,17 @@ namespace GateAccessControl
                                Excel.XlFormatConditionOperator.xlBetween,
                                flatList,
                                Type.Missing);
-                            cell.Value2 = profileList[i].CHECK_DATE_TO_LOCK;
+                            cell.Value2 = profileList[i].check_date_to_lock;
                             cell.Locked = true;
                             cell.Validation.IgnoreBlank = true;
                             cell.Validation.InCellDropdown = true;
                         }
                         if (j == 16)//License plate
-                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].LICENSE_PLATE; }
+                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].license_plate; }
                         if (j == 17)//Date created
-                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].DATE_CREATED; }
+                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].date_created; }
                         if (j == 18)//Date modified
-                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].DATE_MODIFIED; }
+                        { worksheet.Cells[cellRowIndex, cellColumnIndex] = profileList[i].date_modified; }
 
                         cellColumnIndex++;
                     }
@@ -873,20 +864,21 @@ namespace GateAccessControl
             }
         }
 
-        private bool SetTimeDeviceProfile(List<DeviceProfile> p)
+        private async void SetTimeDeviceProfileAsync(List<DeviceProfile> p)
         {
             string myActiveTime = GetActiveTimeFromTextBoxes();
             if (!String.IsNullOrEmpty(myActiveTime))
             {
                 foreach (DeviceProfile item in p)
                 {
-                    item.ACTIVE_TIME = myActiveTime;
-                    if (item.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString() &&
-                        item.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString())
+                    item.active_time = myActiveTime;
+                    if (item.profileStatus == GlobalConstant.ProfileStatus.Active.ToString() &&
+                        item.server_status == GlobalConstant.ServerStatus.None.ToString())
                     {
-                        item.SERVER_STATUS = GlobalConstant.ServerStatus.Update.ToString();
+                        item.server_status = GlobalConstant.ServerStatus.Update.ToString();
                     }
-                    if (SqliteDataAccess.UpdateDeviceProfile(SelectedDevice.deviceId, item))
+                    Task<bool> updateTask = SqliteDataAccess.UpdateDeviceProfileAsync(SelectedDevice.deviceId, item);
+                    if (await updateTask)
                     {
                         ApplyActiveTimeStatus = "Success!";
                     }
@@ -895,11 +887,7 @@ namespace GateAccessControl
                         ApplyActiveTimeStatus = "Unsuccess!";
                     }
                 }
-                return true;
-            }
-            else
-            {
-                return false;
+                ReloadProfiles();
             }
         }
 
@@ -953,9 +941,9 @@ namespace GateAccessControl
 
         private void ParseActiveTimeDeviceProfile(DeviceProfile p)
         {
-            if (p != null && !String.IsNullOrEmpty(p.ACTIVE_TIME))
+            if (p != null && !String.IsNullOrEmpty(p.active_time))
             {
-                string[] listVar = p.ACTIVE_TIME.Split('-');
+                string[] listVar = p.active_time.Split('-');
                 for (int i = 0; i < 4; i++)
                 {
                     if (i == 0 && ValidateTime(listVar[i]))
@@ -1024,10 +1012,10 @@ namespace GateAccessControl
             lastHour = DateTime.Now.Hour;
             lastSec = DateTime.Now.Second;
             SuspendStudentCheckTimer.Elapsed += SuspendStudentCheckTimer_Elapsed;
-            SuspendStudentCheckTimer.Start();
+            //SuspendStudentCheckTimer.Start();//wrong
         }
 
-        private void SuspendStudentCheckTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private async void SuspendStudentCheckTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             if (CheckNoDeviceIsSyncing())
             {
@@ -1035,7 +1023,10 @@ namespace GateAccessControl
                 {
                     lastHour = DateTime.Now.Hour;
                     Console.WriteLine("Catch " + DateTime.Now.ToLongTimeString() + "s.");
-                    if (CheckSuspendAllProfile())
+
+                    Task<bool> checkResultTask = CheckSuspendAllProfile();
+                    bool check = await checkResultTask;
+                    if (check)
                     {
                         Console.WriteLine("Success Check");
                     }
@@ -1051,27 +1042,27 @@ namespace GateAccessControl
             }
         }
 
-        public bool CheckSuspendAllProfile()
+        public async Task<bool> CheckSuspendAllProfile()
         {
             try
             {
                 //Get all Profile
-                List<Profile> profiles = SqliteDataAccess.LoadProfiles("", "", "");
+                List<Profile> profiles = await SqliteDataAccess.LoadProfilesAsync("", "", "");
 
                 //Check status --> check date to Suspend --> Suspend(active)
                 foreach (Profile profile in profiles)
                 {
-                    if (profile.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Active.ToString()) &&
-                        profile.CHECK_DATE_TO_LOCK == true)
+                    if (profile.profileStatus.Equals(GlobalConstant.ProfileStatus.Active.ToString()) &&
+                        profile.check_date_to_lock == true)
                     {
-                        if (DateTime.Now > profile.DATE_TO_LOCK)
+                        if (DateTime.Now > profile.date_to_lock)
                         {
-                            profile.CHECK_DATE_TO_LOCK = false;
-                            profile.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
-                            profile.DATE_MODIFIED = DateTime.Now;
-                            if (SqliteDataAccess.UpdateProfile(profile))
+                            profile.check_date_to_lock = false;
+                            profile.profileStatus = GlobalConstant.ProfileStatus.Suspended.ToString();
+                            profile.date_modified = DateTime.Now;
+                            if (await SqliteDataAccess.UpdateProfileAsync(profile))
                             {
-                                UpdateProfileToAllDevice(profile);
+                                UpdateProfileToAllDeviceAsync(profile);
                             }
                             else
                             {
@@ -1092,15 +1083,15 @@ namespace GateAccessControl
             }
         }
 
-        private bool RemoveProfile(Profile p)
+        private async void RemoveProfileAsync(Profile p)
         {
-            if (String.IsNullOrEmpty(p.LIST_DEVICE_ID))
+            if (String.IsNullOrEmpty(p.list_device_id))
             {
-                return SqliteDataAccess.DeleteProfile(p);
-            }
-            else
-            {
-                return false;
+                Task<bool> deleteTask = SqliteDataAccess.DeleteProfileAsync(p);
+                if (await deleteTask)
+                {
+                    Profiles.Remove(p);
+                }
             }
         }
 
@@ -1137,52 +1128,50 @@ namespace GateAccessControl
                 File.Copy(importFilePath,
                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK\Image\" + origin, true);
 
-                p.IMAGE = origin;
+                p.image = origin;
                 SaveProfileUpdateImage(p);
             }
         }
 
-        public bool SaveProfileUpdateImage(Profile p)
+        public async void SaveProfileUpdateImage(Profile p)
         {
-            if (p.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Active.ToString()))
+            if (p.profileStatus.Equals(GlobalConstant.ProfileStatus.Active.ToString()))
             {
-                if (p.CHECK_DATE_TO_LOCK && DateTime.Now.CompareTo(p.DATE_TO_LOCK) >= 0)
+                if (p.check_date_to_lock && DateTime.Now.CompareTo(p.date_to_lock) >= 0)
                 {
                     //Today is later then date to lock
-                    p.CHECK_DATE_TO_LOCK = false;
-                    p.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
-                    p.DATE_MODIFIED = DateTime.Now;
+                    p.check_date_to_lock = false;
+                    p.profileStatus = GlobalConstant.ProfileStatus.Suspended.ToString();
+                    p.date_modified = DateTime.Now;
                 }
             }
             else
             {
-                p.CHECK_DATE_TO_LOCK = false;
-                p.DATE_MODIFIED = DateTime.Now;
+                p.check_date_to_lock = false;
+                p.date_modified = DateTime.Now;
             }
 
-            if (SqliteDataAccess.UpdateProfile(p))
+            if (await SqliteDataAccess.UpdateProfileAsync(p))
             {
                 System.Windows.Forms.MessageBox.Show("Profile saved!");
-                UpdateProfileToAllDevice(p);
-                return true;
+                UpdateProfileToAllDeviceAsync(p);
             }
             else
             {
                 System.Windows.Forms.MessageBox.Show("Field with (*) is mandatory!");
-                return false;
             }
         }
 
-        private bool UpdateProfileToAllDevice(Profile p)
+        private async Task<bool> UpdateProfileToAllDeviceAsync(Profile p)
         {
             if (p != null)
             {
                 int count = 0;
                 List<int> listDeviceId = new List<int>();
 
-                if (!String.IsNullOrEmpty(p.LIST_DEVICE_ID))
+                if (!String.IsNullOrEmpty(p.list_device_id))
                 {
-                    string[] listVar = p.LIST_DEVICE_ID.Split(',');
+                    string[] listVar = p.list_device_id.Split(',');
                     foreach (string var in listVar)
                     {
                         int temp;
@@ -1194,28 +1183,29 @@ namespace GateAccessControl
                     }
                     foreach (int id in listDeviceId)
                     {
-                        List<DeviceProfile> getCloneDeviceProfile = SqliteDataAccess.LoadDeviceProfiles(id, "", "", p.pinno);
+                        List<DeviceProfile> getCloneDeviceProfile = await SqliteDataAccess.LoadDeviceProfilesAsync(id, "", "", p.pinno);
 
                         foreach (DeviceProfile DP in getCloneDeviceProfile)
                         {
                             DP.CloneDataFromProfile(p);
-                            if (p.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Suspended.ToString()))
+                            if (p.profileStatus.Equals(GlobalConstant.ProfileStatus.Suspended.ToString()))
                             {
-                                if (!DP.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Deleted.ToString()))
+                                if (!DP.client_status.Equals(GlobalConstant.ClientStatus.Deleted.ToString()))
                                 {
-                                    DP.CLIENT_STATUS = GlobalConstant.ClientStatus.Delete.ToString();
+                                    DP.client_status = GlobalConstant.ClientStatus.Delete.ToString();
                                 }
                             }
                             else
                             {
-                                DP.CLIENT_STATUS = GlobalConstant.ClientStatus.Unknow.ToString();
-                                if (DP.SERVER_STATUS.Equals(GlobalConstant.ServerStatus.None.ToString()))
+                                DP.client_status = GlobalConstant.ClientStatus.Unknow.ToString();
+                                if (DP.server_status.Equals(GlobalConstant.ServerStatus.None.ToString()))
                                 {
-                                    DP.SERVER_STATUS = GlobalConstant.ServerStatus.Update.ToString();
+                                    DP.server_status = GlobalConstant.ServerStatus.Update.ToString();
                                 }
                             }
 
-                            if (SqliteDataAccess.UpdateDeviceProfile(id, DP))
+                            Task<bool> updateTask = SqliteDataAccess.UpdateDeviceProfileAsync(id, DP);
+                            if (await updateTask)
                             {
                                 count++;
                             }
@@ -1259,27 +1249,22 @@ namespace GateAccessControl
             editDeviceWindow.ShowDialog();
         }
 
-        private bool RemoveDevice(Device p)
+        private async void RemoveDeviceAsync(Device p)
         {
             if (CanEditOrRemoveDevice(p))
             {
                 //Remove Device in database
-                if (SqliteDataAccess.DeleteDevice(p))
+                if (await SqliteDataAccess.DeleteDeviceAsync(p))
                 {
                     //Succeed
                     Console.WriteLine("Succeed");
-                    return true;
+                    Devices.Remove(SelectedDevice);
                 }
                 else
                 {
                     //Unsucceed
                     Console.WriteLine("Unsucceed");
-                    return false;
                 }
-            }
-            else
-            {
-                return false;
             }
         }
 
@@ -1306,11 +1291,11 @@ namespace GateAccessControl
             if (p != null)
             {
                 p.Filter = (obj) => (
-                (((Profile)obj).ADDRESS.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
-                (((Profile)obj).AD_NO.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
-                (((Profile)obj).EMAIL.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
-                (((Profile)obj).PROFILE_NAME.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
-                (((Profile)obj).PHONE.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
+                (((Profile)obj).address.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
+                (((Profile)obj).adno.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
+                (((Profile)obj).email.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
+                (((Profile)obj).profileName.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
+                (((Profile)obj).phone.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
                 (((Profile)obj).pinno.ToLower().Contains(Search_profiles_others.ToString().ToLower()))
             );
             }
@@ -1321,12 +1306,12 @@ namespace GateAccessControl
             if (p != null)
             {
                 p.Filter = (obj) => (
-                (((DeviceProfile)obj).ADDRESS.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
-                (((DeviceProfile)obj).AD_NO.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
-                (((DeviceProfile)obj).EMAIL.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
-                (((DeviceProfile)obj).PROFILE_NAME.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
-                (((DeviceProfile)obj).PHONE.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
-                (((DeviceProfile)obj).PIN_NO.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower()))
+                (((DeviceProfile)obj).address.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((DeviceProfile)obj).adno.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((DeviceProfile)obj).email.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((DeviceProfile)obj).profileName.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((DeviceProfile)obj).phone.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((DeviceProfile)obj).pinno.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower()))
             );
             }
         }
@@ -1346,18 +1331,12 @@ namespace GateAccessControl
             }
         }
 
-        public void ReloadCardTypes()
+        public async void ReloadCardTypesAsync()
         {
-            try
-            {
-                List<CardType> classesList = SqliteDataAccess.LoadCardTypes();
-                classesList.Insert(0, new CardType(-1, "All"));
-                Classes = new ObservableCollection<CardType>(classesList);
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-            }
+            Task<List<CardType>> loadTask = SqliteDataAccess.LoadCardTypesAsync();
+            List<CardType> classesList = await loadTask;
+            classesList.Insert(0, new CardType(-1, "All"));
+            Classes = new ObservableCollection<CardType>(classesList);
         }
 
         /// <summary>
@@ -1370,7 +1349,6 @@ namespace GateAccessControl
             try
             {
                 List<Device> deviceList = await SqliteDataAccess.LoadDevicesAsync(0);
-                //List<Device> deviceList = SqliteDataAccess.LoadDevices(0);
                 foreach (Device item in deviceList)
                 {
                     Device device = CheckExistDevice(Devices, item);
@@ -1413,12 +1391,14 @@ namespace GateAccessControl
             return null;
         }
 
-        public bool ReloadDataTimeCheck(Profile selectedProfile, DateTime selectedDate)
+        public async Task<bool> ReloadDataTimeCheckAsync(Profile selectedProfile, DateTime selectedDate)
         {
             Console.WriteLine("Reload TimeCheck: " + selectedDate.ToShortDateString());
             if (selectedDate != null && selectedProfile != null)
             {
-                TimeChecks = new ObservableCollection<TimeRecord>(SqliteDataAccess.LoadTimeChecks(selectedProfile.pinno, selectedDate));
+                Task<List<TimeRecord>> loadTask = SqliteDataAccess.LoadTimeChecksAsync(selectedProfile.pinno, selectedDate);
+                List<TimeRecord> list = await loadTask;
+                TimeChecks = new ObservableCollection<TimeRecord>(list);
                 return true;
             }
             else
@@ -1488,7 +1468,7 @@ namespace GateAccessControl
             return (_noDeviceSyncing == 0) ? true : false;
         }
 
-        public bool ReloadProfiles()
+        public async void ReloadProfiles()
         {
             if (Search_profiles_class == null)
             {
@@ -1502,18 +1482,31 @@ namespace GateAccessControl
             string group = Search_profiles_group == "All" ? "" : Search_profiles_group;
             try
             {
-                Profiles = new ObservableCollection<Profile>(SqliteDataAccess.LoadProfiles(type, group, ""));
-                return true;
+                Profiles = new ObservableCollection<Profile>(await SqliteDataAccess.LoadProfilesAsync(type, group, ""));
+                return;
             }
             catch (Exception ex)
             {
                 logFile.Error(ex.Message);
-                return false;
+                return;
             }
         }
 
-        public bool ReloadDeviceProfiles(Device d)
+        public async void SelectDeviceAsync()
         {
+            Task<bool> createTask = SqliteDataAccess.CreateDeviceProfilesTableAsync(SelectedDevice.deviceId);
+            if (await createTask)
+            {
+                ReloadDeviceProfilesAsync(SelectedDevice);
+            }
+        }
+
+        public async void ReloadDeviceProfilesAsync(Device d)
+        {
+            if (d == null)
+            {
+                return;
+            }
             if (Search_deviceProfiles_class == null)
             {
                 Search_deviceProfiles_class = "All";
@@ -1524,16 +1517,10 @@ namespace GateAccessControl
             }
             string type = Search_deviceProfiles_class == "All" ? "" : Search_deviceProfiles_class;
             string group = Search_deviceProfiles_group == "All" ? "" : Search_deviceProfiles_group;
-            try
-            {
-                DeviceProfiles = new ObservableCollection<DeviceProfile>(SqliteDataAccess.LoadDeviceProfiles(d.deviceId, type, group, ""));
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return false;
-            }
+
+            Task<List<DeviceProfile>> loadTask = SqliteDataAccess.LoadDeviceProfilesAsync(d.deviceId, type, group, "");
+            List<DeviceProfile> list = await loadTask;
+            DeviceProfiles = new ObservableCollection<DeviceProfile>(list);
         }
 
         private static readonly log4net.ILog logFile = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -1844,22 +1831,22 @@ namespace GateAccessControl
         {
             List<DeviceProfile> CanSyncDeviceProfiles = p.FindAll((u) =>
             {
-                switch (u.CLIENT_STATUS)
+                switch (u.client_status)
                 {
                     case "Unknow":
                     {
                         if (
-                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString())) ||
+                           ((u.profileStatus == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                           (u.server_status == GlobalConstant.ServerStatus.Add.ToString())) ||
 
-                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Update.ToString())) ||
+                           ((u.profileStatus == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                           (u.server_status == GlobalConstant.ServerStatus.Update.ToString())) ||
 
-                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString())) ||
+                           ((u.profileStatus == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                           (u.server_status == GlobalConstant.ServerStatus.Remove.ToString())) ||
 
-                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
-                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString()))
+                           ((u.profileStatus == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                           (u.server_status == GlobalConstant.ServerStatus.Add.ToString()))
                            )
                         {
                             return true;
@@ -1872,20 +1859,20 @@ namespace GateAccessControl
                     case "Delete":
                     {
                         if (
-                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString())) ||
+                           ((u.profileStatus == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                           (u.server_status == GlobalConstant.ServerStatus.None.ToString())) ||
 
-                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString())) ||
+                           ((u.profileStatus == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                           (u.server_status == GlobalConstant.ServerStatus.Add.ToString())) ||
 
-                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Update.ToString())) ||
+                           ((u.profileStatus == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                           (u.server_status == GlobalConstant.ServerStatus.Update.ToString())) ||
 
-                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString())) ||
+                           ((u.profileStatus == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                           (u.server_status == GlobalConstant.ServerStatus.Remove.ToString())) ||
 
-                           ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
-                           (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString()))
+                           ((u.profileStatus == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                           (u.server_status == GlobalConstant.ServerStatus.Add.ToString()))
                            )
                         {
                             return true;
@@ -1913,6 +1900,10 @@ namespace GateAccessControl
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            if (value == null)
+            {
+                return "";
+            }
             if (!String.IsNullOrEmpty(value.ToString()))
             {
                 string[] parts = value.ToString().Split('-');
@@ -1931,6 +1922,10 @@ namespace GateAccessControl
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            if (value == null)
+            {
+                return "";
+            }
             if (!String.IsNullOrEmpty(value.ToString()))
             {
                 string[] parts = value.ToString().Split('-');
@@ -1949,6 +1944,10 @@ namespace GateAccessControl
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            if (value == null)
+            {
+                return "";
+            }
             if (!String.IsNullOrEmpty(value.ToString()))
             {
                 string[] parts = value.ToString().Split('-');
@@ -1967,6 +1966,10 @@ namespace GateAccessControl
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            if (value == null)
+            {
+                return "";
+            }
             if (!String.IsNullOrEmpty(value.ToString()))
             {
                 string[] parts = value.ToString().Split('-');

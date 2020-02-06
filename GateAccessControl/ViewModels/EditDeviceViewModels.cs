@@ -78,16 +78,16 @@ namespace GateAccessControl
               });
         }
 
-        private void SaveDevice(Device p)
+        private async void SaveDevice(Device p)
         {
-            if (SqliteDataAccess.UpdateDevice(p))
+            if (await SqliteDataAccess.UpdateDeviceAsync(p))
             {
                 EditDeviceStatus = "Succeed";
             }
             else
             {
                 EditDeviceStatus = "Unsucceed";
-                List<Device> reloadDevice = SqliteDataAccess.LoadDevices(EditDevice.deviceId);
+                List<Device> reloadDevice = await SqliteDataAccess.LoadDevicesAsync(EditDevice.deviceId);
                 foreach (Device d in reloadDevice)
                 {
                     EditDevice.deviceName = d.deviceName;

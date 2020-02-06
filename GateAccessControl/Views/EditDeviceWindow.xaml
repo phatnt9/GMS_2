@@ -74,7 +74,7 @@
                             x:Name="tb_gateName"
                             Margin="5,2"
                             Background="FloralWhite"
-                            Text="{Binding Path=EditDevice.DEVICE_NAME, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                            Text="{Binding Path=EditDevice.deviceName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                             TextAlignment="Center" />
                     </Grid>
                     <Grid Grid.Row="1">
@@ -82,7 +82,7 @@
                             x:Name="tb_gateIp"
                             Margin="5,2"
                             Background="FloralWhite"
-                            Text="{Binding Path=EditDevice.DEVICE_IP, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                            Text="{Binding Path=EditDevice.deviceIp, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                             TextAlignment="Center" />
                     </Grid>
                     <Grid Grid.Row="2">
@@ -90,7 +90,7 @@
                             x:Name="tb_gateNote"
                             Margin="5,2"
                             Background="FloralWhite"
-                            Text="{Binding Path=EditDevice.DEVICE_NOTE, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                            Text="{Binding Path=EditDevice.deviceNote, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                             TextAlignment="Center" />
                     </Grid>
                 </Grid>

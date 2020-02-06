@@ -12,10 +12,7 @@
     d:DesignWidth="900"
     mc:Ignorable="d">
     <Page.Resources>
-        <vmd:DeviceItemWebSocketStatusConverter x:Key="myDeviceItemWebSocketStatusConverter" />
-        <vmd:LoadTimeCheckParametersConverter x:Key="myLoadTimeCheckParametersConverter" />
         <vmd:ProfileSelectedItemsConverter x:Key="myProfileSelectedItemsConverter" />
-        <vmd:DeviceProfilesActiveTimeConverter x:Key="myDeviceProfilesActiveTimeConverter" />
         <vmd:DeviceProfilesSelectedItemsConverter x:Key="myDeviceProfilesSelectedItemsConverter" />
         <vmd:ProfileListDeviceConverter x:Key="myProfileListDeviceConverter" />
         <vmd:ProfileImageConverter x:Key="myProfileImageConverter" />
@@ -474,7 +471,7 @@
                                                             <TextBox
                                                                 BorderThickness="0"
                                                                 IsReadOnly="True"
-                                                                Text="{Binding ElementName=dg_devices, Path=SelectedItem.DEVICE_NAME, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                                                                Text="{Binding ElementName=dg_devices, Path=SelectedItem.deviceName, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
                                                         </Border>
                                                         <Grid Grid.Row="1">
                                                             <Border
@@ -485,7 +482,7 @@
                                                                 <TextBox
                                                                     BorderThickness="0"
                                                                     IsReadOnly="True"
-                                                                    Text="{Binding ElementName=dg_devices, Path=SelectedItem.DEVICE_IP, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                                                                    Text="{Binding ElementName=dg_devices, Path=SelectedItem.deviceIp, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
                                                             </Border>
                                                         </Grid>
                                                         <Grid Grid.Row="2">
@@ -497,7 +494,7 @@
                                                                 <TextBox
                                                                     BorderThickness="0"
                                                                     IsReadOnly="True"
-                                                                    Text="{Binding ElementName=dg_devices, Path=SelectedItem.DEVICE_NOTE, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                                                                    Text="{Binding ElementName=dg_devices, Path=SelectedItem.deviceNote, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
                                                             </Border>
                                                         </Grid>
                                                     </Grid>
@@ -536,7 +533,7 @@
                                             Padding="5,0"
                                             VerticalContentAlignment="Center"
                                             Command="{Binding SearchClassDeviceProfilesCommand}"
-                                            DisplayMemberPath="CLASS_NAME"
+                                            DisplayMemberPath="className"
                                             ItemsSource="{Binding Classes, UpdateSourceTrigger=PropertyChanged}"
                                             SelectedIndex="0"
                                             Text="{Binding Search_deviceProfiles_class, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}" />
@@ -635,53 +632,53 @@
                                         <DataGrid.Columns>
                                             <DataGridTextColumn
                                                 Width="Auto"
-                                                Binding="{Binding Path=PROFILE_ID, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Binding="{Binding Path=profileId, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                 Header="Id"
                                                 Visibility="Hidden" />
                                             <DataGridTextColumn
                                                 Width="Auto"
-                                                Binding="{Binding Path=PIN_NO, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Binding="{Binding Path=pinno, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                 Header="PinNo"
                                                 Visibility="Visible" />
                                             <DataGridTextColumn
                                                 Width="Auto"
-                                                Binding="{Binding Path=AD_NO, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Binding="{Binding Path=adno, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                 Header="AdNo"
                                                 Visibility="Visible" />
                                             <DataGridTextColumn
                                                 Width="Auto"
-                                                Binding="{Binding Path=PROFILE_NAME, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Binding="{Binding Path=profileName, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                 Header="Name"
                                                 Visibility="Visible" />
                                             <DataGridTextColumn
                                                 Width="Auto"
-                                                Binding="{Binding Path=CLASS_NAME, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Binding="{Binding Path=className, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                 Header="Type"
                                                 Visibility="Visible" />
                                             <DataGridTextColumn
                                                 Width="Auto"
-                                                Binding="{Binding Path=SUB_CLASS, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Binding="{Binding Path=subClass, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                 Header="Group"
                                                 Visibility="Visible" />
                                             <DataGridTextColumn
                                                 Width="Auto"
-                                                Binding="{Binding Path=GENDER, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Binding="{Binding Path=gender, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                 Header="Gender"
                                                 Visibility="Visible" />
                                             <DataGridTextColumn
                                                 Width="Auto"
-                                                Binding="{Binding Path=PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Binding="{Binding Path=profileStatus, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                 Header="Status"
                                                 Visibility="Visible">
                                                 <DataGridTextColumn.CellStyle>
                                                     <Style TargetType="{x:Type DataGridCell}">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Path=PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Active">
+                                                            <DataTrigger Binding="{Binding Path=profileStatus, UpdateSourceTrigger=PropertyChanged}" Value="Active">
                                                                 <Setter Property="Foreground" Value="White" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
                                                                 <Setter Property="Background" Value="#29BF12" />
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Path=PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Suspended">
+                                                            <DataTrigger Binding="{Binding Path=profileStatus, UpdateSourceTrigger=PropertyChanged}" Value="Suspended">
                                                                 <Setter Property="Foreground" Value="White" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
                                                                 <Setter Property="Background" Value="#F21B3F" />
@@ -692,28 +689,28 @@
                                             </DataGridTextColumn>
                                             <DataGridTextColumn
                                                 Width="Auto"
-                                                Binding="{Binding Path=SERVER_STATUS, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Binding="{Binding Path=server_status, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                 Header="Request"
                                                 Visibility="Visible">
                                                 <DataGridTextColumn.CellStyle>
                                                     <Style TargetType="{x:Type DataGridCell}">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Path=SERVER_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="None">
+                                                            <DataTrigger Binding="{Binding Path=server_status, UpdateSourceTrigger=PropertyChanged}" Value="None">
                                                                 <Setter Property="Foreground" Value="Black" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
                                                                 <Setter Property="Background" Value="#ACB4B9" />
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Path=SERVER_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Update">
+                                                            <DataTrigger Binding="{Binding Path=server_status, UpdateSourceTrigger=PropertyChanged}" Value="Update">
                                                                 <Setter Property="Foreground" Value="#222E50" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
                                                                 <Setter Property="Background" Value="#F9DC5C" />
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Path=SERVER_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Add">
+                                                            <DataTrigger Binding="{Binding Path=server_status, UpdateSourceTrigger=PropertyChanged}" Value="Add">
                                                                 <Setter Property="Foreground" Value="White" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
                                                                 <Setter Property="Background" Value="#5998C5" />
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Path=SERVER_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Remove">
+                                                            <DataTrigger Binding="{Binding Path=server_status, UpdateSourceTrigger=PropertyChanged}" Value="Remove">
                                                                 <Setter Property="Foreground" Value="White" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
                                                                 <Setter Property="Background" Value="#D83636" />
@@ -724,23 +721,23 @@
                                             </DataGridTextColumn>
                                             <DataGridTextColumn
                                                 Width="Auto"
-                                                Binding="{Binding Path=CLIENT_STATUS, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Binding="{Binding Path=client_status, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                 Header="Client"
                                                 Visibility="Visible">
                                                 <DataGridTextColumn.CellStyle>
                                                     <Style TargetType="{x:Type DataGridCell}">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Path=CLIENT_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Unknow">
+                                                            <DataTrigger Binding="{Binding Path=client_status, UpdateSourceTrigger=PropertyChanged}" Value="Unknow">
                                                                 <Setter Property="Foreground" Value="Black" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
                                                                 <Setter Property="Background" Value="#ACB4B9" />
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Path=CLIENT_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Delete">
+                                                            <DataTrigger Binding="{Binding Path=client_status, UpdateSourceTrigger=PropertyChanged}" Value="Delete">
                                                                 <Setter Property="Foreground" Value="White" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
                                                                 <Setter Property="Background" Value="#BE2328" />
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Path=CLIENT_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Deleted">
+                                                            <DataTrigger Binding="{Binding Path=client_status, UpdateSourceTrigger=PropertyChanged}" Value="Deleted">
                                                                 <Setter Property="Foreground" Value="White" />
                                                                 <Setter Property="FontWeight" Value="DemiBold" />
                                                                 <Setter Property="Background" Value="#202626" />
@@ -751,27 +748,27 @@
                                             </DataGridTextColumn>
                                             <DataGridCheckBoxColumn
                                                 Width="Auto"
-                                                Binding="{Binding Path=CHECK_DATE_TO_LOCK, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Binding="{Binding Path=check_date_to_lock, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                 Header="Auto Suspension"
                                                 Visibility="Visible" />
                                             <DataGridTextColumn
                                                 Width="Auto"
-                                                Binding="{Binding Path=ACTIVE_TIME, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource myActiveTimeFrom1Converter}}"
+                                                Binding="{Binding Path=active_time, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource myActiveTimeFrom1Converter}}"
                                                 Header="Schedule 1F"
                                                 Visibility="Visible" />
                                             <DataGridTextColumn
                                                 Width="Auto"
-                                                Binding="{Binding Path=ACTIVE_TIME, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource myActiveTimeTo1Converter}}"
+                                                Binding="{Binding Path=active_time, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource myActiveTimeTo1Converter}}"
                                                 Header="Schedule 1T"
                                                 Visibility="Visible" />
                                             <DataGridTextColumn
                                                 Width="Auto"
-                                                Binding="{Binding Path=ACTIVE_TIME, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource myActiveTimeFrom2Converter}}"
+                                                Binding="{Binding Path=active_time, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource myActiveTimeFrom2Converter}}"
                                                 Header="Schedule 2F"
                                                 Visibility="Visible" />
                                             <DataGridTextColumn
                                                 Width="Auto"
-                                                Binding="{Binding Path=ACTIVE_TIME, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource myActiveTimeTo2Converter}}"
+                                                Binding="{Binding Path=active_time, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource myActiveTimeTo2Converter}}"
                                                 Header="Schedule 2T"
                                                 Visibility="Visible" />
                                         </DataGrid.Columns>
@@ -1086,7 +1083,7 @@
                                         Padding="5,0"
                                         VerticalContentAlignment="Center"
                                         Command="{Binding SearchClassProfilesCommand}"
-                                        DisplayMemberPath="CLASS_NAME"
+                                        DisplayMemberPath="className"
                                         ItemsSource="{Binding Classes, UpdateSourceTrigger=PropertyChanged}"
                                         SelectedIndex="0"
                                         Text="{Binding Search_profiles_class, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}" />
@@ -1135,53 +1132,53 @@
                                     <DataGrid.Columns>
                                         <DataGridTextColumn
                                             Width="Auto"
-                                            Binding="{Binding Path=PROFILE_ID, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                            Binding="{Binding Path=profileId, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                             Header="Id"
                                             Visibility="Hidden" />
                                         <DataGridTextColumn
                                             Width="Auto"
-                                            Binding="{Binding Path=PIN_NO, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                            Binding="{Binding Path=pinno, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                             Header="PinNo"
                                             Visibility="Visible" />
                                         <DataGridTextColumn
                                             Width="Auto"
-                                            Binding="{Binding Path=AD_NO, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                            Binding="{Binding Path=adno, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                             Header="AdNo"
                                             Visibility="Visible" />
                                         <DataGridTextColumn
                                             Width="Auto"
-                                            Binding="{Binding Path=PROFILE_NAME, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                            Binding="{Binding Path=profileName, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                             Header="Name"
                                             Visibility="Visible" />
                                         <DataGridTextColumn
                                             Width="Auto"
-                                            Binding="{Binding Path=CLASS_NAME, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                            Binding="{Binding Path=className, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                             Header="Type"
                                             Visibility="Visible" />
                                         <DataGridTextColumn
                                             Width="Auto"
-                                            Binding="{Binding Path=SUB_CLASS, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                            Binding="{Binding Path=subClass, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                             Header="Group"
                                             Visibility="Visible" />
                                         <DataGridTextColumn
                                             Width="Auto"
-                                            Binding="{Binding Path=GENDER, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                            Binding="{Binding Path=gender, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                             Header="Gender"
                                             Visibility="Visible" />
                                         <DataGridTextColumn
                                             Width="Auto"
-                                            Binding="{Binding Path=PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                            Binding="{Binding Path=profileStatus, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                             Header="Status"
                                             Visibility="Visible">
                                             <DataGridTextColumn.CellStyle>
                                                 <Style TargetType="{x:Type DataGridCell}">
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Path=PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Active">
+                                                        <DataTrigger Binding="{Binding Path=profileStatus, UpdateSourceTrigger=PropertyChanged}" Value="Active">
                                                             <Setter Property="Foreground" Value="White" />
                                                             <Setter Property="FontWeight" Value="DemiBold" />
                                                             <Setter Property="Background" Value="#29BF12" />
                                                         </DataTrigger>
-                                                        <DataTrigger Binding="{Binding Path=PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged}" Value="Suspended">
+                                                        <DataTrigger Binding="{Binding Path=profileStatus, UpdateSourceTrigger=PropertyChanged}" Value="Suspended">
                                                             <Setter Property="Foreground" Value="White" />
                                                             <Setter Property="FontWeight" Value="DemiBold" />
                                                             <Setter Property="Background" Value="#F21B3F" />
@@ -1192,22 +1189,22 @@
                                         </DataGridTextColumn>
                                         <DataGridCheckBoxColumn
                                             Width="Auto"
-                                            Binding="{Binding Path=CHECK_DATE_TO_LOCK, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                            Binding="{Binding Path=check_date_to_lock, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                             Header="Auto Suspension"
                                             Visibility="Visible" />
                                         <DataGridTextColumn
                                             Width="Auto"
-                                            Binding="{Binding Path=LIST_DEVICE_ID, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                            Binding="{Binding Path=list_device_id, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                             Header="List Device"
                                             Visibility="Visible" />
                                         <DataGridTextColumn
                                             Width="Auto"
-                                            Binding="{Binding Path=DATE_CREATED, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                            Binding="{Binding Path=date_created, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                             Header="Date Created"
                                             Visibility="Visible" />
                                         <DataGridTextColumn
                                             Width="Auto"
-                                            Binding="{Binding Path=DATE_MODIFIED, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                            Binding="{Binding Path=date_modified, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                             Header="Date Modified"
                                             Visibility="Visible" />
                                     </DataGrid.Columns>
@@ -1405,7 +1402,7 @@
                                                                     VerticalContentAlignment="Center"
                                                                     BorderThickness="0"
                                                                     FontSize="16"
-                                                                    Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.PROFILE_STATUS}"
+                                                                    Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.profileStatus}"
                                                                     TextWrapping="WrapWithOverflow" />
                                                             </Border>
                                                             <Border
@@ -1418,7 +1415,7 @@
                                                                     VerticalContentAlignment="Center"
                                                                     BorderThickness="0"
                                                                     FontSize="16"
-                                                                    Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.PROFILE_NAME}"
+                                                                    Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.profileName}"
                                                                     TextWrapping="WrapWithOverflow" />
                                                             </Border>
                                                             <Grid Grid.Row="2">
@@ -1436,7 +1433,7 @@
                                                                         VerticalContentAlignment="Center"
                                                                         BorderThickness="0"
                                                                         FontSize="16"
-                                                                        Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.PIN_NO}"
+                                                                        Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.pinno}"
                                                                         TextWrapping="WrapWithOverflow" />
                                                                 </Border>
                                                                 <Border
@@ -1449,7 +1446,7 @@
                                                                         VerticalContentAlignment="Center"
                                                                         BorderThickness="0"
                                                                         FontSize="16"
-                                                                        Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.AD_NO}"
+                                                                        Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.adno}"
                                                                         TextWrapping="WrapWithOverflow" />
                                                                 </Border>
                                                             </Grid>
@@ -1464,7 +1461,7 @@
                                                                     VerticalContentAlignment="Center"
                                                                     BorderThickness="0"
                                                                     FontSize="16"
-                                                                    Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.DOB, StringFormat=\{0:dd-MM-yyyy\}}"
+                                                                    Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.dob, StringFormat=\{0:dd-MM-yyyy\}}"
                                                                     TextWrapping="WrapWithOverflow" />
                                                             </Border>
                                                             <Border
@@ -1477,14 +1474,45 @@
                                                                     VerticalContentAlignment="Center"
                                                                     BorderThickness="0"
                                                                     FontSize="16"
-                                                                    Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.DISU, StringFormat=\{0:dd-MM-yyyy\}}"
+                                                                    Text="{Binding ElementName=dg_main_profiles, Path=SelectedItem.disu, StringFormat=\{0:dd-MM-yyyy\}}"
                                                                     TextWrapping="WrapWithOverflow" />
                                                             </Border>
                                                         </Grid>
                                                     </Grid>
                                                 </Border>
                                                 <Grid Grid.Row="1">
-                                                    <ListBox ItemsSource="{Binding ElementName=dg_main_profiles, Path=SelectedItem.LIST_DEVICE_ID, Converter={StaticResource myProfileListDeviceConverter}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                                                    <md:CommandDataGrid
+                                                        x:Name="dg_profileDevices"
+                                                        AutoGenerateColumns="False"
+                                                        CanUserAddRows="False"
+                                                        CanUserDeleteRows="False"
+                                                        IsReadOnly="True"
+                                                        ItemsSource="{Binding ElementName=dg_main_profiles, Path=SelectedItem.list_device_id, Converter={StaticResource myProfileListDeviceConverter}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                        SelectedIndex="0"
+                                                        SelectionMode="Single"
+                                                        SelectionUnit="FullRow">
+                                                        <DataGrid.Columns>
+                                                            <DataGridTextColumn
+                                                                Width="Auto"
+                                                                Binding="{Binding Path=deviceId, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                                Header="ID"
+                                                                IsReadOnly="True"
+                                                                Visibility="Visible" />
+                                                            <DataGridTextColumn
+                                                                Width="*"
+                                                                Binding="{Binding Path=deviceName, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                                Header="NAME"
+                                                                IsReadOnly="True"
+                                                                Visibility="Visible" />
+                                                            <DataGridTextColumn
+                                                                Width="*"
+                                                                Binding="{Binding Path=deviceIp, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                                Header="IP"
+                                                                IsReadOnly="True"
+                                                                Visibility="Visible" />
+                                                        </DataGrid.Columns>
+                                                    </md:CommandDataGrid>
+                                                    <!--<ListBox ItemsSource="{Binding ElementName=dg_main_profiles, Path=SelectedItem.LIST_DEVICE_ID, Converter={StaticResource myProfileListDeviceConverter}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />-->
                                                 </Grid>
                                             </Grid>
                                         </ScrollViewer>
@@ -1572,17 +1600,17 @@
                                         <DataGrid.Columns>
                                             <DataGridTextColumn
                                                 Width="Auto"
-                                                Binding="{Binding Path=PIN_NO, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Binding="{Binding Path=pinno, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                 Header="PinNo"
                                                 Visibility="Visible" />
                                             <DataGridTextColumn
                                                 Width="Auto"
-                                                Binding="{Binding Path=DEVICE_IP, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Binding="{Binding Path=deviceIp, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                 Header="IP"
                                                 Visibility="Visible" />
                                             <DataGridTextColumn
                                                 Width="Auto"
-                                                Binding="{Binding Path=TIMECHECK_TIME, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                                Binding="{Binding Path=timeCheck, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                                                 Header="Time"
                                                 Visibility="Visible" />
                                         </DataGrid.Columns>

@@ -66,12 +66,12 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn
                             Width="*"
-                            Binding="{Binding Path=CLASS_ID}"
+                            Binding="{Binding Path=classId}"
                             Header="Class Id"
                             IsReadOnly="True" />
                         <DataGridTextColumn
                             Width="*"
-                            Binding="{Binding Path=CLASS_NAME}"
+                            Binding="{Binding Path=className}"
                             Header="Class Name" />
                     </DataGrid.Columns>
                 </DataGrid>

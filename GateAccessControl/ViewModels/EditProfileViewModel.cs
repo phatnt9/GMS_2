@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
 
@@ -54,7 +55,7 @@ namespace GateAccessControl
         public EditProfileViewModel(Profile profile)
         {
             EditProfile = profile;
-            ReloadDataCardTypes();
+            ReloadDataCardTypesAsync();
 
             ReplaceProfileImageCommand = new RelayCommand<Profile>(
                  (p) =>
@@ -63,7 +64,7 @@ namespace GateAccessControl
                  },
                  (p) =>
                  {
-                     ReplaceProfileImage(EditProfile.IMAGE, EditProfile);
+                     ReplaceProfileImage(EditProfile.image, EditProfile);
                  });
 
             SaveProfileCommand = new RelayCommand<Profile>(
@@ -74,7 +75,7 @@ namespace GateAccessControl
                  },
                  (p) =>
                  {
-                     SaveProfile(EditProfile);
+                     SaveProfileAsync(EditProfile);
                  });
 
             CloseEditProfileCommand = new RelayCommand<Device>(
@@ -109,15 +110,15 @@ namespace GateAccessControl
                 string fileName = openFileDialog1.SafeFileName;
                 if (String.IsNullOrEmpty(origin))
                 {
-                    p.IMAGE = fileName;
+                    p.image = fileName;
                 }
                 else
                 {
-                    p.IMAGE = origin;
+                    p.image = origin;
                 }
                 File.Copy(importFilePath,
-                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK\Image\" + p.IMAGE, true);
-                p.IMAGE = p.IMAGE;
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\ATEK\Image\" + p.image, true);
+                p.image = p.image;
             }
         }
 
@@ -126,28 +127,28 @@ namespace GateAccessControl
             DialogResult = true;
         }
 
-        private bool SaveProfile(Profile p)
+        private async Task<bool> SaveProfileAsync(Profile p)
         {
-            if (p.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Active.ToString()))
+            if (p.profileStatus.Equals(GlobalConstant.ProfileStatus.Active.ToString()))
             {
-                if (p.CHECK_DATE_TO_LOCK && DateTime.Now.CompareTo(p.DATE_TO_LOCK) >= 0)
+                if (p.check_date_to_lock && DateTime.Now.CompareTo(p.date_to_lock) >= 0)
                 {
                     //Today is later then date to lock
-                    p.CHECK_DATE_TO_LOCK = false;
-                    p.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
-                    p.DATE_MODIFIED = DateTime.Now;
+                    p.check_date_to_lock = false;
+                    p.profileStatus = GlobalConstant.ProfileStatus.Suspended.ToString();
+                    p.date_modified = DateTime.Now;
                 }
             }
             else
             {
-                p.CHECK_DATE_TO_LOCK = false;
-                p.DATE_MODIFIED = DateTime.Now;
+                p.check_date_to_lock = false;
+                p.date_modified = DateTime.Now;
             }
-
-            if (SqliteDataAccess.UpdateProfile(p))
+            Task<bool> updateTask = SqliteDataAccess.UpdateProfileAsync(p);
+            if (await updateTask)
             {
                 System.Windows.Forms.MessageBox.Show("Profile saved!");
-                UpdateProfileToAllDevice(p);
+                UpdateProfileToAllDeviceAsync(p);
                 return true;
             }
             else
@@ -157,16 +158,16 @@ namespace GateAccessControl
             }
         }
 
-        private bool UpdateProfileToAllDevice(Profile p)
+        private async Task<bool> UpdateProfileToAllDeviceAsync(Profile p)
         {
             if (p != null)
             {
                 int count = 0;
                 List<int> listDeviceId = new List<int>();
 
-                if (!String.IsNullOrEmpty(p.LIST_DEVICE_ID))
+                if (!String.IsNullOrEmpty(p.list_device_id))
                 {
-                    string[] listVar = p.LIST_DEVICE_ID.Split(',');
+                    string[] listVar = p.list_device_id.Split(',');
                     foreach (string var in listVar)
                     {
                         int temp;
@@ -178,28 +179,28 @@ namespace GateAccessControl
                     }
                     foreach (int id in listDeviceId)
                     {
-                        List<DeviceProfile> getCloneDeviceProfile = SqliteDataAccess.LoadDeviceProfiles(id, "", "", p.pinno);
+                        List<DeviceProfile> getCloneDeviceProfile = await SqliteDataAccess.LoadDeviceProfilesAsync(id, "", "", p.pinno);
 
                         foreach (DeviceProfile DP in getCloneDeviceProfile)
                         {
                             DP.CloneDataFromProfile(p);
-                            if (p.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Suspended.ToString()))
+                            if (p.profileStatus.Equals(GlobalConstant.ProfileStatus.Suspended.ToString()))
                             {
-                                if (!DP.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Deleted.ToString()))
+                                if (!DP.client_status.Equals(GlobalConstant.ClientStatus.Deleted.ToString()))
                                 {
-                                    DP.CLIENT_STATUS = GlobalConstant.ClientStatus.Delete.ToString();
+                                    DP.client_status = GlobalConstant.ClientStatus.Delete.ToString();
                                 }
                             }
                             else
                             {
-                                DP.CLIENT_STATUS = GlobalConstant.ClientStatus.Unknow.ToString();
-                                if (DP.SERVER_STATUS.Equals(GlobalConstant.ServerStatus.None.ToString()))
+                                DP.client_status = GlobalConstant.ClientStatus.Unknow.ToString();
+                                if (DP.server_status.Equals(GlobalConstant.ServerStatus.None.ToString()))
                                 {
-                                    DP.SERVER_STATUS = GlobalConstant.ServerStatus.Update.ToString();
+                                    DP.server_status = GlobalConstant.ServerStatus.Update.ToString();
                                 }
                             }
-
-                            if (SqliteDataAccess.UpdateDeviceProfile(id, DP))
+                            Task<bool> updateTask = SqliteDataAccess.UpdateDeviceProfileAsync(id, DP);
+                            if (await updateTask)
                             {
                                 count++;
                             }
@@ -225,16 +226,11 @@ namespace GateAccessControl
             }
         }
 
-        public void ReloadDataCardTypes()
+        public async void ReloadDataCardTypesAsync()
         {
-            try
-            {
-                Classes = new ObservableCollection<CardType>(SqliteDataAccess.LoadCardTypes());
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-            }
+            Task<List<CardType>> loadTask = SqliteDataAccess.LoadCardTypesAsync();
+            List<CardType> classesList = await loadTask;
+            Classes = new ObservableCollection<CardType>(classesList);
         }
     }
 }

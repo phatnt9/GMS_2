@@ -14,7 +14,7 @@ namespace GateAccessControl
     public class SqliteDataAccess
     {
         private static readonly log4net.ILog logFile = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private static readonly HttpClient client = new HttpClient();
+        public static readonly HttpClient client = new HttpClient();
 
         /// <summary>
         /// Return the connection string to main Database
@@ -30,559 +30,556 @@ namespace GateAccessControl
             return test;
         }
 
-        public static List<CardType> LoadCardTypes()
-        {
-            try
-            {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    var output = cnn.Query<CardType>("SELECT * FROM DT_CLASS", new DynamicParameters());
-                    return output.ToList();
-                }
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return new List<CardType>();
-            }
-        }
-
+        //public static List<CardType> LoadCardTypes()
+        //{
+        //    try
+        //    {
+        //        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //        {
+        //            var output = cnn.Query<CardType>("SELECT * FROM DT_CLASS", new DynamicParameters());
+        //            return output.ToList();
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logFile.Error(ex.Message);
+        //        return new List<CardType>();
+        //    }
+        //}
         /// <summary>
         /// 0: Load all
         /// </summary>
         /// <param name="deviceId"></param>
         /// <returns></returns>
-        public static List<Device> LoadDevices(int deviceId)
-        {
-            try
-            {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    var p = new DynamicParameters();
-                    p.Add("@DEVICE_ID", deviceId);
-                    if (deviceId == 0)
-                    {
-                        var output = cnn.Query<Device>("SELECT * FROM DT_DEVICE", p);
-                        return output.ToList();
-                    }
-                    else
-                    {
-                        var output = cnn.Query<Device>("SELECT * FROM DT_DEVICE WHERE DT_DEVICE.DEVICE_ID = @DEVICE_ID", p);
-                        return output.ToList();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return new List<Device>();
-            }
-        }
+        //public static List<Device> LoadDevices(int deviceId)
+        //{
+        //    try
+        //    {
+        //        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //        {
+        //            var p = new DynamicParameters();
+        //            p.Add("@DEVICE_ID", deviceId);
+        //            if (deviceId == 0)
+        //            {
+        //                var output = cnn.Query<Device>("SELECT * FROM DT_DEVICE", p);
+        //                return output.ToList();
+        //            }
+        //            else
+        //            {
+        //                var output = cnn.Query<Device>("SELECT * FROM DT_DEVICE WHERE DT_DEVICE.DEVICE_ID = @DEVICE_ID", p);
+        //                return output.ToList();
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logFile.Error(ex.Message);
+        //        return new List<Device>();
+        //    }
+        //}
 
-        public static List<DeviceProfile> LoadDeviceProfiles(int deviceId, string type, string group, string pinno)
-        {
-            try
-            {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    type = (type == null) ? "" : type;
-                    group = (group == null) ? "" : group;
-                    pinno = (pinno == null) ? "" : pinno;
-                    var p = new DynamicParameters();
-                    p.Add("@CLASS_NAME", "%" + type + "%");
-                    p.Add("@SUB_CLASS", "%" + group + "%");
-                    p.Add("@PIN_NO", "%" + pinno + "%");
-                    var output = cnn.Query<DeviceProfile>("SELECT * FROM DT_DEVICE_PROFILES_" + deviceId + " WHERE ((CLASS_NAME LIKE (@CLASS_NAME)) AND (SUB_CLASS LIKE (@SUB_CLASS)) AND (PIN_NO LIKE (@PIN_NO)))", p);
-                    return output.ToList();
-                }
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return new List<DeviceProfile>();
-            }
-        }
+        //public static List<DeviceProfile> LoadDeviceProfiles(int deviceId, string type, string group, string pinno)
+        //{
+        //    try
+        //    {
+        //        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //        {
+        //            type = (type == null) ? "" : type;
+        //            group = (group == null) ? "" : group;
+        //            pinno = (pinno == null) ? "" : pinno;
+        //            var p = new DynamicParameters();
+        //            p.Add("@CLASS_NAME", "%" + type + "%");
+        //            p.Add("@SUB_CLASS", "%" + group + "%");
+        //            p.Add("@PIN_NO", "%" + pinno + "%");
+        //            var output = cnn.Query<DeviceProfile>("SELECT * FROM DT_DEVICE_PROFILES_" + deviceId + " WHERE ((CLASS_NAME LIKE (@CLASS_NAME)) AND (SUB_CLASS LIKE (@SUB_CLASS)) AND (PIN_NO LIKE (@PIN_NO)))", p);
+        //            return output.ToList();
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logFile.Error(ex.Message);
+        //        return new List<DeviceProfile>();
+        //    }
+        //}
 
-        public static List<Profile> LoadProfiles(string type, string group, string pinno)
-        {
-            try
-            {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    type = (type == null) ? "" : type;
-                    group = (group == null) ? "" : group;
-                    pinno = (pinno == null) ? "" : pinno;
-                    var p = new DynamicParameters();
-                    p.Add("@CLASS_NAME", "%" + type + "%");
-                    p.Add("@SUB_CLASS", "%" + group + "%");
-                    p.Add("@PIN_NO", "%" + pinno + "%");
-                    var output = cnn.Query<Profile>("SELECT * FROM DT_PROFILE WHERE ((CLASS_NAME LIKE (@CLASS_NAME)) AND (SUB_CLASS LIKE (@SUB_CLASS)) AND (PIN_NO LIKE (@PIN_NO)))", p);
-                    return output.ToList();
-                }
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return new List<Profile>();
-            }
-        }
+        //public static List<Profile> LoadProfiles(string type, string group, string pinno)
+        //{
+        //    try
+        //    {
+        //        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //        {
+        //            type = (type == null) ? "" : type;
+        //            group = (group == null) ? "" : group;
+        //            pinno = (pinno == null) ? "" : pinno;
+        //            var p = new DynamicParameters();
+        //            p.Add("@CLASS_NAME", "%" + type + "%");
+        //            p.Add("@SUB_CLASS", "%" + group + "%");
+        //            p.Add("@PIN_NO", "%" + pinno + "%");
+        //            var output = cnn.Query<Profile>("SELECT * FROM DT_PROFILE WHERE ((CLASS_NAME LIKE (@CLASS_NAME)) AND (SUB_CLASS LIKE (@SUB_CLASS)) AND (PIN_NO LIKE (@PIN_NO)))", p);
+        //            return output.ToList();
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logFile.Error(ex.Message);
+        //        return new List<Profile>();
+        //    }
+        //}
 
-        public static List<TimeRecord> LoadTimeChecks(string PIN_NO, DateTime time, string ip = null)
-        {
-            try
-            {
-                if (ip == null)
-                {
-                    if (time != DateTime.MinValue)
-                    {
-                        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                        {
-                            var p = new DynamicParameters();
-                            p.Add("@PIN_NO", PIN_NO);
-                            p.Add("@FROM", time);
-                            p.Add("@TO", time.AddDays(1));
+        //public static List<TimeRecord> LoadTimeChecks(string PIN_NO, DateTime time, string ip = null)
+        //{
+        //    try
+        //    {
+        //        if (ip == null)
+        //        {
+        //            if (time != DateTime.MinValue)
+        //            {
+        //                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //                {
+        //                    var p = new DynamicParameters();
+        //                    p.Add("@PIN_NO", PIN_NO);
+        //                    p.Add("@FROM", time);
+        //                    p.Add("@TO", time.AddDays(1));
 
-                            var output = cnn.Query<TimeRecord>("SELECT * FROM DT_TIMECHECK INNER JOIN DT_PROFILE,DT_DEVICE ON " +
-                                "(DT_PROFILE.PIN_NO = DT_TIMECHECK.PIN_NO AND DT_DEVICE.DEVICE_IP = DT_TIMECHECK.DEVICE_IP)" +
-                                " WHERE (TIMECHECK_TIME >= @FROM AND TIMECHECK_TIME < @TO) AND (DT_PROFILE.PIN_NO = @PIN_NO)", p);
+        //                    var output = cnn.Query<TimeRecord>("SELECT * FROM DT_TIMECHECK INNER JOIN DT_PROFILE,DT_DEVICE ON " +
+        //                        "(DT_PROFILE.PIN_NO = DT_TIMECHECK.PIN_NO AND DT_DEVICE.DEVICE_IP = DT_TIMECHECK.DEVICE_IP)" +
+        //                        " WHERE (TIMECHECK_TIME >= @FROM AND TIMECHECK_TIME < @TO) AND (DT_PROFILE.PIN_NO = @PIN_NO)", p);
 
-                            //var output = cnn.Query<TimeRecord>("SELECT * FROM DT_TIMECHECK" +
-                            //    " WHERE (DT_TIMECHECK.PIN_NO = @PIN_NO)", p);
-                            return output.ToList();
-                        }
-                    }
-                    else
-                    {
-                        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                        {
-                            var p = new DynamicParameters();
-                            p.Add("@PIN_NO", PIN_NO);
+        //                    //var output = cnn.Query<TimeRecord>("SELECT * FROM DT_TIMECHECK" +
+        //                    //    " WHERE (DT_TIMECHECK.PIN_NO = @PIN_NO)", p);
+        //                    return output.ToList();
+        //                }
+        //            }
+        //            else
+        //            {
+        //                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //                {
+        //                    var p = new DynamicParameters();
+        //                    p.Add("@PIN_NO", PIN_NO);
 
-                            var output = cnn.Query<TimeRecord>("SELECT * FROM DT_TIMECHECK INNER JOIN DT_PROFILE,DT_DEVICE ON " +
-                                "(DT_PROFILE.PIN_NO = DT_TIMECHECK.PIN_NO AND DT_DEVICE.DEVICE_IP = DT_TIMECHECK.DEVICE_IP)" +
-                                " WHERE (DT_PROFILE.PIN_NO = @PIN_NO)", p);
+        //                    var output = cnn.Query<TimeRecord>("SELECT * FROM DT_TIMECHECK INNER JOIN DT_PROFILE,DT_DEVICE ON " +
+        //                        "(DT_PROFILE.PIN_NO = DT_TIMECHECK.PIN_NO AND DT_DEVICE.DEVICE_IP = DT_TIMECHECK.DEVICE_IP)" +
+        //                        " WHERE (DT_PROFILE.PIN_NO = @PIN_NO)", p);
 
-                            //var output = cnn.Query<TimeRecord>("SELECT * FROM DT_TIMECHECK" +
-                            //    " WHERE (DT_TIMECHECK.PIN_NO = @PIN_NO)", p);
+        //                    //var output = cnn.Query<TimeRecord>("SELECT * FROM DT_TIMECHECK" +
+        //                    //    " WHERE (DT_TIMECHECK.PIN_NO = @PIN_NO)", p);
 
-                            return output.ToList();
-                        }
-                    }
-                }
-                else
-                {
-                    if (time != DateTime.MinValue)
-                    {
-                        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                        {
-                            var p = new DynamicParameters();
-                            p.Add("@PIN_NO", PIN_NO);
-                            p.Add("@DEVICE_IP", ip);
-                            p.Add("@FROM", time);
-                            p.Add("@TO", time.AddDays(1));
+        //                    return output.ToList();
+        //                }
+        //            }
+        //        }
+        //        else
+        //        {
+        //            if (time != DateTime.MinValue)
+        //            {
+        //                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //                {
+        //                    var p = new DynamicParameters();
+        //                    p.Add("@PIN_NO", PIN_NO);
+        //                    p.Add("@DEVICE_IP", ip);
+        //                    p.Add("@FROM", time);
+        //                    p.Add("@TO", time.AddDays(1));
 
-                            var output = cnn.Query<TimeRecord>("SELECT * FROM DT_TIMECHECK INNER JOIN DT_PROFILE,DT_DEVICE ON " +
-                                "(DT_PROFILE.PIN_NO = DT_TIMECHECK.PIN_NO AND DT_DEVICE.DEVICE_IP = DT_TIMECHECK.DEVICE_IP)" +
-                                " WHERE (TIMECHECK_TIME >= @FROM AND TIMECHECK_TIME < @TO) AND (DT_DEVICE.DEVICE_IP = @DEVICE_IP)", p);
-                            return output.ToList();
-                        }
-                    }
-                    else
-                    {
-                        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                        {
-                            var p = new DynamicParameters();
-                            p.Add("@PIN_NO", PIN_NO);
-                            p.Add("@DEVICE_IP", ip);
-                            var output = cnn.Query<TimeRecord>("SELECT * FROM DT_TIMECHECK INNER JOIN DT_PROFILE,DT_DEVICE ON " +
-                                "(DT_PROFILE.PIN_NO = DT_TIMECHECK.PIN_NO AND DT_DEVICE.DEVICE_IP = DT_TIMECHECK.DEVICE_IP)" +
-                                " WHERE (DT_DEVICE.DEVICE_IP = @DEVICE_IP)", p);
-                            return output.ToList();
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return new List<TimeRecord>();
-            }
-        }
+        //                    var output = cnn.Query<TimeRecord>("SELECT * FROM DT_TIMECHECK INNER JOIN DT_PROFILE,DT_DEVICE ON " +
+        //                        "(DT_PROFILE.PIN_NO = DT_TIMECHECK.PIN_NO AND DT_DEVICE.DEVICE_IP = DT_TIMECHECK.DEVICE_IP)" +
+        //                        " WHERE (TIMECHECK_TIME >= @FROM AND TIMECHECK_TIME < @TO) AND (DT_DEVICE.DEVICE_IP = @DEVICE_IP)", p);
+        //                    return output.ToList();
+        //                }
+        //            }
+        //            else
+        //            {
+        //                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //                {
+        //                    var p = new DynamicParameters();
+        //                    p.Add("@PIN_NO", PIN_NO);
+        //                    p.Add("@DEVICE_IP", ip);
+        //                    var output = cnn.Query<TimeRecord>("SELECT * FROM DT_TIMECHECK INNER JOIN DT_PROFILE,DT_DEVICE ON " +
+        //                        "(DT_PROFILE.PIN_NO = DT_TIMECHECK.PIN_NO AND DT_DEVICE.DEVICE_IP = DT_TIMECHECK.DEVICE_IP)" +
+        //                        " WHERE (DT_DEVICE.DEVICE_IP = @DEVICE_IP)", p);
+        //                    return output.ToList();
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logFile.Error(ex.Message);
+        //        return new List<TimeRecord>();
+        //    }
+        //}
 
-        public static bool InsertDevice(Device device)
-        {
-            try
-            {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    var p = new DynamicParameters();
-                    p.Add("@DEVICE_IP", device.deviceIp);
-                    p.Add("@DEVICE_NAME", device.deviceName);
-                    p.Add("@DEVICE_STATUS", device.deviceStatus);
-                    p.Add("@DEVICE_NOTE", device.deviceNote);
-                    cnn.Execute("INSERT INTO DT_DEVICE " +
-                        "(DEVICE_IP,DEVICE_NAME,DEVICE_STATUS,DEVICE_NOTE) " +
-                        "VALUES " +
-                        "(@DEVICE_IP, @DEVICE_NAME, @DEVICE_STATUS,@DEVICE_NOTE)", device);
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return false;
-            }
-        }
+        //public static bool InsertDevice(Device device)
+        //{
+        //    try
+        //    {
+        //        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //        {
+        //            var p = new DynamicParameters();
+        //            p.Add("@DEVICE_IP", device.deviceIp);
+        //            p.Add("@DEVICE_NAME", device.deviceName);
+        //            p.Add("@DEVICE_STATUS", device.deviceStatus);
+        //            p.Add("@DEVICE_NOTE", device.deviceNote);
+        //            cnn.Execute("INSERT INTO DT_DEVICE " +
+        //                "(DEVICE_IP,DEVICE_NAME,DEVICE_STATUS,DEVICE_NOTE) " +
+        //                "VALUES " +
+        //                "(@DEVICE_IP, @DEVICE_NAME, @DEVICE_STATUS,@DEVICE_NOTE)", device);
+        //        }
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logFile.Error(ex.Message);
+        //        return false;
+        //    }
+        //}
 
-        public static bool InsertProfile(Profile profile)
-        {
-            try
-            {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    cnn.Execute("INSERT INTO DT_PROFILE " +
-                        "(PIN_NO,AD_NO,PROFILE_NAME,CLASS_NAME,SUB_CLASS,GENDER,DOB,DISU,EMAIL,ADDRESS," +
-                        "PHONE,PROFILE_STATUS,IMAGE,DATE_TO_LOCK,CHECK_DATE_TO_LOCK," +
-                        "LICENSE_PLATE,LIST_DEVICE_ID,DATE_CREATED,DATE_MODIFIED) " +
-                        "VALUES (@PIN_NO,@AD_NO,@PROFILE_NAME,@CLASS_NAME,@SUB_CLASS,@GENDER,@DOB,@DISU,@EMAIL,@ADDRESS," +
-                        "@PHONE,@PROFILE_STATUS,@IMAGE,@DATE_TO_LOCK,@CHECK_DATE_TO_LOCK," +
-                        "@LICENSE_PLATE,@LIST_DEVICE_ID,@DATE_CREATED,@DATE_MODIFIED)", profile);
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return false;
-            }
-        }
+        //public static bool InsertProfile(Profile profile)
+        //{
+        //    try
+        //    {
+        //        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //        {
+        //            cnn.Execute("INSERT INTO DT_PROFILE " +
+        //                "(PIN_NO,AD_NO,PROFILE_NAME,CLASS_NAME,SUB_CLASS,GENDER,DOB,DISU,EMAIL,ADDRESS," +
+        //                "PHONE,PROFILE_STATUS,IMAGE,DATE_TO_LOCK,CHECK_DATE_TO_LOCK," +
+        //                "LICENSE_PLATE,LIST_DEVICE_ID,DATE_CREATED,DATE_MODIFIED) " +
+        //                "VALUES (@PIN_NO,@AD_NO,@PROFILE_NAME,@CLASS_NAME,@SUB_CLASS,@GENDER,@DOB,@DISU,@EMAIL,@ADDRESS," +
+        //                "@PHONE,@PROFILE_STATUS,@IMAGE,@DATE_TO_LOCK,@CHECK_DATE_TO_LOCK," +
+        //                "@LICENSE_PLATE,@LIST_DEVICE_ID,@DATE_CREATED,@DATE_MODIFIED)", profile);
+        //        }
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logFile.Error(ex.Message);
+        //        return false;
+        //    }
+        //}
 
-        public static bool InsertClass(CardType cardType)
-        {
-            try
-            {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    cnn.Execute("INSERT INTO DT_CLASS (CLASS_NAME) VALUES (@CLASS_NAME)", cardType);
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return false;
-            }
-        }
+        //public static bool InsertClass(CardType cardType)
+        //{
+        //    try
+        //    {
+        //        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //        {
+        //            cnn.Execute("INSERT INTO DT_CLASS (CLASS_NAME) VALUES (@CLASS_NAME)", cardType);
+        //        }
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logFile.Error(ex.Message);
+        //        return false;
+        //    }
+        //}
 
-        public static bool InsertDeviceProfile(int deviceId, DeviceProfile _profile)
-        {
-            try
-            {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    cnn.Execute("INSERT INTO DT_DEVICE_PROFILES_" + deviceId +
-                        " (PIN_NO,AD_NO,PROFILE_NAME,CLASS_NAME,SUB_CLASS,GENDER,DOB,DISU,EMAIL,ADDRESS," +
-                        "PHONE,PROFILE_STATUS,IMAGE,DATE_TO_LOCK,CHECK_DATE_TO_LOCK," +
-                        "LICENSE_PLATE,DATE_CREATED,DATE_MODIFIED,SERVER_STATUS,CLIENT_STATUS,ACTIVE_TIME) " +
-                        "VALUES (@PIN_NO,@AD_NO,@PROFILE_NAME,@CLASS_NAME,@SUB_CLASS,@GENDER,@DOB,@DISU,@EMAIL,@ADDRESS," +
-                        "@PHONE,@PROFILE_STATUS,@IMAGE,@DATE_TO_LOCK,@CHECK_DATE_TO_LOCK," +
-                        "@LICENSE_PLATE,@DATE_CREATED,@DATE_MODIFIED,@SERVER_STATUS,@CLIENT_STATUS,@ACTIVE_TIME)", _profile);
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return false;
-            }
-        }
+        //public static bool InsertDeviceProfile(int deviceId, DeviceProfile _profile)
+        //{
+        //    try
+        //    {
+        //        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //        {
+        //            cnn.Execute("INSERT INTO DT_DEVICE_PROFILES_" + deviceId +
+        //                " (PIN_NO,AD_NO,PROFILE_NAME,CLASS_NAME,SUB_CLASS,GENDER,DOB,DISU,EMAIL,ADDRESS," +
+        //                "PHONE,PROFILE_STATUS,IMAGE,DATE_TO_LOCK,CHECK_DATE_TO_LOCK," +
+        //                "LICENSE_PLATE,DATE_CREATED,DATE_MODIFIED,SERVER_STATUS,CLIENT_STATUS,ACTIVE_TIME) " +
+        //                "VALUES (@PIN_NO,@AD_NO,@PROFILE_NAME,@CLASS_NAME,@SUB_CLASS,@GENDER,@DOB,@DISU,@EMAIL,@ADDRESS," +
+        //                "@PHONE,@PROFILE_STATUS,@IMAGE,@DATE_TO_LOCK,@CHECK_DATE_TO_LOCK," +
+        //                "@LICENSE_PLATE,@DATE_CREATED,@DATE_MODIFIED,@SERVER_STATUS,@CLIENT_STATUS,@ACTIVE_TIME)", _profile);
+        //        }
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logFile.Error(ex.Message);
+        //        return false;
+        //    }
+        //}
 
-        public static bool InsertDeviceProfile(int deviceId, List<Profile> _profiles)
-        {
-            try
-            {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    string insertCmd = "INSERT INTO DT_DEVICE_PROFILES_" + deviceId +
-                        " (PIN_NO,AD_NO,PROFILE_NAME,CLASS_NAME,SUB_CLASS,GENDER,DOB,DISU,EMAIL,ADDRESS," +
-                        "PHONE,PROFILE_STATUS,IMAGE,DATE_TO_LOCK,CHECK_DATE_TO_LOCK," +
-                        "LICENSE_PLATE,DATE_CREATED,DATE_MODIFIED,SERVER_STATUS,CLIENT_STATUS,ACTIVE_TIME) " +
-                        "VALUES (@PIN_NO,@AD_NO,@PROFILE_NAME,@CLASS_NAME,@SUB_CLASS,@GENDER,@DOB,@DISU,@EMAIL,@ADDRESS," +
-                        "@PHONE,@PROFILE_STATUS,@IMAGE,@DATE_TO_LOCK,@CHECK_DATE_TO_LOCK," +
-                        "@LICENSE_PLATE,@DATE_CREATED,@DATE_MODIFIED,@SERVER_STATUS,@CLIENT_STATUS,@ACTIVE_TIME)";
+        //public static bool InsertDeviceProfile(int deviceId, List<Profile> _profiles)
+        //{
+        //    try
+        //    {
+        //        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //        {
+        //            string insertCmd = "INSERT INTO DT_DEVICE_PROFILES_" + deviceId +
+        //                " (PIN_NO,AD_NO,PROFILE_NAME,CLASS_NAME,SUB_CLASS,GENDER,DOB,DISU,EMAIL,ADDRESS," +
+        //                "PHONE,PROFILE_STATUS,IMAGE,DATE_TO_LOCK,CHECK_DATE_TO_LOCK," +
+        //                "LICENSE_PLATE,DATE_CREATED,DATE_MODIFIED,SERVER_STATUS,CLIENT_STATUS,ACTIVE_TIME) " +
+        //                "VALUES (@PIN_NO,@AD_NO,@PROFILE_NAME,@CLASS_NAME,@SUB_CLASS,@GENDER,@DOB,@DISU,@EMAIL,@ADDRESS," +
+        //                "@PHONE,@PROFILE_STATUS,@IMAGE,@DATE_TO_LOCK,@CHECK_DATE_TO_LOCK," +
+        //                "@LICENSE_PLATE,@DATE_CREATED,@DATE_MODIFIED,@SERVER_STATUS,@CLIENT_STATUS,@ACTIVE_TIME)";
 
-                    foreach (Profile p in _profiles)
-                    {
-                        DeviceProfile dp = new DeviceProfile(p);
-                        cnn.Execute(insertCmd, dp);
-                    }
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return false;
-            }
-        }
+        //            foreach (Profile p in _profiles)
+        //            {
+        //                DeviceProfile dp = new DeviceProfile(p);
+        //                cnn.Execute(insertCmd, dp);
+        //            }
+        //        }
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logFile.Error(ex.Message);
+        //        return false;
+        //    }
+        //}
 
-        public static bool InsertTimeCheck(TimeRecord timeRecord)
-        {
-            try
-            {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    cnn.Execute("INSERT INTO DT_TIMECHECK (PIN_NO,TIMECHECK_TIME,DEVICE_IP) VALUES (@PIN_NO, @TIMECHECK_TIME, @DEVICE_IP)", timeRecord);
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return false;
-            }
-        }
+        //public static bool InsertTimeCheck(TimeRecord timeRecord)
+        //{
+        //    try
+        //    {
+        //        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //        {
+        //            cnn.Execute("INSERT INTO DT_TIMECHECK (PIN_NO,TIMECHECK_TIME,DEVICE_IP) VALUES (@PIN_NO, @TIMECHECK_TIME, @DEVICE_IP)", timeRecord);
+        //        }
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logFile.Error(ex.Message);
+        //        return false;
+        //    }
+        //}
 
-        public static bool UpdateDevice(Device device)
-        {
-            try
-            {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    cnn.Execute("UPDATE DT_DEVICE SET " +
-                            "DEVICE_IP = @DEVICE_IP, " +
-                            "DEVICE_NAME = @DEVICE_NAME, " +
-                            "DEVICE_STATUS = @DEVICE_STATUS, " +
-                            "DEVICE_NOTE = @DEVICE_NOTE " +
-                            "WHERE DEVICE_ID = @DEVICE_ID", device);
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return false;
-            }
-        }
+        //public static bool UpdateDevice(Device device)
+        //{
+        //    try
+        //    {
+        //        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //        {
+        //            cnn.Execute("UPDATE DT_DEVICE SET " +
+        //                    "DEVICE_IP = @DEVICE_IP, " +
+        //                    "DEVICE_NAME = @DEVICE_NAME, " +
+        //                    "DEVICE_STATUS = @DEVICE_STATUS, " +
+        //                    "DEVICE_NOTE = @DEVICE_NOTE " +
+        //                    "WHERE DEVICE_ID = @DEVICE_ID", device);
+        //        }
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logFile.Error(ex.Message);
+        //        return false;
+        //    }
+        //}
 
-        public static bool UpdateProfile(Profile profile)
-        {
-            try
-            {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    cnn.Execute("UPDATE DT_PROFILE SET " +
-                        "PIN_NO = @PIN_NO, " +
-                        "AD_NO = @AD_NO, " +
-                        "PROFILE_NAME = @PROFILE_NAME, " +
-                        "CLASS_NAME = @CLASS_NAME, " +
-                        "SUB_CLASS = @SUB_CLASS, " +
-                        "GENDER = @GENDER, " +
-                        "DOB = @DOB, " +
-                        "DISU = @DISU, " +
-                        "EMAIL = @EMAIL, " +
-                        "ADDRESS = @ADDRESS, " +
-                        "PHONE = @PHONE, " +
-                        "PROFILE_STATUS = @PROFILE_STATUS, " +
-                        "IMAGE = @IMAGE, " +
-                        "DATE_TO_LOCK = @DATE_TO_LOCK, " +
-                        "CHECK_DATE_TO_LOCK = @CHECK_DATE_TO_LOCK, " +
-                        "LICENSE_PLATE = @LICENSE_PLATE, " +
-                        "LIST_DEVICE_ID = @LIST_DEVICE_ID, " +
-                        "DATE_CREATED = @DATE_CREATED, " +
-                        "DATE_MODIFIED = @DATE_MODIFIED " +
-                        "WHERE PIN_NO = @PIN_NO", profile);
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return false;
-            }
-        }
+        //public static bool UpdateProfile(Profile profile)
+        //{
+        //    try
+        //    {
+        //        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //        {
+        //            cnn.Execute("UPDATE DT_PROFILE SET " +
+        //                "PIN_NO = @PIN_NO, " +
+        //                "AD_NO = @AD_NO, " +
+        //                "PROFILE_NAME = @PROFILE_NAME, " +
+        //                "CLASS_NAME = @CLASS_NAME, " +
+        //                "SUB_CLASS = @SUB_CLASS, " +
+        //                "GENDER = @GENDER, " +
+        //                "DOB = @DOB, " +
+        //                "DISU = @DISU, " +
+        //                "EMAIL = @EMAIL, " +
+        //                "ADDRESS = @ADDRESS, " +
+        //                "PHONE = @PHONE, " +
+        //                "PROFILE_STATUS = @PROFILE_STATUS, " +
+        //                "IMAGE = @IMAGE, " +
+        //                "DATE_TO_LOCK = @DATE_TO_LOCK, " +
+        //                "CHECK_DATE_TO_LOCK = @CHECK_DATE_TO_LOCK, " +
+        //                "LICENSE_PLATE = @LICENSE_PLATE, " +
+        //                "LIST_DEVICE_ID = @LIST_DEVICE_ID, " +
+        //                "DATE_CREATED = @DATE_CREATED, " +
+        //                "DATE_MODIFIED = @DATE_MODIFIED " +
+        //                "WHERE PIN_NO = @PIN_NO", profile);
+        //        }
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logFile.Error(ex.Message);
+        //        return false;
+        //    }
+        //}
 
-        public static bool UpdateDeviceProfile(int deviceId, DeviceProfile _profile)
-        {
-            try
-            {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    cnn.Execute("UPDATE DT_DEVICE_PROFILES_" + deviceId + " SET " +
-                        "PIN_NO = @PIN_NO, " +
-                        "AD_NO = @AD_NO, " +
-                        "PROFILE_NAME = @PROFILE_NAME, " +
-                        "CLASS_NAME = @CLASS_NAME, " +
-                        "SUB_CLASS = @SUB_CLASS, " +
-                        "GENDER = @GENDER, " +
-                        "DOB = @DOB, " +
-                        "DISU = @DISU, " +
-                        "EMAIL = @EMAIL, " +
-                        "ADDRESS = @ADDRESS, " +
-                        "PHONE = @PHONE, " +
-                        "PROFILE_STATUS = @PROFILE_STATUS, " +
-                        "IMAGE = @IMAGE, " +
-                        "DATE_TO_LOCK = @DATE_TO_LOCK, " +
-                        "CHECK_DATE_TO_LOCK = @CHECK_DATE_TO_LOCK, " +
-                        "LICENSE_PLATE = @LICENSE_PLATE, " +
-                        "DATE_CREATED = @DATE_CREATED, " +
-                        "DATE_MODIFIED = @DATE_MODIFIED, " +
-                        "SERVER_STATUS = @SERVER_STATUS, " +
-                        "CLIENT_STATUS = @CLIENT_STATUS, " +
-                        "ACTIVE_TIME = @ACTIVE_TIME " +
-                        "WHERE PIN_NO = @PIN_NO", _profile);
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return false;
-            }
-        }
+        //public static bool UpdateDeviceProfile(int deviceId, DeviceProfile _profile)
+        //{
+        //    try
+        //    {
+        //        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //        {
+        //            cnn.Execute("UPDATE DT_DEVICE_PROFILES_" + deviceId + " SET " +
+        //                "PIN_NO = @PIN_NO, " +
+        //                "AD_NO = @AD_NO, " +
+        //                "PROFILE_NAME = @PROFILE_NAME, " +
+        //                "CLASS_NAME = @CLASS_NAME, " +
+        //                "SUB_CLASS = @SUB_CLASS, " +
+        //                "GENDER = @GENDER, " +
+        //                "DOB = @DOB, " +
+        //                "DISU = @DISU, " +
+        //                "EMAIL = @EMAIL, " +
+        //                "ADDRESS = @ADDRESS, " +
+        //                "PHONE = @PHONE, " +
+        //                "PROFILE_STATUS = @PROFILE_STATUS, " +
+        //                "IMAGE = @IMAGE, " +
+        //                "DATE_TO_LOCK = @DATE_TO_LOCK, " +
+        //                "CHECK_DATE_TO_LOCK = @CHECK_DATE_TO_LOCK, " +
+        //                "LICENSE_PLATE = @LICENSE_PLATE, " +
+        //                "DATE_CREATED = @DATE_CREATED, " +
+        //                "DATE_MODIFIED = @DATE_MODIFIED, " +
+        //                "SERVER_STATUS = @SERVER_STATUS, " +
+        //                "CLIENT_STATUS = @CLIENT_STATUS, " +
+        //                "ACTIVE_TIME = @ACTIVE_TIME " +
+        //                "WHERE PIN_NO = @PIN_NO", _profile);
+        //        }
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logFile.Error(ex.Message);
+        //        return false;
+        //    }
+        //}
 
-        public static bool UpdateCardType(CardType cardType)
-        {
-            try
-            {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    cnn.Execute("UPDATE DT_CLASS SET " +
-                        "CLASS_NAME = @CLASS_NAME " +
-                        "WHERE CLASS_ID = @CLASS_ID", cardType);
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return false;
-            }
-        }
+        //public static bool UpdateCardType(CardType cardType)
+        //{
+        //    try
+        //    {
+        //        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //        {
+        //            cnn.Execute("UPDATE DT_CLASS SET " +
+        //                "CLASS_NAME = @CLASS_NAME " +
+        //                "WHERE CLASS_ID = @CLASS_ID", cardType);
+        //        }
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logFile.Error(ex.Message);
+        //        return false;
+        //    }
+        //}
 
-        public static bool DeleteDevice(Device device)
-        {
-            try
-            {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    cnn.Execute("DELETE FROM DT_DEVICE WHERE DEVICE_ID = @DEVICE_ID", device);
-                }
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    cnn.Execute("DROP TABLE IF EXISTS DT_DEVICE_PROFILES_" + device.deviceId, device);
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return false;
-            }
-        }
+        //public static bool DeleteDevice(Device device)
+        //{
+        //    try
+        //    {
+        //        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //        {
+        //            cnn.Execute("DELETE FROM DT_DEVICE WHERE DEVICE_ID = @DEVICE_ID", device);
+        //        }
+        //        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //        {
+        //            cnn.Execute("DROP TABLE IF EXISTS DT_DEVICE_PROFILES_" + device.deviceId, device);
+        //        }
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logFile.Error(ex.Message);
+        //        return false;
+        //    }
+        //}
 
-        public static bool DeleteProfile(Profile profile)
-        {
-            try
-            {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    cnn.Execute("DELETE FROM DT_PROFILE WHERE PIN_NO = @PIN_NO", profile);
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return false;
-            }
-        }
+        //public static bool DeleteProfile(Profile profile)
+        //{
+        //    try
+        //    {
+        //        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //        {
+        //            cnn.Execute("DELETE FROM DT_PROFILE WHERE PIN_NO = @PIN_NO", profile);
+        //        }
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logFile.Error(ex.Message);
+        //        return false;
+        //    }
+        //}
 
-        public static bool DeleteCardType(CardType cardType)
-        {
-            try
-            {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    cnn.Execute("DELETE FROM DT_CLASS WHERE CLASS_ID = @CLASS_ID", cardType);
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return false;
-            }
-        }
+        //public static bool DeleteCardType(CardType cardType)
+        //{
+        //    try
+        //    {
+        //        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //        {
+        //            cnn.Execute("DELETE FROM DT_CLASS WHERE CLASS_ID = @CLASS_ID", cardType);
+        //        }
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logFile.Error(ex.Message);
+        //        return false;
+        //    }
+        //}
 
-        public static bool DeleteDeviceProfile(int deviceId, DeviceProfile _profile)
-        {
-            try
-            {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    cnn.Execute("DELETE FROM DT_DEVICE_PROFILES_" + deviceId + " WHERE PIN_NO = @PIN_NO", _profile);
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return false;
-            }
-        }
-
+        //public static bool DeleteDeviceProfile(int deviceId, DeviceProfile _profile)
+        //{
+        //    try
+        //    {
+        //        using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //        {
+        //            cnn.Execute("DELETE FROM DT_DEVICE_PROFILES_" + deviceId + " WHERE PIN_NO = @PIN_NO", _profile);
+        //        }
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logFile.Error(ex.Message);
+        //        return false;
+        //    }
+        //}
         /// <summary>
         /// Create dynamic table containt profiles for each device in main Database
         /// </summary>
         /// <param name="tableName"></param>
         /// <returns></returns>
-        public static bool CreateDeviceProfilesTable(string tableName)
-        {
-            if (File.Exists(GlobalConstant.DatabasePath + @"\MyDatabase.db"))
-            {
-                try
-                {
-                    using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                    {
-                        cnn.Execute("CREATE TABLE IF NOT EXISTS \"" + tableName + "\" " +
-                               "(\"PROFILE_ID\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, " +
-                               "\"PIN_NO\" TEXT NOT NULL UNIQUE, " +
-                               "\"AD_NO\" TEXT NOT NULL, " +
-                               "\"PROFILE_NAME\" TEXT NOT NULL, " +
-                               "\"CLASS_NAME\" TEXT NOT NULL, " +
-                               "\"SUB_CLASS\" TEXT, " +
-                               "\"GENDER\" TEXT NOT NULL, " +
-                               "\"DOB\" DATE NOT NULL, " +
-                               "\"DISU\" DATE NOT NULL, " +
-                               "\"EMAIL\" TEXT, " +
-                               "\"ADDRESS\" TEXT, " +
-                               "\"PHONE\" TEXT, " +
-                               "\"PROFILE_STATUS\" TEXT, " +
-                               "\"IMAGE\" TEXT NOT NULL, " +
-                               "\"DATE_TO_LOCK\" DATE, " +
-                               "\"CHECK_DATE_TO_LOCK\" INTEGER NOT NULL DEFAULT 0, " +
-                               "\"LICENSE_PLATE\" TEXT, " +
-                               "\"DATE_CREATED\" DATE, " +
-                               "\"DATE_MODIFIED\" DATE, " +
-                               "\"SERVER_STATUS\" TEXT, " +
-                               "\"CLIENT_STATUS\" TEXT, " +
-                               "\"ACTIVE_TIME\" TEXT)");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    logFile.Error(ex.Message);
-                    return false;
-                }
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
+        //public static bool CreateDeviceProfilesTable(string tableName)
+        //{
+        //    if (File.Exists(GlobalConstant.DatabasePath + @"\MyDatabase.db"))
+        //    {
+        //        try
+        //        {
+        //            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+        //            {
+        //                cnn.Execute("CREATE TABLE IF NOT EXISTS \"" + tableName + "\" " +
+        //                       "(\"PROFILE_ID\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, " +
+        //                       "\"PIN_NO\" TEXT NOT NULL UNIQUE, " +
+        //                       "\"AD_NO\" TEXT NOT NULL, " +
+        //                       "\"PROFILE_NAME\" TEXT NOT NULL, " +
+        //                       "\"CLASS_NAME\" TEXT NOT NULL, " +
+        //                       "\"SUB_CLASS\" TEXT, " +
+        //                       "\"GENDER\" TEXT NOT NULL, " +
+        //                       "\"DOB\" DATE NOT NULL, " +
+        //                       "\"DISU\" DATE NOT NULL, " +
+        //                       "\"EMAIL\" TEXT, " +
+        //                       "\"ADDRESS\" TEXT, " +
+        //                       "\"PHONE\" TEXT, " +
+        //                       "\"PROFILE_STATUS\" TEXT, " +
+        //                       "\"IMAGE\" TEXT NOT NULL, " +
+        //                       "\"DATE_TO_LOCK\" DATE, " +
+        //                       "\"CHECK_DATE_TO_LOCK\" INTEGER NOT NULL DEFAULT 0, " +
+        //                       "\"LICENSE_PLATE\" TEXT, " +
+        //                       "\"DATE_CREATED\" DATE, " +
+        //                       "\"DATE_MODIFIED\" DATE, " +
+        //                       "\"SERVER_STATUS\" TEXT, " +
+        //                       "\"CLIENT_STATUS\" TEXT, " +
+        //                       "\"ACTIVE_TIME\" TEXT)");
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            logFile.Error(ex.Message);
+        //            return false;
+        //        }
+        //        return true;
+        //    }
+        //    else
+        //    {
+        //        return false;
+        //    }
+        //}
         /// <summary>
         /// Create main Database with its tables
         /// </summary>
@@ -655,7 +652,7 @@ namespace GateAccessControl
             {
                 string serverIp = Properties.Settings.Default.WebServerAddress;
                 string serverPort = Properties.Settings.Default.WebServerPort;
-                string url = $@"{serverIp}:{serverPort}/serverschool/load/cardType";
+                string url = $@"http://{serverIp}:{serverPort}/serverschool/load/cardType";
 
                 Task<string> responseTask = client.GetStringAsync(url);
                 var responseString = await responseTask;
@@ -664,6 +661,10 @@ namespace GateAccessControl
             }
             catch (Exception ex)
             {
+                if (ex.GetType() == typeof(HttpRequestException))
+                {
+                    return new List<CardType>();
+                }
                 logFile.Error(ex.Message);
                 return new List<CardType>();
             }
@@ -675,7 +676,7 @@ namespace GateAccessControl
             {
                 string serverIp = Properties.Settings.Default.WebServerAddress;
                 string serverPort = Properties.Settings.Default.WebServerPort;
-                string url = $@"{serverIp}:{serverPort}/serverschool/insert/cardType";
+                string url = $@"http://{serverIp}:{serverPort}/serverschool/insert/cardType";
 
                 var values = new Dictionary<string, string>
                 {
@@ -696,6 +697,10 @@ namespace GateAccessControl
             }
             catch (Exception ex)
             {
+                if (ex.GetType() == typeof(HttpRequestException))
+                {
+                    return false;
+                }
                 logFile.Error(ex.Message);
                 return false;
             }
@@ -707,7 +712,7 @@ namespace GateAccessControl
             {
                 string serverIp = Properties.Settings.Default.WebServerAddress;
                 string serverPort = Properties.Settings.Default.WebServerPort;
-                string url = $@"{serverIp}:{serverPort}/serverschool/delete/cardType";
+                string url = $@"http://{serverIp}:{serverPort}/serverschool/delete/cardType";
 
                 var values = new Dictionary<string, string>
                 {
@@ -728,6 +733,10 @@ namespace GateAccessControl
             }
             catch (Exception ex)
             {
+                if (ex.GetType() == typeof(HttpRequestException))
+                {
+                    return false;
+                }
                 logFile.Error(ex.Message);
                 return false;
             }
@@ -759,7 +768,7 @@ namespace GateAccessControl
             {
                 string serverIp = Properties.Settings.Default.WebServerAddress;
                 string serverPort = Properties.Settings.Default.WebServerPort;
-                string url = $@"{serverIp}:{serverPort}/serverschool/insert/deviceInf";
+                string url = $@"http://{serverIp}:{serverPort}/serverschool/insert/deviceInf";
 
                 var values = new Dictionary<string, string>
                 {
@@ -791,7 +800,7 @@ namespace GateAccessControl
             {
                 string serverIp = Properties.Settings.Default.WebServerAddress;
                 string serverPort = Properties.Settings.Default.WebServerPort;
-                string url = $@"{serverIp}:{serverPort}/serverschool/delete/deviceInf";
+                string url = $@"http://{serverIp}:{serverPort}/serverschool/delete/deviceInf";
 
                 var values = new Dictionary<string, string>
                 {
@@ -823,7 +832,7 @@ namespace GateAccessControl
             {
                 string serverIp = Properties.Settings.Default.WebServerAddress;
                 string serverPort = Properties.Settings.Default.WebServerPort;
-                string url = $@"{serverIp}:{serverPort}/serverschool/createTable/deviceProfile/?deviceId={deviceId}";
+                string url = $@"http://{serverIp}:{serverPort}/serverschool/createTable/deviceProfile/?deviceId={deviceId}";
 
                 Task<string> responseTask = client.GetStringAsync(url);
                 var responseString = await responseTask;
@@ -850,7 +859,7 @@ namespace GateAccessControl
             {
                 string serverIp = Properties.Settings.Default.WebServerAddress;
                 string serverPort = Properties.Settings.Default.WebServerPort;
-                string url = $@"{serverIp}:{serverPort}/serverschool/load/deviceProfile/?deviceId={deviceId}&type={type}&group={group}&pinno={pinno}";
+                string url = $@"http://{serverIp}:{serverPort}/serverschool/load/deviceProfile/?deviceId={deviceId}&type={type}&group={group}&pinno={pinno}";
 
                 Task<string> responseTask = client.GetStringAsync(url);
                 var responseString = await responseTask;
@@ -871,7 +880,7 @@ namespace GateAccessControl
                 string serverIp = Properties.Settings.Default.WebServerAddress;
                 string serverPort = Properties.Settings.Default.WebServerPort;
 
-                string url = $@"{serverIp}:{serverPort}/serverschool/insert/deviceProfile/?deviceId={deviceId}";
+                string url = $@"http://{serverIp}:{serverPort}/serverschool/insert/deviceProfile/?deviceId={deviceId}";
 
                 var values = new Dictionary<string, string>
                 {
@@ -904,7 +913,7 @@ namespace GateAccessControl
                 string serverIp = Properties.Settings.Default.WebServerAddress;
                 string serverPort = Properties.Settings.Default.WebServerPort;
 
-                string url = $@"{serverIp}:{serverPort}/serverschool/update/deviceProfile/?deviceId={deviceId}";
+                string url = $@"http://{serverIp}:{serverPort}/serverschool/update/deviceProfile/?deviceId={deviceId}";
 
                 var values = new Dictionary<string, string>
                 {
@@ -930,13 +939,13 @@ namespace GateAccessControl
             }
         }
 
-        public static async Task<bool> DeleteDeviceProfileAsync(int deviceId, DeviceProfile _profile)
+        public static async Task<bool> DeleteDeviceProfileAsync(int deviceId, DeviceProfile profile)
         {
             try
             {
                 string serverIp = Properties.Settings.Default.WebServerAddress;
                 string serverPort = Properties.Settings.Default.WebServerPort;
-                string url = $@"{serverIp}:{serverPort}/serverschool/delete/deviceProfile/?deviceId={deviceId}& pinno={_profile.PIN_NO}";
+                string url = $@"http://{serverIp}:{serverPort}/serverschool/delete/deviceProfile/?deviceId={deviceId}&pinno={profile.pinno}";
 
                 Task<string> responseTask = client.GetStringAsync(url);
                 var responseString = await responseTask;
@@ -963,7 +972,7 @@ namespace GateAccessControl
             {
                 string serverIp = Properties.Settings.Default.WebServerAddress;
                 string serverPort = Properties.Settings.Default.WebServerPort;
-                string url = $@"{serverIp}:{serverPort}/serverschool/load/profile/?type={type}& group={group}& pinno={pinno}";
+                string url = $@"http://{serverIp}:{serverPort}/serverschool/load/profile/?type={type ?? ""}&group={group ?? ""}&pinno={pinno ?? ""}";
 
                 Task<string> responseTask = client.GetStringAsync(url);
                 var responseString = await responseTask;
@@ -983,7 +992,7 @@ namespace GateAccessControl
             {
                 string serverIp = Properties.Settings.Default.WebServerAddress;
                 string serverPort = Properties.Settings.Default.WebServerPort;
-                string url = $@"{serverIp}:{serverPort}/serverschool/insert/profile";
+                string url = $@"http://{serverIp}:{serverPort}/serverschool/insert/profile";
 
                 var values = new Dictionary<string, string>
                 {
@@ -1015,7 +1024,7 @@ namespace GateAccessControl
             {
                 string serverIp = Properties.Settings.Default.WebServerAddress;
                 string serverPort = Properties.Settings.Default.WebServerPort;
-                string url = $@"{serverIp}:{serverPort}/serverschool/delete/profile/?&pinno={profile.profileId}";
+                string url = $@"http://{serverIp}:{serverPort}/serverschool/delete/profile/?&pinno={profile.profileId}";
 
                 Task<string> responseTask = client.GetStringAsync(url);
                 var responseString = await responseTask;
@@ -1042,7 +1051,7 @@ namespace GateAccessControl
             {
                 string serverIp = Properties.Settings.Default.WebServerAddress;
                 string serverPort = Properties.Settings.Default.WebServerPort;
-                string url = $@"{serverIp}:{serverPort}/serverschool/update/profile";
+                string url = $@"http://{serverIp}:{serverPort}/serverschool/update/profile";
 
                 var values = new Dictionary<string, string>
                 {
@@ -1074,7 +1083,7 @@ namespace GateAccessControl
             {
                 string serverIp = Properties.Settings.Default.WebServerAddress;
                 string serverPort = Properties.Settings.Default.WebServerPort;
-                string url = $@"{serverIp}:{serverPort}/serverschool/load/timeRecord";
+                string url = $@"http://{serverIp}:{serverPort}/serverschool/load/timeRecord";
 
                 var values = new Dictionary<string, string>
                 {
@@ -1090,6 +1099,82 @@ namespace GateAccessControl
             {
                 logFile.Error(ex.Message);
                 return new List<TimeRecord>();
+            }
+        }
+
+        public static async Task<bool> UpdateDeviceAsync(Device device)
+        {
+            try
+            {
+                string serverIp = Properties.Settings.Default.WebServerAddress;
+                string serverPort = Properties.Settings.Default.WebServerPort;
+                string url = $@"http://{serverIp}:{serverPort}/serverschool/update/deviceInf";
+
+                var values = new Dictionary<string, string>
+                {
+                { "item1", JsonConvert.SerializeObject(device) }
+                };
+                var content = new FormUrlEncodedContent(values);
+                var response = await client.PostAsync(url, content);
+                var responseString = await response.Content.ReadAsStringAsync();
+                bool result = false;
+                if (bool.TryParse(responseString, out result))
+                {
+                    return result;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+                return false;
+            }
+        }
+
+        public static async void InsertTimeCheckAsync(TimeRecord timeRecord)
+        {
+            try
+            {
+                string serverIp = Properties.Settings.Default.WebServerAddress;
+                string serverPort = Properties.Settings.Default.WebServerPort;
+                string url = $@"http://{serverIp}:{serverPort}/serverschool/insert/timeRecord";
+
+                var values = new Dictionary<string, string>
+                {
+                { "item1", JsonConvert.SerializeObject(timeRecord) }
+                };
+                var content = new FormUrlEncodedContent(values);
+                var response = await client.PostAsync(url, content);
+                var responseString = await response.Content.ReadAsStringAsync();
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
+            }
+        }
+
+        public static async void UpdateCardTypeAsync(CardType cardType)
+        {
+            try
+            {
+                string serverIp = Properties.Settings.Default.WebServerAddress;
+                string serverPort = Properties.Settings.Default.WebServerPort;
+                string url = $@"http://{serverIp}:{serverPort}/serverschool/update/cardType";
+
+                var values = new Dictionary<string, string>
+                {
+                { "item1", JsonConvert.SerializeObject(cardType) }
+                };
+                var content = new FormUrlEncodedContent(values);
+                var response = await client.PostAsync(url, content);
+                var responseString = await response.Content.ReadAsStringAsync();
+            }
+            catch (Exception ex)
+            {
+                logFile.Error(ex.Message);
             }
         }
     }

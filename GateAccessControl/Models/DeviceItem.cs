@@ -436,7 +436,7 @@ namespace GateAccessControl
                         long date = long.Parse(tick);
                         DateTime dateTime = new DateTime(date);
                         TimeRecord timeCheck = new TimeRecord(ip, p.SERIAL_ID, dateTime);
-                        SqliteDataAccess.InsertTimeCheck(timeCheck);
+                        SqliteDataAccess.InsertTimeCheckAsync(timeCheck);
                     }
                 }
                 StatusProfile = "Check-in records saved";

@@ -66,13 +66,13 @@ namespace GateAccessControl
                 }
                 DeviceProfile deviceProfileToSend = profiles[i];
 
-                if ((deviceProfileToSend.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Active.ToString())) &&
-                        (deviceProfileToSend.SERVER_STATUS.Equals(GlobalConstant.ServerStatus.None.ToString())))
+                if ((deviceProfileToSend.profileStatus.Equals(GlobalConstant.ProfileStatus.Active.ToString())) &&
+                        (deviceProfileToSend.server_status.Equals(GlobalConstant.ServerStatus.None.ToString())))
                 {
                     (sender as BackgroundWorker).ReportProgress((i * 100) / profiles.Count);
 
                     DeviceItem.SERVERRESPONSE serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_UPDATE;
-                    if (deviceProfileToSend.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
+                    if (deviceProfileToSend.client_status.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
                     {
                         serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_DELETE;
                     }
@@ -81,23 +81,23 @@ namespace GateAccessControl
                     sendList.Add(deviceProfileToSend);
                     if (DeviceItem.SendDeviceProfile(deviceIp, serRes, sendList, remainProfiles))
                     {
-                        if (deviceProfileToSend.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
+                        if (deviceProfileToSend.client_status.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
                         {
-                            deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                            deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
-                            deviceProfileToSend.CLIENT_STATUS = GlobalConstant.ClientStatus.Deleted.ToString();
+                            deviceProfileToSend.profileStatus = GlobalConstant.ProfileStatus.Active.ToString();
+                            deviceProfileToSend.server_status = GlobalConstant.ServerStatus.Add.ToString();
+                            deviceProfileToSend.client_status = GlobalConstant.ClientStatus.Deleted.ToString();
                         }
                         else
                         {
-                            deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                            deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+                            deviceProfileToSend.profileStatus = GlobalConstant.ProfileStatus.Active.ToString();
+                            deviceProfileToSend.server_status = GlobalConstant.ServerStatus.None.ToString();
                         }
-                        SqliteDataAccess.UpdateDeviceProfile(deviceId, deviceProfileToSend);
+                        SqliteDataAccess.UpdateDeviceProfileAsync(deviceId, deviceProfileToSend);
                     }
                     else
                     {
-                        deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                        deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+                        deviceProfileToSend.profileStatus = GlobalConstant.ProfileStatus.Active.ToString();
+                        deviceProfileToSend.server_status = GlobalConstant.ServerStatus.None.ToString();
                     }
                     if (SyncWorker.CancellationPending)
                     {
@@ -106,13 +106,13 @@ namespace GateAccessControl
                     continue;
                 }
 
-                if ((deviceProfileToSend.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Active.ToString())) &&
-                        (deviceProfileToSend.SERVER_STATUS.Equals(GlobalConstant.ServerStatus.Add.ToString())))
+                if ((deviceProfileToSend.profileStatus.Equals(GlobalConstant.ProfileStatus.Active.ToString())) &&
+                        (deviceProfileToSend.server_status.Equals(GlobalConstant.ServerStatus.Add.ToString())))
                 {
                     (sender as BackgroundWorker).ReportProgress((i * 100) / profiles.Count);
 
                     DeviceItem.SERVERRESPONSE serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_ADD;
-                    if (deviceProfileToSend.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
+                    if (deviceProfileToSend.client_status.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
                     {
                         serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_DELETE;
                     }
@@ -121,23 +121,23 @@ namespace GateAccessControl
                     sendList.Add(deviceProfileToSend);
                     if (DeviceItem.SendDeviceProfile(deviceIp, serRes, sendList, remainProfiles))
                     {
-                        if (deviceProfileToSend.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
+                        if (deviceProfileToSend.client_status.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
                         {
-                            deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                            deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
-                            deviceProfileToSend.CLIENT_STATUS = GlobalConstant.ClientStatus.Deleted.ToString();
+                            deviceProfileToSend.profileStatus = GlobalConstant.ProfileStatus.Active.ToString();
+                            deviceProfileToSend.server_status = GlobalConstant.ServerStatus.Add.ToString();
+                            deviceProfileToSend.client_status = GlobalConstant.ClientStatus.Deleted.ToString();
                         }
                         else
                         {
-                            deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                            deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+                            deviceProfileToSend.profileStatus = GlobalConstant.ProfileStatus.Active.ToString();
+                            deviceProfileToSend.server_status = GlobalConstant.ServerStatus.None.ToString();
                         }
-                        SqliteDataAccess.UpdateDeviceProfile(deviceId, deviceProfileToSend);
+                        SqliteDataAccess.UpdateDeviceProfileAsync(deviceId, deviceProfileToSend);
                     }
                     else
                     {
-                        deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                        deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
+                        deviceProfileToSend.profileStatus = GlobalConstant.ProfileStatus.Active.ToString();
+                        deviceProfileToSend.server_status = GlobalConstant.ServerStatus.Add.ToString();
                     }
                     if (SyncWorker.CancellationPending)
                     {
@@ -146,13 +146,13 @@ namespace GateAccessControl
                     continue;
                 }
 
-                if ((deviceProfileToSend.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Active.ToString())) &&
-                        (deviceProfileToSend.SERVER_STATUS.Equals(GlobalConstant.ServerStatus.Update.ToString())))
+                if ((deviceProfileToSend.profileStatus.Equals(GlobalConstant.ProfileStatus.Active.ToString())) &&
+                        (deviceProfileToSend.server_status.Equals(GlobalConstant.ServerStatus.Update.ToString())))
                 {
                     (sender as BackgroundWorker).ReportProgress((i * 100) / profiles.Count);
 
                     DeviceItem.SERVERRESPONSE serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_UPDATE;
-                    if (deviceProfileToSend.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
+                    if (deviceProfileToSend.client_status.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
                     {
                         serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_DELETE;
                     }
@@ -161,23 +161,23 @@ namespace GateAccessControl
                     sendList.Add(deviceProfileToSend);
                     if (DeviceItem.SendDeviceProfile(deviceIp, serRes, sendList, remainProfiles))
                     {
-                        if (deviceProfileToSend.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
+                        if (deviceProfileToSend.client_status.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
                         {
-                            deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                            deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
-                            deviceProfileToSend.CLIENT_STATUS = GlobalConstant.ClientStatus.Deleted.ToString();
+                            deviceProfileToSend.profileStatus = GlobalConstant.ProfileStatus.Active.ToString();
+                            deviceProfileToSend.server_status = GlobalConstant.ServerStatus.Add.ToString();
+                            deviceProfileToSend.client_status = GlobalConstant.ClientStatus.Deleted.ToString();
                         }
                         else
                         {
-                            deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                            deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+                            deviceProfileToSend.profileStatus = GlobalConstant.ProfileStatus.Active.ToString();
+                            deviceProfileToSend.server_status = GlobalConstant.ServerStatus.None.ToString();
                         }
-                        SqliteDataAccess.UpdateDeviceProfile(deviceId, deviceProfileToSend);
+                        SqliteDataAccess.UpdateDeviceProfileAsync(deviceId, deviceProfileToSend);
                     }
                     else
                     {
-                        deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                        deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.Update.ToString();
+                        deviceProfileToSend.profileStatus = GlobalConstant.ProfileStatus.Active.ToString();
+                        deviceProfileToSend.server_status = GlobalConstant.ServerStatus.Update.ToString();
                     }
                     if (SyncWorker.CancellationPending)
                     {
@@ -186,13 +186,13 @@ namespace GateAccessControl
                     continue;
                 }
 
-                if ((deviceProfileToSend.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Active.ToString())) &&
-                        (deviceProfileToSend.SERVER_STATUS.Equals(GlobalConstant.ServerStatus.Remove.ToString())))
+                if ((deviceProfileToSend.profileStatus.Equals(GlobalConstant.ProfileStatus.Active.ToString())) &&
+                        (deviceProfileToSend.server_status.Equals(GlobalConstant.ServerStatus.Remove.ToString())))
                 {
                     (sender as BackgroundWorker).ReportProgress((i * 100) / profiles.Count);
 
                     DeviceItem.SERVERRESPONSE serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_DELETE;
-                    if (deviceProfileToSend.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
+                    if (deviceProfileToSend.client_status.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
                     {
                         serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_DELETE;
                     }
@@ -201,23 +201,23 @@ namespace GateAccessControl
                     sendList.Add(deviceProfileToSend);
                     if (DeviceItem.SendDeviceProfile(deviceIp, serRes, sendList, remainProfiles))
                     {
-                        if (deviceProfileToSend.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
+                        if (deviceProfileToSend.client_status.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
                         {
-                            deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
-                            deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
-                            deviceProfileToSend.CLIENT_STATUS = GlobalConstant.ClientStatus.Deleted.ToString();
+                            deviceProfileToSend.profileStatus = GlobalConstant.ProfileStatus.Suspended.ToString();
+                            deviceProfileToSend.server_status = GlobalConstant.ServerStatus.None.ToString();
+                            deviceProfileToSend.client_status = GlobalConstant.ClientStatus.Deleted.ToString();
                         }
                         else
                         {
-                            deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
-                            deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+                            deviceProfileToSend.profileStatus = GlobalConstant.ProfileStatus.Suspended.ToString();
+                            deviceProfileToSend.server_status = GlobalConstant.ServerStatus.None.ToString();
                         }
-                        SqliteDataAccess.UpdateDeviceProfile(deviceId, deviceProfileToSend);
+                        SqliteDataAccess.UpdateDeviceProfileAsync(deviceId, deviceProfileToSend);
                     }
                     else
                     {
-                        deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                        deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.Remove.ToString();
+                        deviceProfileToSend.profileStatus = GlobalConstant.ProfileStatus.Active.ToString();
+                        deviceProfileToSend.server_status = GlobalConstant.ServerStatus.Remove.ToString();
                     }
                     if (SyncWorker.CancellationPending)
                     {
@@ -226,13 +226,13 @@ namespace GateAccessControl
                     continue;
                 }
 
-                if ((deviceProfileToSend.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Suspended.ToString())) &&
-                        (deviceProfileToSend.SERVER_STATUS.Equals(GlobalConstant.ServerStatus.Remove.ToString())))
+                if ((deviceProfileToSend.profileStatus.Equals(GlobalConstant.ProfileStatus.Suspended.ToString())) &&
+                        (deviceProfileToSend.server_status.Equals(GlobalConstant.ServerStatus.Remove.ToString())))
                 {
                     (sender as BackgroundWorker).ReportProgress((i * 100) / profiles.Count);
 
                     DeviceItem.SERVERRESPONSE serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_DELETE;
-                    if (deviceProfileToSend.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
+                    if (deviceProfileToSend.client_status.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
                     {
                         serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_DELETE;
                     }
@@ -241,23 +241,23 @@ namespace GateAccessControl
                     sendList.Add(deviceProfileToSend);
                     if (DeviceItem.SendDeviceProfile(deviceIp, serRes, sendList, remainProfiles))
                     {
-                        if (deviceProfileToSend.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
+                        if (deviceProfileToSend.client_status.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
                         {
-                            deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
-                            deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
-                            deviceProfileToSend.CLIENT_STATUS = GlobalConstant.ClientStatus.Deleted.ToString();
+                            deviceProfileToSend.profileStatus = GlobalConstant.ProfileStatus.Suspended.ToString();
+                            deviceProfileToSend.server_status = GlobalConstant.ServerStatus.None.ToString();
+                            deviceProfileToSend.client_status = GlobalConstant.ClientStatus.Deleted.ToString();
                         }
                         else
                         {
-                            deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
-                            deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+                            deviceProfileToSend.profileStatus = GlobalConstant.ProfileStatus.Suspended.ToString();
+                            deviceProfileToSend.server_status = GlobalConstant.ServerStatus.None.ToString();
                         }
-                        SqliteDataAccess.UpdateDeviceProfile(deviceId, deviceProfileToSend);
+                        SqliteDataAccess.UpdateDeviceProfileAsync(deviceId, deviceProfileToSend);
                     }
                     else
                     {
-                        deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
-                        deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.Remove.ToString();
+                        deviceProfileToSend.profileStatus = GlobalConstant.ProfileStatus.Suspended.ToString();
+                        deviceProfileToSend.server_status = GlobalConstant.ServerStatus.Remove.ToString();
                     }
                     if (SyncWorker.CancellationPending)
                     {
@@ -266,13 +266,13 @@ namespace GateAccessControl
                     continue;
                 }
 
-                if ((deviceProfileToSend.PROFILE_STATUS.Equals(GlobalConstant.ProfileStatus.Suspended.ToString()) &&
-                        (deviceProfileToSend.SERVER_STATUS.Equals(GlobalConstant.ServerStatus.Add.ToString()))))
+                if ((deviceProfileToSend.profileStatus.Equals(GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                        (deviceProfileToSend.server_status.Equals(GlobalConstant.ServerStatus.Add.ToString()))))
                 {
                     (sender as BackgroundWorker).ReportProgress((i * 100) / profiles.Count);
 
                     DeviceItem.SERVERRESPONSE serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_ADD;
-                    if (deviceProfileToSend.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
+                    if (deviceProfileToSend.client_status.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
                     {
                         serRes = DeviceItem.SERVERRESPONSE.RESP_PROFILE_DELETE;
                     }
@@ -281,23 +281,23 @@ namespace GateAccessControl
                     sendList.Add(deviceProfileToSend);
                     if (DeviceItem.SendDeviceProfile(deviceIp, serRes, sendList, remainProfiles))
                     {
-                        if (deviceProfileToSend.CLIENT_STATUS.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
+                        if (deviceProfileToSend.client_status.Equals(GlobalConstant.ClientStatus.Delete.ToString()))
                         {
-                            deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                            deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
-                            deviceProfileToSend.CLIENT_STATUS = GlobalConstant.ClientStatus.Deleted.ToString();
+                            deviceProfileToSend.profileStatus = GlobalConstant.ProfileStatus.Active.ToString();
+                            deviceProfileToSend.server_status = GlobalConstant.ServerStatus.Add.ToString();
+                            deviceProfileToSend.client_status = GlobalConstant.ClientStatus.Deleted.ToString();
                         }
                         else
                         {
-                            deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                            deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+                            deviceProfileToSend.profileStatus = GlobalConstant.ProfileStatus.Active.ToString();
+                            deviceProfileToSend.server_status = GlobalConstant.ServerStatus.None.ToString();
                         }
-                        SqliteDataAccess.UpdateDeviceProfile(deviceId, deviceProfileToSend);
+                        SqliteDataAccess.UpdateDeviceProfileAsync(deviceId, deviceProfileToSend);
                     }
                     else
                     {
-                        deviceProfileToSend.PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
-                        deviceProfileToSend.SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
+                        deviceProfileToSend.profileStatus = GlobalConstant.ProfileStatus.Suspended.ToString();
+                        deviceProfileToSend.server_status = GlobalConstant.ServerStatus.Add.ToString();
                     }
                     if (SyncWorker.CancellationPending)
                     {

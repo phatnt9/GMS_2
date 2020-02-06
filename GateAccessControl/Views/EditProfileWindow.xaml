@@ -34,7 +34,7 @@
                             <RowDefinition />
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0">
-                            <Image Source="{Binding EditProfile.IMAGE, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource myProfileImageConverter}}" />
+                            <Image Source="{Binding EditProfile.image, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource myProfileImageConverter}}" />
                         </Grid>
                         <Grid Grid.Row="1">
                             <ScrollViewer>
@@ -69,22 +69,22 @@
                                                 Height="22"
                                                 Margin="5,2"
                                                 VerticalContentAlignment="Center"
-                                                SelectedDate="{Binding EditProfile.DOB, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                                SelectedDate="{Binding EditProfile.dob, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                             <DatePicker
                                                 Height="22"
                                                 Margin="5,2"
                                                 VerticalContentAlignment="Center"
-                                                SelectedDate="{Binding EditProfile.DISU, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                                SelectedDate="{Binding EditProfile.disu, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                             <CheckBox
                                                 Height="22"
                                                 Margin="5,2"
                                                 VerticalContentAlignment="Center"
-                                                IsChecked="{Binding EditProfile.CHECK_DATE_TO_LOCK, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                                IsChecked="{Binding EditProfile.check_date_to_lock, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                             <DatePicker
                                                 Height="22"
                                                 Margin="5,2"
                                                 VerticalContentAlignment="Center"
-                                                SelectedDate="{Binding EditProfile.DATE_TO_LOCK, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                                SelectedDate="{Binding EditProfile.date_to_lock, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                         </StackPanel>
                                     </Grid>
                                 </Grid>
@@ -169,31 +169,31 @@
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
                                         IsReadOnly="True"
-                                        Text="{Binding EditProfile.PIN_NO, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                        Text="{Binding EditProfile.pinno, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                     <TextBox
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
-                                        Text="{Binding EditProfile.AD_NO, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                        Text="{Binding EditProfile.adno, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                     <TextBox
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
-                                        Text="{Binding EditProfile.PROFILE_NAME, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                        Text="{Binding EditProfile.profileName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                     <local:CommandComboBox
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
-                                        DisplayMemberPath="CLASS_NAME"
+                                        DisplayMemberPath="className"
                                         ItemsSource="{Binding Classes, UpdateSourceTrigger=PropertyChanged}"
                                         SelectedIndex="0"
-                                        Text="{Binding EditProfile.CLASS_NAME, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                        Text="{Binding EditProfile.className, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                     <local:CommandComboBox
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
                                         SelectedIndex="0"
-                                        Text="{Binding EditProfile.SUB_CLASS, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                        Text="{Binding EditProfile.subClass, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                                         <ComboBoxItem>Group 1</ComboBoxItem>
                                         <ComboBoxItem>Group 2</ComboBoxItem>
                                         <ComboBoxItem>Group 3</ComboBoxItem>
@@ -210,7 +210,7 @@
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
                                         SelectedIndex="0"
-                                        Text="{Binding EditProfile.GENDER, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                        Text="{Binding EditProfile.gender, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                                         <ComboBoxItem>Male</ComboBoxItem>
                                         <ComboBoxItem>Female</ComboBoxItem>
                                     </local:CommandComboBox>
@@ -218,22 +218,22 @@
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
-                                        Text="{Binding EditProfile.EMAIL, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                        Text="{Binding EditProfile.email, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                     <TextBox
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
-                                        Text="{Binding EditProfile.ADDRESS, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                        Text="{Binding EditProfile.address, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                     <TextBox
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
-                                        Text="{Binding EditProfile.PHONE, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                        Text="{Binding EditProfile.phone, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                     <local:CommandComboBox
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
-                                        Text="{Binding EditProfile.PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                        Text="{Binding EditProfile.profileStatus, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                                         <ComboBoxItem>Active</ComboBoxItem>
                                         <ComboBoxItem>Suspended</ComboBoxItem>
                                     </local:CommandComboBox>
@@ -247,7 +247,7 @@
                                             <TextBox
                                                 HorizontalAlignment="Stretch"
                                                 HorizontalContentAlignment="Center"
-                                                Text="{Binding EditProfile.IMAGE, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                                Text="{Binding EditProfile.image, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                         </Grid>
                                         <Grid Grid.Column="1">
                                             <Button
@@ -260,7 +260,7 @@
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
-                                        Text="{Binding EditProfile.LICENSE_PLATE, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                        Text="{Binding EditProfile.license_plate, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                 </StackPanel>
                             </Grid>
                         </Grid>

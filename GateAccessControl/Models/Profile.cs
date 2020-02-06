@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace GateAccessControl
 {
@@ -33,19 +34,19 @@ namespace GateAccessControl
 
         public Profile()
         {
-            IMAGE = "default.png";
+            image = "default.png";
         }
 
         public void AddDeviceId(int deviceId)
         {
             List<int> listDeviceId = new List<int>();
-            if (String.IsNullOrEmpty(LIST_DEVICE_ID))
+            if (String.IsNullOrEmpty(list_device_id))
             {
-                LIST_DEVICE_ID += deviceId + ",";
+                list_device_id += deviceId + ",";
             }
             else
             {
-                string[] listVar = this.LIST_DEVICE_ID.Split(',');
+                string[] listVar = this.list_device_id.Split(',');
                 foreach (string var in listVar)
                 {
                     int temp;
@@ -57,33 +58,33 @@ namespace GateAccessControl
                 }
                 if (!listDeviceId.Contains(deviceId))
                 {
-                    LIST_DEVICE_ID += deviceId + ",";
+                    list_device_id += deviceId + ",";
                 }
             }
         }
 
-        public void RemoveDeviceId(int removeDeviceId)
+        public async Task RemoveDeviceId(int removeDeviceId)
         {
-            List<Device> listDevices = SqliteDataAccess.LoadDevices(0);
+            List<Device> listDevices = await SqliteDataAccess.LoadDevicesAsync(0);
             List<int> listDeviceId = new List<int>();
-            if (!String.IsNullOrEmpty(LIST_DEVICE_ID))
+            if (!string.IsNullOrEmpty(list_device_id))
             {
-                string[] listVar = this.LIST_DEVICE_ID.Split(',');
+                string[] listVar = list_device_id.Split(',');
                 foreach (string var in listVar)
                 {
                     int temp;
-                    Int32.TryParse(var, out temp);
+                    int.TryParse(var, out temp);
                     if (temp != 0)
                     {
                         listDeviceId.Add(temp);
                     }
                 }
-                LIST_DEVICE_ID = "";
+                list_device_id = "";
                 foreach (int id in listDeviceId)
                 {
                     if (id != removeDeviceId && CheckDeviceAlive(id, listDevices))
                     {
-                        LIST_DEVICE_ID += id + ",";
+                        list_device_id += id + ",";
                     }
                 }
             }
@@ -121,183 +122,183 @@ namespace GateAccessControl
             }
         }
 
-        public String AD_NO
+        public String adno
         {
             get => _adno;
             set
             {
                 _adno = value;
-                OnPropertyChanged("AD_NO");
+                OnPropertyChanged("adno");
             }
         }
 
-        public String PROFILE_NAME
+        public String profileName
         {
             get => _profileName;
             set
             {
                 _profileName = value;
-                OnPropertyChanged("PROFILE_NAME");
+                OnPropertyChanged("profileName");
             }
         }
 
-        public String CLASS_NAME
+        public String className
         {
             get => _className;
             set
             {
                 _className = value;
-                OnPropertyChanged("CLASS_NAME");
+                OnPropertyChanged("className");
             }
         }
 
-        public String SUB_CLASS
+        public String subClass
         {
             get => _subClass;
             set
             {
                 _subClass = value;
-                OnPropertyChanged("SUB_CLASS");
+                OnPropertyChanged("subClass");
             }
         }
 
-        public String GENDER
+        public String gender
         {
             get => _gender;
             set
             {
                 _gender = value;
-                OnPropertyChanged("GENDER");
+                OnPropertyChanged("gender");
             }
         }
 
-        public DateTime DOB
+        public DateTime dob
         {
             get => _dob;
             set
             {
                 _dob = value;
-                OnPropertyChanged("DOB");
+                OnPropertyChanged("dob");
             }
         }
 
-        public DateTime DISU
+        public DateTime disu
         {
             get => _disu;
             set
             {
                 _disu = value;
-                OnPropertyChanged("DISU");
+                OnPropertyChanged("disu");
             }
         }
 
-        public String EMAIL
+        public String email
         {
             get => _email;
             set
             {
                 _email = value;
-                OnPropertyChanged("EMAIL");
+                OnPropertyChanged("email");
             }
         }
 
-        public String ADDRESS
+        public String address
         {
             get => _address;
             set
             {
                 _address = value;
-                OnPropertyChanged("ADDRESS");
+                OnPropertyChanged("address");
             }
         }
 
-        public String PHONE
+        public String phone
         {
             get => _phone;
             set
             {
                 _phone = value;
-                OnPropertyChanged("PHONE");
+                OnPropertyChanged("phone");
             }
         }
 
-        public String PROFILE_STATUS
+        public String profileStatus
         {
             get => _profileStatus;
             set
             {
                 _profileStatus = value;
-                OnPropertyChanged("PROFILE_STATUS");
+                OnPropertyChanged("profileStatus");
             }
         }
 
-        public String IMAGE
+        public String image
         {
             get => _image;
             set
             {
                 _image = value;
-                OnPropertyChanged("IMAGE");
+                OnPropertyChanged("image");
             }
         }
 
-        public DateTime DATE_TO_LOCK
+        public DateTime date_to_lock
         {
             get => _dateToLock;
             set
             {
                 _dateToLock = value;
-                OnPropertyChanged("DATE_TO_LOCK");
+                OnPropertyChanged("date_to_lock");
             }
         }
 
-        public bool CHECK_DATE_TO_LOCK
+        public bool check_date_to_lock
         {
             get => _checkDateToLock;
             set
             {
                 _checkDateToLock = value;
-                OnPropertyChanged("CHECK_DATE_TO_LOCK");
+                OnPropertyChanged("check_date_to_lock");
             }
         }
 
-        public String LICENSE_PLATE
+        public String license_plate
         {
             get => _licensePlate;
             set
             {
                 _licensePlate = value;
-                OnPropertyChanged("LICENSE_PLATE");
+                OnPropertyChanged("license_plate");
             }
         }
 
-        public DateTime DATE_CREATED
+        public DateTime date_created
         {
             get => _dateCreated;
             set
             {
                 _dateCreated = value;
-                OnPropertyChanged("DATE_CREATED");
+                OnPropertyChanged("date_created");
             }
         }
 
-        public DateTime DATE_MODIFIED
+        public DateTime date_modified
         {
             get => _dateModified;
             set
             {
                 _dateModified = value;
-                OnPropertyChanged("DATE_MODIFIED");
+                OnPropertyChanged("date_modified");
             }
         }
 
-        public String LIST_DEVICE_ID
+        public String list_device_id
         {
             get => _listDeviceId;
             set
             {
                 _listDeviceId = value;
-                OnPropertyChanged("LIST_DEVICE_ID");
+                OnPropertyChanged("list_device_id");
             }
         }
 

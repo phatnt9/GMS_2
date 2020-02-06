@@ -8,12 +8,12 @@ namespace GateAccessControl.ViewModels
 {
     internal class ProfileListDeviceConverter : IValueConverter
     {
-        private ObservableCollection<Device> _devices = new ObservableCollection<Device>();
-        public ObservableCollection<Device> Devices => _devices;
+        private ObservableCollection<ProfileDevice> _profileDevices = new ObservableCollection<ProfileDevice>();
+        public ObservableCollection<ProfileDevice> ProfileDevices => _profileDevices;
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            Devices.Clear();
+            ProfileDevices.Clear();
             string ListDevice = value as String;
             List<int> listDeviceId = new List<int>();
             if (!String.IsNullOrEmpty(ListDevice))
@@ -28,20 +28,14 @@ namespace GateAccessControl.ViewModels
                         listDeviceId.Add(temp);
                     }
                 }
-                List<Device> devices = SqliteDataAccess.LoadDevices(0);
+                //List<Device> devices = SqliteDataAccess.LoadDevices(0);
                 foreach (int id in listDeviceId)
                 {
-                    foreach (Device item in devices)
-                    {
-                        if (item.deviceId == id)
-                        {
-                            Devices.Add(item);
-                            break;
-                        }
-                    }
+                    ProfileDevice temp = new ProfileDevice(id);
+                    ProfileDevices.Add(temp);
                 }
             }
-            return Devices;
+            return ProfileDevices;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

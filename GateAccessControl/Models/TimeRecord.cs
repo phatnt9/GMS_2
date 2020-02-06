@@ -16,49 +16,49 @@ namespace GateAccessControl
 
         public TimeRecord(string ip, string pinno, DateTime checkTime)
         {
-            TIMECHECK_ID = 0;
-            DEVICE_IP = ip;
-            PIN_NO = pinno;
-            TIMECHECK_TIME = checkTime;
+            timeCheckId = 0;
+            deviceIp = ip;
+            this.pinno = pinno;
+            timeCheck = checkTime;
         }
 
-        public int TIMECHECK_ID
+        public int timeCheckId
         {
             get => _timeCheckId;
             set
             {
                 _timeCheckId = value;
-                OnPropertyChanged("TIMECHECK_ID");
+                OnPropertyChanged("timeCheckId");
             }
         }
 
-        public DateTime TIMECHECK_TIME
+        public DateTime timeCheck
         {
             get => _timeCheckTime;
             set
             {
                 _timeCheckTime = value;
-                OnPropertyChanged("TIMECHECK_TIME");
+                OnPropertyChanged("timeCheck");
             }
         }
 
-        public String PIN_NO
+        public String pinno
         {
             get => _pinno;
             set
             {
                 _pinno = value;
-                OnPropertyChanged("PIN_NO");
+                OnPropertyChanged("pinno");
             }
         }
 
-        public String DEVICE_IP
+        public String deviceIp
         {
             get => _deviceIp;
             set
             {
                 _deviceIp = value;
-                OnPropertyChanged("DEVICE_IP");
+                OnPropertyChanged("deviceIp");
             }
         }
 

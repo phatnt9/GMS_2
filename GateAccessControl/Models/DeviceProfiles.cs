@@ -11,269 +11,269 @@ namespace GateAccessControl
 
         public DeviceProfile(Profile p)
         {
-            PROFILE_ID = 0;
-            PIN_NO = p.pinno;
-            AD_NO = p.AD_NO;
-            PROFILE_NAME = p.PROFILE_NAME;
-            CLASS_NAME = p.CLASS_NAME;
-            SUB_CLASS = p.SUB_CLASS;
-            GENDER = p.GENDER;
-            DOB = p.DOB;
-            DISU = p.DISU;
-            EMAIL = p.EMAIL;
-            ADDRESS = p.ADDRESS;
-            PHONE = p.PHONE;
-            PROFILE_STATUS = p.PROFILE_STATUS;
-            IMAGE = p.IMAGE;
-            DATE_TO_LOCK = p.DATE_TO_LOCK;
-            CHECK_DATE_TO_LOCK = p.CHECK_DATE_TO_LOCK;
-            LICENSE_PLATE = p.LICENSE_PLATE;
-            DATE_CREATED = p.DATE_CREATED;
-            DATE_MODIFIED = p.DATE_MODIFIED;
-            SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
-            CLIENT_STATUS = GlobalConstant.ClientStatus.Unknow.ToString();
-            ACTIVE_TIME = "00:00-23:59-00:00-23:59";
+            profileId = 0;
+            pinno = p.pinno;
+            adno = p.adno;
+            profileName = p.profileName;
+            className = p.className;
+            subClass = p.subClass;
+            gender = p.gender;
+            dob = p.dob;
+            disu = p.disu;
+            email = p.email;
+            address = p.address;
+            phone = p.phone;
+            profileStatus = p.profileStatus;
+            image = p.image;
+            date_to_lock = p.date_to_lock;
+            check_date_to_lock = p.check_date_to_lock;
+            license_plate = p.license_plate;
+            date_created = p.date_created;
+            date_modified = p.date_modified;
+            server_status = GlobalConstant.ServerStatus.Add.ToString();
+            client_status = GlobalConstant.ClientStatus.Unknow.ToString();
+            active_time = "00:00-23:59-00:00-23:59";
         }
 
         public void CloneDataFromProfile(Profile p)
         {
-            PIN_NO = p.pinno;
-            AD_NO = p.AD_NO;
-            PROFILE_NAME = p.PROFILE_NAME;
-            CLASS_NAME = p.CLASS_NAME;
-            SUB_CLASS = p.SUB_CLASS;
-            GENDER = p.GENDER;
-            DOB = p.DOB;
-            DISU = p.DISU;
-            EMAIL = p.EMAIL;
-            ADDRESS = p.ADDRESS;
-            PHONE = p.PHONE;
+            pinno = p.pinno;
+            adno = p.adno;
+            profileName = p.profileName;
+            className = p.className;
+            subClass = p.subClass;
+            gender = p.gender;
+            dob = p.dob;
+            disu = p.disu;
+            email = p.email;
+            address = p.address;
+            phone = p.phone;
             //PROFILE_STATUS = p.PROFILE_STATUS;
-            IMAGE = p.IMAGE;
-            DATE_TO_LOCK = p.DATE_TO_LOCK;
-            CHECK_DATE_TO_LOCK = p.CHECK_DATE_TO_LOCK;
-            LICENSE_PLATE = p.LICENSE_PLATE;
-            DATE_CREATED = p.DATE_CREATED;
-            DATE_MODIFIED = p.DATE_MODIFIED;
+            image = p.image;
+            date_to_lock = p.date_to_lock;
+            check_date_to_lock = p.check_date_to_lock;
+            license_plate = p.license_plate;
+            date_created = p.date_created;
+            date_modified = p.date_modified;
         }
 
-        public int PROFILE_ID
+        public int profileId
         {
             get => _profileId;
             set
             {
                 _profileId = value;
-                OnPropertyChanged("PROFILE_ID");
+                OnPropertyChanged("profileId");
             }
         }
 
-        public String PIN_NO
+        public String pinno
         {
             get => _pinno;
             set
             {
                 _pinno = value;
-                OnPropertyChanged("PIN_NO");
+                OnPropertyChanged("pinno");
             }
         }
 
-        public String AD_NO
+        public String adno
         {
             get => _adno;
             set
             {
                 _adno = value;
-                OnPropertyChanged("AD_NO");
+                OnPropertyChanged("adno");
             }
         }
 
-        public String PROFILE_NAME
+        public String profileName
         {
             get => _profileName;
             set
             {
                 _profileName = value;
-                OnPropertyChanged("PROFILE_NAME");
+                OnPropertyChanged("profileName");
             }
         }
 
-        public String CLASS_NAME
+        public String className
         {
             get => _className;
             set
             {
                 _className = value;
-                OnPropertyChanged("CLASS_NAME");
+                OnPropertyChanged("className");
             }
         }
 
-        public String SUB_CLASS
+        public String subClass
         {
             get => _subClass;
             set
             {
                 _subClass = value;
-                OnPropertyChanged("SUB_CLASS");
+                OnPropertyChanged("subClass");
             }
         }
 
-        public String GENDER
+        public String gender
         {
             get => _gender;
             set
             {
                 _gender = value;
-                OnPropertyChanged("GENDER");
+                OnPropertyChanged("gender");
             }
         }
 
-        public DateTime DOB
+        public DateTime dob
         {
             get => _dob;
             set
             {
                 _dob = value;
-                OnPropertyChanged("DOB");
+                OnPropertyChanged("dob");
             }
         }
 
-        public DateTime DISU
+        public DateTime disu
         {
             get => _disu;
             set
             {
                 _disu = value;
-                OnPropertyChanged("DISU");
+                OnPropertyChanged("disu");
             }
         }
 
-        public String EMAIL
+        public String email
         {
             get => _email;
             set
             {
                 _email = value;
-                OnPropertyChanged("EMAIL");
+                OnPropertyChanged("email");
             }
         }
 
-        public String ADDRESS
+        public String address
         {
             get => _address;
             set
             {
                 _address = value;
-                OnPropertyChanged("ADDRESS");
+                OnPropertyChanged("address");
             }
         }
 
-        public String PHONE
+        public String phone
         {
             get => _phone;
             set
             {
                 _phone = value;
-                OnPropertyChanged("PHONE");
+                OnPropertyChanged("phone");
             }
         }
 
-        public String PROFILE_STATUS
+        public String profileStatus
         {
             get => _profileStatus;
             set
             {
                 _profileStatus = value;
-                OnPropertyChanged("PROFILE_STATUS");
+                OnPropertyChanged("profileStatus");
             }
         }
 
-        public String IMAGE
+        public String image
         {
             get => _image;
             set
             {
                 _image = value;
-                OnPropertyChanged("IMAGE");
+                OnPropertyChanged("image");
             }
         }
 
-        public DateTime DATE_TO_LOCK
+        public DateTime date_to_lock
         {
             get => _dateToLock;
             set
             {
                 _dateToLock = value;
-                OnPropertyChanged("DATE_TO_LOCK");
+                OnPropertyChanged("date_to_lock");
             }
         }
 
-        public bool CHECK_DATE_TO_LOCK
+        public bool check_date_to_lock
         {
             get => _checkDateToLock;
             set
             {
                 _checkDateToLock = value;
-                OnPropertyChanged("CHECK_DATE_TO_LOCK");
+                OnPropertyChanged("check_date_to_lock");
             }
         }
 
-        public String LICENSE_PLATE
+        public String license_plate
         {
             get => _licensePlate;
             set
             {
                 _licensePlate = value;
-                OnPropertyChanged("LICENSE_PLATE");
+                OnPropertyChanged("license_plate");
             }
         }
 
-        public DateTime DATE_CREATED
+        public DateTime date_created
         {
             get => _dateCreated;
             set
             {
                 _dateCreated = value;
-                OnPropertyChanged("DATE_CREATED");
+                OnPropertyChanged("date_created");
             }
         }
 
-        public DateTime DATE_MODIFIED
+        public DateTime date_modified
         {
             get => _dateModified;
             set
             {
                 _dateModified = value;
-                OnPropertyChanged("DATE_MODIFIED");
+                OnPropertyChanged("date_modified");
             }
         }
 
-        public String SERVER_STATUS
+        public String server_status
         {
             get => _serverStatus;
             set
             {
                 _serverStatus = value;
-                OnPropertyChanged("SERVER_STATUS");
+                OnPropertyChanged("server_status");
             }
         }
 
-        public String CLIENT_STATUS
+        public String client_status
         {
             get => _clientStatus;
             set
             {
                 _clientStatus = value;
-                OnPropertyChanged("CLIENT_STATUS");
+                OnPropertyChanged("client_status");
             }
         }
 
-        public String ACTIVE_TIME
+        public String active_time
         {
             get => _activeTime;
             set
             {
                 _activeTime = value;
-                OnPropertyChanged("ACTIVE_TIME");
+                OnPropertyChanged("active_time");
             }
         }
 

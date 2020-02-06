@@ -35,7 +35,7 @@
                             <RowDefinition />
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0">
-                            <Image Source="{Binding AddProfile.IMAGE, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource myProfileImageConverter}}" />
+                            <Image Source="{Binding AddProfile.image, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource myProfileImageConverter}}" />
                         </Grid>
                         <Grid Grid.Row="1">
                             <ScrollViewer>
@@ -70,22 +70,22 @@
                                                 Height="22"
                                                 Margin="5,2"
                                                 VerticalContentAlignment="Center"
-                                                SelectedDate="{Binding AddProfile.DOB, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                                SelectedDate="{Binding AddProfile.dob, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                             <DatePicker
                                                 Height="22"
                                                 Margin="5,2"
                                                 VerticalContentAlignment="Center"
-                                                SelectedDate="{Binding AddProfile.DISU, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                                SelectedDate="{Binding AddProfile.disu, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                             <CheckBox
                                                 Height="22"
                                                 Margin="5,2"
                                                 VerticalContentAlignment="Center"
-                                                IsChecked="{Binding AddProfile.CHECK_DATE_TO_LOCK, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                                IsChecked="{Binding AddProfile.check_date_to_lock, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                             <DatePicker
                                                 Height="22"
                                                 Margin="5,2"
                                                 VerticalContentAlignment="Center"
-                                                SelectedDate="{Binding AddProfile.DATE_TO_LOCK, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                                SelectedDate="{Binding AddProfile.date_to_lock, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                         </StackPanel>
                                     </Grid>
                                 </Grid>
@@ -169,31 +169,31 @@
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
-                                        Text="{Binding AddProfile.PIN_NO, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                        Text="{Binding AddProfile.pinno, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                     <TextBox
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
-                                        Text="{Binding AddProfile.AD_NO, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                        Text="{Binding AddProfile.adno, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                     <TextBox
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
-                                        Text="{Binding AddProfile.PROFILE_NAME, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                        Text="{Binding AddProfile.profileName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                     <md:CommandComboBox
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
-                                        DisplayMemberPath="CLASS_NAME"
+                                        DisplayMemberPath="className"
                                         ItemsSource="{Binding Classes, UpdateSourceTrigger=PropertyChanged}"
                                         SelectedIndex="0"
-                                        Text="{Binding AddProfile.CLASS_NAME, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                        Text="{Binding AddProfile.className, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                     <md:CommandComboBox
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
                                         SelectedIndex="0"
-                                        Text="{Binding AddProfile.SUB_CLASS, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                        Text="{Binding AddProfile.subClass, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                                         <ComboBoxItem>Group 1</ComboBoxItem>
                                         <ComboBoxItem>Group 2</ComboBoxItem>
                                         <ComboBoxItem>Group 3</ComboBoxItem>
@@ -210,7 +210,7 @@
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
                                         SelectedIndex="0"
-                                        Text="{Binding AddProfile.GENDER, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                        Text="{Binding AddProfile.gender, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                                         <ComboBoxItem>Male</ComboBoxItem>
                                         <ComboBoxItem>Female</ComboBoxItem>
                                     </md:CommandComboBox>
@@ -218,22 +218,22 @@
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
-                                        Text="{Binding AddProfile.EMAIL, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                        Text="{Binding AddProfile.email, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                     <TextBox
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
-                                        Text="{Binding AddProfile.ADDRESS, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                        Text="{Binding AddProfile.address, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                     <TextBox
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
-                                        Text="{Binding AddProfile.PHONE, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                        Text="{Binding AddProfile.phone, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                     <md:CommandComboBox
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
-                                        Text="{Binding AddProfile.PROFILE_STATUS, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                        Text="{Binding AddProfile.profileStatus, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                                         <ComboBoxItem>Active</ComboBoxItem>
                                         <ComboBoxItem>Suspended</ComboBoxItem>
                                     </md:CommandComboBox>
@@ -247,7 +247,7 @@
                                             <TextBox
                                                 HorizontalAlignment="Stretch"
                                                 HorizontalContentAlignment="Center"
-                                                Text="{Binding AddProfile.IMAGE, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                                Text="{Binding AddProfile.image, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                         </Grid>
                                         <Grid Grid.Column="1">
                                             <Button
@@ -260,7 +260,7 @@
                                         Height="22"
                                         Margin="5,2"
                                         VerticalContentAlignment="Center"
-                                        Text="{Binding AddProfile.LICENSE_PLATE, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                        Text="{Binding AddProfile.license_plate, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                 </StackPanel>
                             </Grid>
                         </Grid>

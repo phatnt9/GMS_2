@@ -166,95 +166,96 @@ namespace GateAccessControl.Views
                             profile.pinno = serialId;
                         }
 
-                        profile.AD_NO = xlRange.Cells[i, 3].Value2.ToString().ToUpper();
+                        profile.adno = xlRange.Cells[i, 3].Value2.ToString().ToUpper();
 
-                        profile.PROFILE_NAME = xlRange.Cells[i, 2].Value2.ToString().ToUpper();
+                        profile.profileName = xlRange.Cells[i, 2].Value2.ToString().ToUpper();
 
-                        profile.CLASS_NAME = xlRange.Cells[i, 9].Value2.ToString();
+                        profile.className = xlRange.Cells[i, 9].Value2.ToString();
 
-                        profile.SUB_CLASS = (xlRange.Cells[i, 10].Value2 == null) ? "" : xlRange.Cells[i, 10].Value2.ToString();
+                        profile.subClass = (xlRange.Cells[i, 10].Value2 == null) ? "" : xlRange.Cells[i, 10].Value2.ToString();
 
-                        profile.GENDER = (xlRange.Cells[i, 4].Value2.ToString() == "Male" ? "Male" : "Female");
+                        profile.gender = (xlRange.Cells[i, 4].Value2.ToString() == "Male" ? "Male" : "Female");
 
-                        profile.DOB = ParseDateTimeFormCell(xlRange.Cells[i, 5].Value2.ToString());
+                        profile.dob = ParseDateTimeFormCell(xlRange.Cells[i, 5].Value2.ToString());
 
-                        profile.DISU = ParseDateTimeFormCell(xlRange.Cells[i, 6].Value2.ToString());
+                        profile.disu = ParseDateTimeFormCell(xlRange.Cells[i, 6].Value2.ToString());
 
-                        profile.EMAIL = (xlRange.Cells[i, 11].Value2 == null) ? "" : xlRange.Cells[i, 11].Value2.ToString();
+                        profile.email = (xlRange.Cells[i, 11].Value2 == null) ? "" : xlRange.Cells[i, 11].Value2.ToString();
 
-                        profile.ADDRESS = (xlRange.Cells[i, 12].Value2 == null) ? "" : xlRange.Cells[i, 12].Value2.ToString();
+                        profile.address = (xlRange.Cells[i, 12].Value2 == null) ? "" : xlRange.Cells[i, 12].Value2.ToString();
 
-                        profile.PHONE = (xlRange.Cells[i, 13].Value2 == null) ? "" : xlRange.Cells[i, 13].Value2.ToString();
+                        profile.phone = (xlRange.Cells[i, 13].Value2 == null) ? "" : xlRange.Cells[i, 13].Value2.ToString();
 
-                        profile.PROFILE_STATUS = xlRange.Cells[i, 14].Value2.ToString();
+                        profile.profileStatus = xlRange.Cells[i, 14].Value2.ToString();
 
-                        profile.IMAGE = xlRange.Cells[i, 7].Value2.ToString();
+                        profile.image = xlRange.Cells[i, 7].Value2.ToString();
 
                         if (xlRange.Cells[i, 16].Value2 != null)
                         {
-                            profile.CHECK_DATE_TO_LOCK = Boolean.Parse(xlRange.Cells[i, 16].Value2.ToString());
+                            profile.check_date_to_lock = Boolean.Parse(xlRange.Cells[i, 16].Value2.ToString());
                         }
                         else
                         {
-                            profile.CHECK_DATE_TO_LOCK = false;
+                            profile.check_date_to_lock = false;
                         }
 
-                        if (profile.CHECK_DATE_TO_LOCK == true)
+                        if (profile.check_date_to_lock == true)
                         {
                             if (xlRange.Cells[i, 15].Value2 != null)
                             {
-                                profile.DATE_TO_LOCK = ParseDateTimeFormCell(xlRange.Cells[i, 15].Value2.ToString());
+                                profile.date_to_lock = ParseDateTimeFormCell(xlRange.Cells[i, 15].Value2.ToString());
                             }
                             else
                             {
-                                profile.DATE_TO_LOCK = DateTime.MinValue;
+                                profile.date_to_lock = DateTime.MinValue;
                             }
                         }
                         else
                         {
-                            profile.DATE_TO_LOCK = DateTime.MinValue;
+                            profile.date_to_lock = DateTime.MinValue;
                         }
 
-                        profile.LICENSE_PLATE = (xlRange.Cells[i, 17].Value2 == null) ? "" : xlRange.Cells[i, 17].Value2.ToString();
+                        profile.license_plate = (xlRange.Cells[i, 17].Value2 == null) ? "" : xlRange.Cells[i, 17].Value2.ToString();
 
                         if (isAddProfile)
                         {
                             //Add
-                            profile.DATE_CREATED = DateTime.Now;
-                            profile.DATE_MODIFIED = DateTime.Now;
+                            profile.date_created = DateTime.Now;
+                            profile.date_modified = DateTime.Now;
                         }
                         else
                         {
                             //Update
-                            profile.DATE_CREATED = (xlRange.Cells[i, 18].Value2 == null) ? DateTime.Now : ParseDateTimeFormCell(xlRange.Cells[i, 18].Value2.ToString());
-                            profile.DATE_MODIFIED = DateTime.Now;
+                            profile.date_created = (xlRange.Cells[i, 18].Value2 == null) ? DateTime.Now : ParseDateTimeFormCell(xlRange.Cells[i, 18].Value2.ToString());
+                            profile.date_modified = DateTime.Now;
                         }
 
                         try
                         {
-                            if (!CheckClassNameValid(classes, profile.CLASS_NAME))
+                            if (!CheckClassNameValid(classes, profile.className))
                             {
                                 //Create New Class
                                 CardType NewClass = new CardType()
                                 {
-                                    CLASS_NAME = profile.CLASS_NAME
+                                    className = profile.className
                                 };
-                                SqliteDataAccess.InsertClass(NewClass);
+                                SqliteDataAccess.InsertCardTypesAsync(NewClass);
                                 //Add or Update Profile
                                 if (isAddProfile)
                                 {
-                                    if (SqliteDataAccess.InsertProfile(profile))
-                                    {
-                                        ImportProfileImage(importFileFolder, profile.IMAGE);
-                                    }
+                                    SqliteDataAccess.InsertProfileAsync(profile);
+                                    //if (SqliteDataAccess.InsertProfile(profile))
+                                    //{
+                                    //    ImportProfileImage(importFileFolder, profile.image);
+                                    //}
                                 }
                                 else
                                 {
-                                    //if (SqliteDataAccess.UpdateDataProfile(profile, profile.PROFILE_STATUS))
-                                    if (SqliteDataAccess.UpdateProfile(profile))
-                                    {
-                                        ImportProfileImage(importFileFolder, profile.IMAGE);
-                                    }
+                                    SqliteDataAccess.UpdateProfileAsync(profile);
+                                    //if (SqliteDataAccess.UpdateProfile(profile))
+                                    //{
+                                    //    ImportProfileImage(importFileFolder, profile.image);
+                                    //}
                                 }
                             }
                             else
@@ -262,18 +263,19 @@ namespace GateAccessControl.Views
                                 //Add or Update Profile
                                 if (isAddProfile)
                                 {
-                                    if (SqliteDataAccess.InsertProfile(profile))
-                                    {
-                                        ImportProfileImage(importFileFolder, profile.IMAGE);
-                                    }
+                                    SqliteDataAccess.InsertProfileAsync(profile);
+                                    //if (SqliteDataAccess.InsertProfile(profile))
+                                    //{
+                                    //    ImportProfileImage(importFileFolder, profile.image);
+                                    //}
                                 }
                                 else
                                 {
-                                    //if (SqliteDataAccess.UpdateDataProfile(profile, profile.PROFILE_STATUS))
-                                    if (SqliteDataAccess.UpdateProfile(profile))
-                                    {
-                                        ImportProfileImage(importFileFolder, profile.IMAGE);
-                                    }
+                                    SqliteDataAccess.UpdateProfileAsync(profile);
+                                    //if (SqliteDataAccess.UpdateProfile(profile))
+                                    //{
+                                    //    ImportProfileImage(importFileFolder, profile.image);
+                                    //}
                                 }
                             }
                         }
@@ -317,7 +319,7 @@ namespace GateAccessControl.Views
         {
             foreach (CardType item in list)
             {
-                if (item.CLASS_NAME.Equals(ClassName))
+                if (item.className.Equals(ClassName))
                 {
                     return true;
                 }

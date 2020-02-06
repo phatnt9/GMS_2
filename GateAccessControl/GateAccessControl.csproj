@@ -99,18 +99,16 @@
     <Compile Include="Models\CommandListBox.cs" />
     <Compile Include="Models\CommandTextBox.cs" />
     <Compile Include="Models\Device.cs" />
-    <Compile Include="Models\DeviceCardType.cs" />
     <Compile Include="Models\DeviceItem.cs" />
     <Compile Include="Models\DeviceProfiles.cs" />
     <Compile Include="Models\Profile.cs" />
+    <Compile Include="Models\ProfileDevice.cs" />
     <Compile Include="Models\TimeRecord.cs" />
     <Compile Include="Converter\AddDeviceDataConverter.cs" />
     <Compile Include="ViewModels\AddDeviceViewModels.cs" />
     <Compile Include="ViewModels\AddProfileViewModel.cs" />
     <Compile Include="ViewModels\AppPageViewModel.cs" />
     <Compile Include="ViewModels\ClassManagementViewModel.cs" />
-    <Compile Include="Converter\DeviceItemWebSocketStatusConverter.cs" />
-    <Compile Include="Converter\DeviceProfilesActiveTimeConverter.cs" />
     <Compile Include="ViewModels\DeviceProfilesManageViewModel.cs" />
     <Compile Include="Converter\DeviceProfilesSelectedItemsConverter.cs" />
     <Compile Include="Converter\DgvSelectedItemsConverter.cs" />
@@ -118,7 +116,6 @@
     <Compile Include="ViewModels\EditDeviceViewModels.cs" />
     <Compile Include="ViewModels\EditProfileViewModel.cs" />
     <Compile Include="ViewModels\GlobalConstant.cs" />
-    <Compile Include="Converter\LoadTimeCheckParametersConverter.cs" />
     <Compile Include="Converter\ProfileImageConverter.cs" />
     <Compile Include="Converter\ProfileListDeviceConverter.cs" />
     <Compile Include="Converter\ProfileSelectedItemsConverter.cs" />

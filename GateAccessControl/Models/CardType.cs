@@ -7,23 +7,23 @@ namespace GateAccessControl
         private int _classId;
         private string _className;
 
-        public int CLASS_ID
+        public int classId
         {
             get => _classId;
             set
             {
                 _classId = value;
-                OnPropertyChanged("CLASS_ID");
+                OnPropertyChanged("classId");
             }
         }
 
-        public string CLASS_NAME
+        public string className
         {
             get => _className;
             set
             {
                 _className = value;
-                OnPropertyChanged("CLASS_NAME");
+                OnPropertyChanged("className");
             }
         }
 
@@ -33,8 +33,8 @@ namespace GateAccessControl
 
         public CardType(int classId, string className)
         {
-            CLASS_ID = classId;
-            CLASS_NAME = className;
+            this.classId = classId;
+            this.className = className;
         }
 
         #region INotifyPropertyChanged Members

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -88,9 +89,9 @@ namespace GateAccessControl
         public DeviceProfilesManageViewModel(Device device)
         {
             Device = device;
-            ReloadCardTypes();
+            ReloadCardTypesAsync();
             ReloadProfiles();
-            ReloadDeviceProfiles(device);
+            ReloadDeviceProfilesAsync(device);
 
             SearchOthersProfilesCommand = new RelayCommand<ItemCollection>(
                 (p) => true,
@@ -124,14 +125,14 @@ namespace GateAccessControl
                 (p) => true,
                 (p) =>
                 {
-                    ReloadDeviceProfiles(Device);
+                    ReloadDeviceProfilesAsync(Device);
                 });
 
             SearchGroupDeviceProfilesCommand = new RelayCommand<ItemCollection>(
                 (p) => true,
                 (p) =>
                 {
-                    ReloadDeviceProfiles(Device);
+                    ReloadDeviceProfilesAsync(Device);
                 });
 
             DeactiveDeviceProfilesCommand = new RelayCommand<List<DeviceProfile>>(
@@ -142,13 +143,13 @@ namespace GateAccessControl
                         List<DeviceProfile> CanDeactiveDeviceProfiles = p.FindAll((u) =>
                         {
                             if (
-                            ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                            (u.CLIENT_STATUS == GlobalConstant.ClientStatus.Unknow.ToString()) &&
-                            (u.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString())) ||
+                            ((u.profileStatus == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                            (u.client_status == GlobalConstant.ClientStatus.Unknow.ToString()) &&
+                            (u.server_status == GlobalConstant.ServerStatus.None.ToString())) ||
 
-                            ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
-                            (u.CLIENT_STATUS == GlobalConstant.ClientStatus.Unknow.ToString()) &&
-                            (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString()))
+                            ((u.profileStatus == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                            (u.client_status == GlobalConstant.ClientStatus.Unknow.ToString()) &&
+                            (u.server_status == GlobalConstant.ServerStatus.Add.ToString()))
                             )
                             {
                                 return true;
@@ -179,13 +180,13 @@ namespace GateAccessControl
                         List<DeviceProfile> CanActiveDeviceProfiles = p.FindAll((u) =>
                         {
                             if (
-                            ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                            (u.CLIENT_STATUS == GlobalConstant.ClientStatus.Unknow.ToString()) &&
-                            (u.SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString())) ||
+                            ((u.profileStatus == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                            (u.client_status == GlobalConstant.ClientStatus.Unknow.ToString()) &&
+                            (u.server_status == GlobalConstant.ServerStatus.Remove.ToString())) ||
 
-                            ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
-                            (u.CLIENT_STATUS == GlobalConstant.ClientStatus.Unknow.ToString()) &&
-                            (u.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString()))
+                            ((u.profileStatus == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                            (u.client_status == GlobalConstant.ClientStatus.Unknow.ToString()) &&
+                            (u.server_status == GlobalConstant.ServerStatus.None.ToString()))
                             )
                             {
                                 return true;
@@ -216,14 +217,14 @@ namespace GateAccessControl
                         List<DeviceProfile> CanDeleteDeviceProfiles = p.FindAll((u) =>
                         {
                             if (
-                            ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                            (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString())) ||
+                            ((u.profileStatus == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                            (u.server_status == GlobalConstant.ServerStatus.Add.ToString())) ||
 
-                            ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
-                            (u.SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString())) ||
+                            ((u.profileStatus == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                            (u.server_status == GlobalConstant.ServerStatus.Add.ToString())) ||
 
-                            ((u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
-                            (u.SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString()))
+                            ((u.profileStatus == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                            (u.server_status == GlobalConstant.ServerStatus.None.ToString()))
                             )
                             {
                                 return true;
@@ -252,7 +253,7 @@ namespace GateAccessControl
                     {
                         List<Profile> CanInserDeviceProfiles = p.FindAll((u) =>
                         {
-                            return (u.PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString());
+                            return (u.profileStatus == GlobalConstant.ProfileStatus.Active.ToString());
                         });
                         return (p.Count > 0 && CanInserDeviceProfiles.Count == p.Count);
                     }
@@ -355,46 +356,46 @@ namespace GateAccessControl
             }
             DeleteProgressValue = 0;
             IsDeletingProfiles = false;
-            ReloadDeviceProfiles(Device);
+            ReloadDeviceProfilesAsync(Device);
         }
 
-        private void ActiveWorker_DoWork(object sender, DoWorkEventArgs e)
+        private async void ActiveWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             IsDeletingProfiles = true;
             List<DeviceProfile> deviceProfiles = e.Argument as List<DeviceProfile>;
             for (int i = 0; i < deviceProfiles.Count; i++)
             {
-                if ((deviceProfiles[i].PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                        (deviceProfiles[i].SERVER_STATUS == GlobalConstant.ServerStatus.Remove.ToString()))
+                if ((deviceProfiles[i].profileStatus == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                        (deviceProfiles[i].server_status == GlobalConstant.ServerStatus.Remove.ToString()))
                 {
-                    deviceProfiles[i].PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                    deviceProfiles[i].SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+                    deviceProfiles[i].profileStatus = GlobalConstant.ProfileStatus.Active.ToString();
+                    deviceProfiles[i].server_status = GlobalConstant.ServerStatus.None.ToString();
 
-                    if (SqliteDataAccess.UpdateDeviceProfile(Device.deviceId, deviceProfiles[i]))
+                    if (await SqliteDataAccess.UpdateDeviceProfileAsync(Device.deviceId, deviceProfiles[i]))
                     {
                         //continue;
                     }
                     else
                     {
-                        deviceProfiles[i].PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                        deviceProfiles[i].SERVER_STATUS = GlobalConstant.ServerStatus.Remove.ToString();
+                        deviceProfiles[i].profileStatus = GlobalConstant.ProfileStatus.Active.ToString();
+                        deviceProfiles[i].server_status = GlobalConstant.ServerStatus.Remove.ToString();
                     }
                 }
 
-                if ((deviceProfiles[i].PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
-                        (deviceProfiles[i].SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString()))
+                if ((deviceProfiles[i].profileStatus == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                        (deviceProfiles[i].server_status == GlobalConstant.ServerStatus.None.ToString()))
                 {
-                    deviceProfiles[i].PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
-                    deviceProfiles[i].SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
+                    deviceProfiles[i].profileStatus = GlobalConstant.ProfileStatus.Suspended.ToString();
+                    deviceProfiles[i].server_status = GlobalConstant.ServerStatus.Add.ToString();
 
-                    if (SqliteDataAccess.UpdateDeviceProfile(Device.deviceId, deviceProfiles[i]))
+                    if (await SqliteDataAccess.UpdateDeviceProfileAsync(Device.deviceId, deviceProfiles[i]))
                     {
                         //continue;
                     }
                     else
                     {
-                        deviceProfiles[i].PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
-                        deviceProfiles[i].SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+                        deviceProfiles[i].profileStatus = GlobalConstant.ProfileStatus.Suspended.ToString();
+                        deviceProfiles[i].server_status = GlobalConstant.ServerStatus.None.ToString();
                     }
                 }
 
@@ -439,46 +440,46 @@ namespace GateAccessControl
             }
             DeleteProgressValue = 0;
             IsDeletingProfiles = false;
-            ReloadDeviceProfiles(Device);
+            ReloadDeviceProfilesAsync(Device);
         }
 
-        private void DeactiveWorker_DoWork(object sender, DoWorkEventArgs e)
+        private async void DeactiveWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             IsDeletingProfiles = true;
             List<DeviceProfile> deviceProfiles = e.Argument as List<DeviceProfile>;
             for (int i = 0; i < deviceProfiles.Count; i++)
             {
-                if ((deviceProfiles[i].PROFILE_STATUS == GlobalConstant.ProfileStatus.Active.ToString()) &&
-                        (deviceProfiles[i].SERVER_STATUS == GlobalConstant.ServerStatus.None.ToString()))
+                if ((deviceProfiles[i].profileStatus == GlobalConstant.ProfileStatus.Active.ToString()) &&
+                        (deviceProfiles[i].server_status == GlobalConstant.ServerStatus.None.ToString()))
                 {
-                    deviceProfiles[i].PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                    deviceProfiles[i].SERVER_STATUS = GlobalConstant.ServerStatus.Remove.ToString();
+                    deviceProfiles[i].profileStatus = GlobalConstant.ProfileStatus.Active.ToString();
+                    deviceProfiles[i].server_status = GlobalConstant.ServerStatus.Remove.ToString();
 
-                    if (SqliteDataAccess.UpdateDeviceProfile(Device.deviceId, deviceProfiles[i]))
+                    if (await SqliteDataAccess.UpdateDeviceProfileAsync(Device.deviceId, deviceProfiles[i]))
                     {
                         //continue;
                     }
                     else
                     {
-                        deviceProfiles[i].PROFILE_STATUS = GlobalConstant.ProfileStatus.Active.ToString();
-                        deviceProfiles[i].SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+                        deviceProfiles[i].profileStatus = GlobalConstant.ProfileStatus.Active.ToString();
+                        deviceProfiles[i].server_status = GlobalConstant.ServerStatus.None.ToString();
                     }
                 }
 
-                if ((deviceProfiles[i].PROFILE_STATUS == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
-                        (deviceProfiles[i].SERVER_STATUS == GlobalConstant.ServerStatus.Add.ToString()))
+                if ((deviceProfiles[i].profileStatus == GlobalConstant.ProfileStatus.Suspended.ToString()) &&
+                        (deviceProfiles[i].server_status == GlobalConstant.ServerStatus.Add.ToString()))
                 {
-                    deviceProfiles[i].PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
-                    deviceProfiles[i].SERVER_STATUS = GlobalConstant.ServerStatus.None.ToString();
+                    deviceProfiles[i].profileStatus = GlobalConstant.ProfileStatus.Suspended.ToString();
+                    deviceProfiles[i].server_status = GlobalConstant.ServerStatus.None.ToString();
 
-                    if (SqliteDataAccess.UpdateDeviceProfile(Device.deviceId, deviceProfiles[i]))
+                    if (await SqliteDataAccess.UpdateDeviceProfileAsync(Device.deviceId, deviceProfiles[i]))
                     {
                         //continue;
                     }
                     else
                     {
-                        deviceProfiles[i].PROFILE_STATUS = GlobalConstant.ProfileStatus.Suspended.ToString();
-                        deviceProfiles[i].SERVER_STATUS = GlobalConstant.ServerStatus.Add.ToString();
+                        deviceProfiles[i].profileStatus = GlobalConstant.ProfileStatus.Suspended.ToString();
+                        deviceProfiles[i].server_status = GlobalConstant.ServerStatus.Add.ToString();
                     }
                 }
 
@@ -523,22 +524,23 @@ namespace GateAccessControl
             }
             DeleteProgressValue = 0;
             IsDeletingProfiles = false;
-            ReloadDeviceProfiles(Device);
+            ReloadDeviceProfilesAsync(Device);
         }
 
-        private void DeleteWorker_DoWork(object sender, DoWorkEventArgs e)
+        private async void DeleteWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             IsDeletingProfiles = true;
             List<DeviceProfile> deviceProfiles = e.Argument as List<DeviceProfile>;
             for (int i = 0; i < deviceProfiles.Count; i++)
             {
-                if (SqliteDataAccess.DeleteDeviceProfile(Device.deviceId, deviceProfiles[i]))
+                Task<bool> deleteTask = SqliteDataAccess.DeleteDeviceProfileAsync(Device.deviceId, deviceProfiles[i]);
+                if (await deleteTask)
                 {
-                    List<Profile> listProfiles = Profiles.Where(x => x.pinno.Equals(deviceProfiles[i].PIN_NO)).Cast<Profile>().ToList();
+                    List<Profile> listProfiles = Profiles.Where(x => x.pinno.Equals(deviceProfiles[i].pinno)).Cast<Profile>().ToList();
                     foreach (Profile pf in listProfiles)
                     {
-                        pf.RemoveDeviceId(Device.deviceId);
-                        SqliteDataAccess.UpdateProfile(pf);
+                        await pf.RemoveDeviceId(Device.deviceId);
+                        SqliteDataAccess.UpdateProfileAsync(pf);
                     }
                 }
 
@@ -583,20 +585,21 @@ namespace GateAccessControl
             }
             SelectProgressValue = 0;
             IsSelectingProfiles = false;
-            ReloadDeviceProfiles(Device);
+            ReloadDeviceProfilesAsync(Device);
         }
 
-        private void SelectWorker_DoWork(object sender, DoWorkEventArgs e)
+        private async void SelectWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             IsSelectingProfiles = true;
             List<Profile> profiles = e.Argument as List<Profile>;
 
             for (int i = 0; i < profiles.Count; i++)
             {
-                if (SqliteDataAccess.InsertDeviceProfile(Device.deviceId, new DeviceProfile(profiles[i])))
+                Task<bool> insertTask = SqliteDataAccess.InsertDeviceProfileAsync(Device.deviceId, new DeviceProfile(profiles[i]));
+                if (await insertTask)
                 {
                     profiles[i].AddDeviceId(Device.deviceId);
-                    SqliteDataAccess.UpdateProfile(profiles[i]);
+                    SqliteDataAccess.UpdateProfileAsync(profiles[i]);
                 }
                 (sender as BackgroundWorker).ReportProgress((i * 100) / profiles.Count);
                 if (SelectWorker.CancellationPending)
@@ -606,11 +609,12 @@ namespace GateAccessControl
             }
         }
 
-        public void ReloadCardTypes()
+        public async void ReloadCardTypesAsync()
         {
             try
             {
-                List<CardType> classesList = SqliteDataAccess.LoadCardTypes();
+                Task<List<CardType>> loadTask = SqliteDataAccess.LoadCardTypesAsync();
+                List<CardType> classesList = await loadTask;
                 classesList.Insert(0, new CardType(-1, "All"));
                 Classes = new ObservableCollection<CardType>(classesList);
             }
@@ -620,7 +624,7 @@ namespace GateAccessControl
             }
         }
 
-        public bool ReloadProfiles()
+        public async void ReloadProfiles()
         {
             if (Search_profiles_class == null)
             {
@@ -634,17 +638,17 @@ namespace GateAccessControl
             string group = Search_profiles_group == "All" ? "" : Search_profiles_group;
             try
             {
-                Profiles = new ObservableCollection<Profile>(SqliteDataAccess.LoadProfiles(type, group, ""));
-                return true;
+                Profiles = new ObservableCollection<Profile>(await SqliteDataAccess.LoadProfilesAsync(type, group, ""));
+                return;
             }
             catch (Exception ex)
             {
                 logFile.Error(ex.Message);
-                return false;
+                return;
             }
         }
 
-        public bool ReloadDeviceProfiles(Device d)
+        public async Task<bool> ReloadDeviceProfilesAsync(Device d)
         {
             if (Search_deviceProfiles_class == null)
             {
@@ -658,7 +662,7 @@ namespace GateAccessControl
             string group = Search_deviceProfiles_group == "All" ? "" : Search_deviceProfiles_group;
             try
             {
-                DeviceProfiles = new ObservableCollection<DeviceProfile>(SqliteDataAccess.LoadDeviceProfiles(d.deviceId, type, group, ""));
+                DeviceProfiles = new ObservableCollection<DeviceProfile>(await SqliteDataAccess.LoadDeviceProfilesAsync(d.deviceId, type, group, ""));
                 return true;
             }
             catch (Exception ex)
@@ -673,11 +677,11 @@ namespace GateAccessControl
             if (p != null)
             {
                 p.Filter = (obj) => (
-                (((Profile)obj).ADDRESS.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
-                (((Profile)obj).AD_NO.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
-                (((Profile)obj).EMAIL.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
-                (((Profile)obj).PROFILE_NAME.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
-                (((Profile)obj).PHONE.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
+                (((Profile)obj).address.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
+                (((Profile)obj).adno.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
+                (((Profile)obj).email.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
+                (((Profile)obj).profileName.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
+                (((Profile)obj).phone.ToLower().Contains(Search_profiles_others.ToString().ToLower())) ||
                 (((Profile)obj).pinno.ToLower().Contains(Search_profiles_others.ToString().ToLower()))
             );
             }
@@ -688,12 +692,12 @@ namespace GateAccessControl
             if (p != null)
             {
                 p.Filter = (obj) => (
-                (((DeviceProfile)obj).ADDRESS.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
-                (((DeviceProfile)obj).AD_NO.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
-                (((DeviceProfile)obj).EMAIL.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
-                (((DeviceProfile)obj).PROFILE_NAME.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
-                (((DeviceProfile)obj).PHONE.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
-                (((DeviceProfile)obj).PIN_NO.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower()))
+                (((DeviceProfile)obj).address.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((DeviceProfile)obj).adno.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((DeviceProfile)obj).email.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((DeviceProfile)obj).profileName.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((DeviceProfile)obj).phone.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower())) ||
+                (((DeviceProfile)obj).pinno.ToLower().Contains(Search_deviceProfiles_others.ToString().ToLower()))
             );
             }
         }

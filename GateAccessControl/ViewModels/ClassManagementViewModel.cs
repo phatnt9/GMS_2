@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace GateAccessControl
@@ -49,7 +50,7 @@ namespace GateAccessControl
                 {
                     List<CardType> list = p.ToList();
                     SaveClasses(list);
-                    ReloadDataCardTypes();
+                    ReloadDataCardTypesAsync();
                 });
 
             RemoveClassesCommand = new RelayCommand<List<CardType>>(
@@ -66,8 +67,8 @@ namespace GateAccessControl
                 },
                 (p) =>
                 {
-                    RemoveClasses(p);
-                    ReloadDataCardTypes();
+                    RemoveClassesAsync(p);
+                    ReloadDataCardTypesAsync();
                 });
 
             CloseClassManagementCommand = new RelayCommand<CardType>(
@@ -80,42 +81,37 @@ namespace GateAccessControl
                     CloseWindow();
                 });
 
-            ReloadDataCardTypes();
+            ReloadDataCardTypesAsync();
         }
 
         public void SaveClasses(List<CardType> classes)
         {
             foreach (CardType cardType in classes)
             {
-                if (cardType.CLASS_ID == 0)
+                if (cardType.classId == 0)
                 {
-                    SqliteDataAccess.InsertClass(cardType);
+                    SqliteDataAccess.InsertCardTypesAsync(cardType);
                 }
                 else
                 {
-                    SqliteDataAccess.UpdateCardType(cardType);
+                    SqliteDataAccess.UpdateCardTypeAsync(cardType);
                 }
             }
         }
 
-        public void RemoveClasses(List<CardType> classes)
+        public void RemoveClassesAsync(List<CardType> classes)
         {
             foreach (CardType cardType in classes)
             {
-                SqliteDataAccess.DeleteCardType(cardType);
+                Task<bool> deleteTask = SqliteDataAccess.DeleteCardTypeAsync(cardType);
             }
         }
 
-        public void ReloadDataCardTypes()
+        public async void ReloadDataCardTypesAsync()
         {
-            try
-            {
-                Classes = new ObservableCollection<CardType>(SqliteDataAccess.LoadCardTypes());
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-            }
+            Task<List<CardType>> loadTask = SqliteDataAccess.LoadCardTypesAsync();
+            List<CardType> list = await loadTask;
+            Classes = new ObservableCollection<CardType>(list);
         }
 
         public void CloseWindow()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace GateAccessControl
@@ -70,14 +71,7 @@ namespace GateAccessControl
                 (p) =>
                 {
                     AddDevice.deviceStatus = DeviceStatus.Pending.ToString();
-                    if (SqliteDataAccess.InsertDevice(AddDevice))
-                    {
-                        AddDeviceStatus = "Succeed";
-                    }
-                    else
-                    {
-                        AddDeviceStatus = "Unsucceed";
-                    }
+                    InsertDeviceAsync();
                 }
                 );
 
@@ -90,6 +84,19 @@ namespace GateAccessControl
                {
                    CloseWindow();
                });
+        }
+
+        public async Task InsertDeviceAsync()
+        {
+            Task<bool> insertTask = SqliteDataAccess.InsertDeviceAsync(AddDevice);
+            if (await insertTask)
+            {
+                AddDeviceStatus = "Succeed";
+            }
+            else
+            {
+                AddDeviceStatus = "Unsucceed";
+            }
         }
 
         public void CloseWindow()
