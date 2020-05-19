@@ -120,7 +120,6 @@
     <Compile Include="Converter\ProfileListDeviceConverter.cs" />
     <Compile Include="Converter\ProfileSelectedItemsConverter.cs" />
     <Compile Include="Converter\SearchProfilesParametersConverter.cs" />
-    <Compile Include="ViewModels\LoginPageViewModel.cs" />
     <Compile Include="ViewModels\SqliteDataAccess.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\AddDeviceWindow.xaml.cs">

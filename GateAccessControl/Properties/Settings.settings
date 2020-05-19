@@ -6,10 +6,10 @@
       <Value Profile="(Default)">3600000</Value>
     </Setting>
     <Setting Name="WebServerAddress" Type="System.String" Scope="User">
-      <Value Profile="(Default)">127.0.0.1</Value>
+      <Value Profile="(Default)">atekserverschool.ddns.net</Value>
     </Setting>
     <Setting Name="WebServerPort" Type="System.String" Scope="User">
-      <Value Profile="(Default)">8081</Value>
+      <Value Profile="(Default)">12000</Value>
     </Setting>
   </Settings>
 </SettingsFile>

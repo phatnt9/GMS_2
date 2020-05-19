@@ -26,8 +26,7 @@
                 Width="200"
                 Margin="3"
                 HorizontalContentAlignment="Center"
-                PreviewKeyDown="Tb_userName_PreviewKeyDown"
-                Text="{Binding LoginName}" />
+                PreviewKeyDown="Tb_userName_PreviewKeyDown" />
             <PasswordBox
                 x:Name="tb_password"
                 Width="200"
@@ -40,8 +39,6 @@
                 Height="20"
                 BorderThickness="0"
                 Click="Btn_login_Click"
-                Command="{Binding LoginCommand}"
-                CommandParameter="{Binding ElementName=tb_password, Path=Password, UpdateSourceTrigger=PropertyChanged}"
                 Content="Login">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}">

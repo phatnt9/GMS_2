@@ -1344,38 +1344,24 @@ namespace GateAccessControl
         /// </summary>
         /// <param name="removedDevice"></param>
         /// <returns></returns>
-        public async Task<bool> ReloadDevices(Device removedDevice = null)
+        public async void ReloadDevices()
         {
-            try
+            List<Device> deviceList = await SqliteDataAccess.LoadDevicesAsync(0);
+            foreach (Device item in deviceList)
             {
-                List<Device> deviceList = await SqliteDataAccess.LoadDevicesAsync(0);
-                foreach (Device item in deviceList)
+                Device device = CheckExistDevice(Devices, item);
+                if (device == null)
                 {
-                    Device device = CheckExistDevice(Devices, item);
-                    if (device == null)
-                    {
-                        //Add Device
-                        Devices.Add(item);
-                    }
-                    else
-                    {
-                        //Update Device
-                        device.deviceIp = item.deviceIp;
-                        device.deviceName = item.deviceName;
-                        device.deviceNote = item.deviceNote;
-                    }
+                    //Add Device
+                    Devices.Add(item);
                 }
-                //Remove Device
-                if (removedDevice != null)
+                else
                 {
-                    return Devices.Remove(removedDevice);
+                    //Update Device
+                    device.deviceIp = item.deviceIp;
+                    device.deviceName = item.deviceName;
+                    device.deviceNote = item.deviceNote;
                 }
-                return false;
-            }
-            catch (Exception ex)
-            {
-                logFile.Error(ex.Message);
-                return false;
             }
         }
 

@@ -16,7 +16,6 @@ namespace GateAccessControl.Views
             this.frame = frame;
             InitializeComponent();
             Loaded += LoginPage_Loaded;
-            //DataContext = new LoginPageViewModel(frame);
         }
 
         private void LoginPage_Loaded(object sender, RoutedEventArgs e)
@@ -27,12 +26,21 @@ namespace GateAccessControl.Views
 
         private void Btn_login_Click(object sender, RoutedEventArgs e)
         {
-            if (tb_userName.Text == "admin" && tb_password.Password == "atek")
+            if (Login(tb_userName.Text, tb_password.Password))
             {
-                GlobalConstant.CreateFolderToSaveData();
-                SqliteDataAccess.CreateDatabase();
+                //GlobalConstant.CreateFolderToSaveData();
+                //SqliteDataAccess.CreateDatabase();
                 frame.Content = new AppPage();
             }
+        }
+
+        public bool Login(string userName, string password)
+        {
+            if (tb_userName.Text == "admin" && tb_password.Password == "atek")
+            {
+                return true;
+            }
+            return false;
         }
 
         private void Tb_password_PreviewKeyDown(object sender, KeyEventArgs e)
